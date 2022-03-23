@@ -22,7 +22,7 @@ uint16_t ntohs(uint16_t netshort);
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
 ```
 
-Some macro available to deal with `fd_set`
+Some macro available to deal with `fd_set` :
 ```c++
 void FD_CLR(int fd, fd_set *set)        # remove fd from set
 void FD_ZERO(fd_set *set)               # clear set
@@ -43,8 +43,9 @@ The `EV_SET()` macro is provided for ease of initializing a `kevent` structure.
 
 int socket(int domain, int type, int protocol);
 ```
-
-
+- return value : socket descriptor (like file descriptors)
+- `domain` : specifies communication domain (local `AF_LOCAL`, through an internet protocol `AF_INET`, etc.)
+- `type` : specifies the semantics of communication over the socket (`SOCK_STREAM`, `SOCK_DGRAM`, ...)
 
 ## Configuration file
 nginx.conf inspiration
