@@ -39,7 +39,7 @@ The `kqueue()` system call creates a new kernel event queue and returns a descri
 
 The `EV_SET()` macro is provided for ease of initializing a `kevent` structure.
 
-### socket
+### socket -- create a socket
 ```c++
 #include <sys/socket.h>
 
@@ -50,8 +50,13 @@ int socket(int domain, int type, int protocol);
 - `type` : specifies the semantics of communication over the socket (`SOCK_STREAM`, `SOCK_DGRAM`, ...)
 - `protocol` : specifies a protocol to use, it should be consistant with the `domain`, you can see protocol's values in `/etc/protocols`
 
+### accept -- accept a connection on a socket
+```c++
+int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
+```
+
 ## Configuration file
-nginx.conf inspiration
+`nginx.conf` inspiration
 
 # Ressources
 
