@@ -3,6 +3,8 @@
 ## HTTP server
 At the most basic level, whenever a browser needs a file that is hosted on a web server, the browser requests the file via HTTP. When the request reaches the correct (hardware) web server, the (software) HTTP server accepts the request, finds the requested document, and sends it back to the browser, also through HTTP.
 
+[TO COMPLETE]
+
 ## Authorized functions
 
 ### htons, htonl, ntohs, ntohl -- convert values between host and network byte order
@@ -14,7 +16,7 @@ uint16_t htons(uint16_t hostshort);
 uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
 ```
-- `htons` : converts the unsigned integer hostlong from host byte order to network byte order
+- `htons()` : converts the unsigned integer hostlong from host byte order to network byte order
 - etc.
 
 ### select, poll, epoll -- synchronous I/O multiplexing
@@ -30,7 +32,7 @@ void FD_SET(int fd, fd_set *set)        # add fd in set
 int  FD_ISSET(int fd, fd_set *set)      # check if fd is in set
 ```
 
-`select` waits until one of `readfds` is ready for reading, or until one of `writefds` is ready for writing, or until one of `exceptfds` has encoutered an exception (cf. test.cpp) or until `timeout` is reached.
+`select()` waits until one of `readfds` is ready for reading, or until one of `writefds` is ready for writing, or until one of `exceptfds` has encoutered an exception (cf. test.cpp) or until `timeout` is reached.
 
 ### kqueue, kevent -- kernel event notification mechanism
 The `kqueue()` system call creates a new kernel event queue and returns a descriptor.
@@ -46,6 +48,7 @@ int socket(int domain, int type, int protocol);
 - return value : socket descriptor (like file descriptors)
 - `domain` : specifies communication domain (local `AF_LOCAL`, through an internet protocol `AF_INET`, etc.)
 - `type` : specifies the semantics of communication over the socket (`SOCK_STREAM`, `SOCK_DGRAM`, ...)
+- `protocol` : specifies a protocol to use, it should be consistant with the `domain`, you can see protocol's values in `/etc/protocols`
 
 ## Configuration file
 nginx.conf inspiration
