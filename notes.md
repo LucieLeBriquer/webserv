@@ -5,6 +5,11 @@ At the most basic level, whenever a browser needs a file that is hosted on a web
 
 HTTP server usually use TCP for communications.
 
+## TCP socket programming
+socket : mechanism to give programs access to the network
+- create a socket with `socket()`
+- identify the socket with `bind()`
+
 [TO COMPLETE]
 
 ## Authorized functions
@@ -56,6 +61,25 @@ int socket(int domain, int type, int protocol);
 ```c++
 int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
 ```
+
+### bind -- identify a socket
+Like assigning an address to a mailbox
+```c++
+int bind(int sockfd, const struct sockaddr *address, socklen_t address_len)
+
+struct sockaddr_in 
+{ 
+    __uint8_t         sin_len; 
+    sa_family_t       sin_family; 
+    in_port_t         sin_port; 
+    struct in_addr    sin_addr; 
+    char              sin_zero[8]; 
+};
+```
+with :
+- `sin_family` = `domain`
+- `sin_port` = a port number
+- `sin_addr` = 
 
 ## Configuration file
 `nginx.conf` inspiration
