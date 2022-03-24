@@ -79,7 +79,7 @@ struct sockaddr_in
 with :
 - `sin_family` = `domain`
 - `sin_port` = a port number
-- `sin_addr` = 
+- `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`)
 
 ## Configuration file
 `nginx.conf` inspiration
