@@ -10,8 +10,10 @@ socket : mechanism to give programs access to the network
 - create a socket with `socket()`
 - identify the socket with `bind()`
 - wait for a connection with `listen()` and `accept()`
+- send and receive messages with `read()` and `write()`
+- close the socket with `close()`
 
-[TO COMPLETE]
+There are some explanations about those functions in the following section.
 
 ## Authorized functions
 
