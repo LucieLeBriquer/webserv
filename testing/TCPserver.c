@@ -25,7 +25,7 @@ int main(void)
     
 
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_addr.s_addr = inet_addr("127.0.0.2");
     address.sin_port = htons( PORT );
     
     memset(address.sin_zero, '\0', sizeof(address.sin_zero));
