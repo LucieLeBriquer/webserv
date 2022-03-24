@@ -6,12 +6,12 @@ At the most basic level, whenever a browser needs a file that is hosted on a web
 HTTP server usually use TCP for communications.
 
 ## TCP socket programming
-socket : mechanism to give programs access to the network
-- create a socket with `socket()`
-- identify the socket with `bind()`
-- wait for a connection with `listen()` and `accept()`
-- send and receive messages with `read()` and `write()`
-- close the socket with `close()`
+Socket : mechanism to give programs access to the network
+- **create** a socket with `socket()`
+- **identify** the socket with `bind()`
+- **wait** for a connection with `listen()` and `accept()`
+- **send** and **receive** messages with `read()` and `write()`
+- **close** the socket with `close()`
 
 There are some explanations about those functions in the following section.
 
