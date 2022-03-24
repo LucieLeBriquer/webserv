@@ -1,5 +1,7 @@
 NAME = webserv
 
+SRCS = server.cpp
+
 OBJS = $(SRCS:.cpp=.o)
 
 CC = clang++ -Wall -Wextra -Werror -std=c++98 #-Wc++11-extensions #
