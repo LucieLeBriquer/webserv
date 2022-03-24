@@ -77,7 +77,7 @@ marks the socket `sockfd` as a listening socket. The `backlog` argument defines 
 ### recv
 
 ### bind -- identify a socket
-Like assigning an address to a mailbox
+Almost like assigning an address to a mailbox
 ```c++
 int bind(int sockfd, const struct sockaddr *address, socklen_t address_len)
 
