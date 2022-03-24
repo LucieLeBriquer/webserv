@@ -114,7 +114,7 @@ with :
 ### fcnt
 
 ## Configuration file
-`nginx.conf` inspiration
+`nginx.conf` inspiration -> parsing
 
 # Ressources
 
