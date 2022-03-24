@@ -9,6 +9,7 @@ HTTP server usually use TCP for communications.
 socket : mechanism to give programs access to the network
 - create a socket with `socket()`
 - identify the socket with `bind()`
+- wait for a connection with `listen()` and `accept()`
 
 [TO COMPLETE]
 
@@ -23,7 +24,7 @@ uint16_t htons(uint16_t hostshort);
 uint32_t ntohl(uint32_t netlong);
 uint16_t ntohs(uint16_t netshort);
 ```
-- `htons()` : converts the unsigned integer hostlong from host byte order to network byte order
+- `htons()` : converts a short integer (e.g. address) to a network representation 
 - etc.
 
 ### select, poll, epoll -- synchronous I/O multiplexing
@@ -52,7 +53,7 @@ The `EV_SET()` macro is provided for ease of initializing a `kevent` structure.
 
 int socket(int domain, int type, int protocol);
 ```
-- return value : socket descriptor (like file descriptors)
+- return value : socket descriptor (like file descriptor)
 - `domain` : specifies communication domain (local `AF_LOCAL`, through an internet protocol `AF_INET`, etc.)
 - `type` : specifies the semantics of communication over the socket (`SOCK_STREAM`, `SOCK_DGRAM`, ...)
 - `protocol` : specifies a protocol to use, it should be consistant with the `domain`, you can see protocol's values in `/etc/protocols`
@@ -61,6 +62,17 @@ int socket(int domain, int type, int protocol);
 ```c++
 int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
 ```
+`accept` grabs the first connection request and create a new socket for communication (the listening socket should be used only for listening purpose). `addr` and `addrlen` are filled by the function.
+
+### listen -- listen for connections on a socket
+```c++
+int listen(int sockfd, int backlog)
+```
+marks the socket `sockfd` as a listening socket. The `backlog` argument defines the maximum lenght of the queue of pending connection requests.
+
+### send
+
+### recv
 
 ### bind -- identify a socket
 Like assigning an address to a mailbox
@@ -80,6 +92,16 @@ with :
 - `sin_family` = `domain`
 - `sin_port` = a port number
 - `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`)
+
+### connect
+
+### inet_addr
+
+### setsockopt
+
+### getsockname
+
+### fcnt
 
 ## Configuration file
 `nginx.conf` inspiration
