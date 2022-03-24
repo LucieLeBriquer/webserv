@@ -9,7 +9,7 @@ HTTP server usually use TCP for communications.
 Socket : mechanism to give programs access to the network
 - **create** a socket with `socket()`
 - **identify** the socket with `bind()`
-- **wait** for a connection with `listen()` and `accept()`
+- **wait** for a connection with `listen()` and `accept()` (or `send()` and `recv()`)
 - **send** and **receive** messages with `read()` and `write()`
 - **close** the socket with `close()`
 
@@ -72,9 +72,17 @@ int listen(int sockfd, int backlog)
 ```
 marks the socket `sockfd` as a listening socket. The `backlog` argument defines the maximum lenght of the queue of pending connection requests.
 
-### send
+### send -- send a message on a socket
+```c++
+ssize_t send(int sockfd, const void *buf, size_t len, int flags)
+```
+The only difference between `write()` and `send()` is the presence of flags.
 
-### recv
+### recv -- receive a message from a socket
+```c++
+ssize_t recv(int sockfd, void *buf, size_t len, int flags)
+```
+The only difference between `read()` and `recv()` is the presence of flags.
 
 ### bind -- identify a socket
 Almost like assigning an address to a mailbox
