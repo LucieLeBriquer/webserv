@@ -116,7 +116,6 @@ with :
 ## Configuration file
 Example of a complete configuration file (`nginx.conf` inspiration):
 ```
-
 server {
 	listen			HOST:PORT
 	server_name		SERVER_NAME
@@ -124,7 +123,7 @@ server {
 	index			INDEX
 	client_body		MAX_CLIENT_BODY
 	methods			METHOD1 METHOD2 ...
-	error_page		
+	error_page		NUM_ERROR ERROR_FILE
 
 	location *.php {
 		cgi_pass	CGI
@@ -151,11 +150,11 @@ server {
 		index			INDEX
 		client_body		MAX_CLIENT_BODY
 		methods			METHOD1 METHOD2 ...
-		autoindex;
+		autoindex
 	}
 
 	location /TOREDIR {
-
+		return REDIR_URL
 	}
 }
 ```
