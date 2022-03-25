@@ -100,7 +100,7 @@ void Location::splitBlocks(std::vector<std::string> &splitted, std::string str, 
 		if (end != std::string::npos)
 			splitted.push_back(str.substr(pos, end - pos + 1));
 		else
-			splitted.push_back(str.substr(pos, str.length() - pos));
+			std::cerr << "Error: wrong format in configuration file" << std::endl;
 		pos = str.find(pattern, end);
 	}
 }
