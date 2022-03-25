@@ -13,12 +13,13 @@ class Location
 		std::string			_index;
 		size_t				_maxClientBody;
 		std::vector<int>	_methods;
+		std::string			_redirUrl;
 		bool				_autoindex;
 		bool				_formatOk;
 
 	public:
 		Location(void);
-		Location(std::string fileString, size_t start);
+		Location(std::string str);
 		Location(const Location &location);
 		virtual ~Location();
 
@@ -26,7 +27,7 @@ class Location
 
 		bool	wellFormatted(void) const;
 
-		static size_t	getClosingBracket(std::string str);
+		static void		splitBlocks(std::vector<std::string> &splitted, std::string str, std::string pattern);
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);

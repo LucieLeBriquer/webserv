@@ -4,17 +4,27 @@
 **		USEFUL FUNCTIONS
 */
 
-
-
 static bool	uselessLine(std::string line)
 {
-	int		i = 0;
-
-	const char *str = line.c_str();
+	int			i = 0;
+	const char	*str = line.c_str();
 
 	while (str[i] && isspace(str[i]))
 		i++;
 	return (!str[i] || str[i] == '#');
+}
+
+static std::string removeSpaces(std::string line)
+{
+	int			i = 0;
+	int			j = line.length() - 1;
+	const char	*str = line.c_str();
+
+	while (str[i] && isspace(str[i]))
+		i++;
+	while (j > 0 && isspace(str[j]))
+		j--;
+	return (line.substr(i, j - i + 1));
 }
 
 static std::string removeCommentary(std::string line)
@@ -23,8 +33,8 @@ static std::string removeCommentary(std::string line)
 
 	commentPos = line.find("#");
  	if (commentPos != std::string::npos)
-		return (line.substr(0, commentPos) + "\n");
-	return (line + "\n");
+		return (removeSpaces(line.substr(0, commentPos)) + "\n");
+	return (removeSpaces(line) + "\n");
 }
 
 /*
@@ -41,19 +51,14 @@ Config::Config(const Config &config)
 	*this = config;
 }
 
-void	showFileString(std::string fileString)
-{
-	std::cout << "====================================================" << std::endl;
-	std::cout << fileString;
-	std::cout << "====================================================" << std::endl;
-}
+
 // parsing
 Config::Config(std::string file)
 {
 	std::ifstream	fileStream(file.c_str());
 	std::string 	fileString = "";
 	std::string		line = "";
-	size_t			sBlockPos = 0;
+	std::vector<std::string> serverBlocks;
 
 	if (fileStream.is_open())
 	{
@@ -63,16 +68,15 @@ Config::Config(std::string file)
 				fileString += removeCommentary(line);
 		}
 		fileStream.close();
-		showFileString(fileString);
-		sBlockPos = fileString.find("server {", 0);
- 		while (sBlockPos != std::string::npos)
+
+		Location::splitBlocks(serverBlocks, fileString, "server ");
+		for (int i = 0; i < serverBlocks.size(); i++)
 		{
-			Server	newServ(fileString, sBlockPos);
+			Server	newServ(serverBlocks[i]);
+
 			if (!newServ.wellFormatted())
 				return ;
 			_servers.push_back(newServ);
-			std::cout << "new server added " << sBlockPos << std::endl;
-			sBlockPos = fileString.find("server {", sBlockPos + 8);
 		}
 	}
 	else

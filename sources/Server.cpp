@@ -4,6 +4,22 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
+/*
+
+private:
+	std::vector<Location>		_locations;
+	std::string					_host;
+	int							_port;
+	std::string					_root;
+	std::string					_index;
+	size_t						_maxClientBody;
+	std::vector<int>			_methods;
+	std::map<int, std::string>	_errorPages;
+	bool						_autoindex;
+	bool						_formatOk;
+
+*/
+
 Server::Server(void) : _formatOk(true)
 {
 	return ;
@@ -14,19 +30,20 @@ Server::Server(const Server &server)
 	*this = server;
 }
 
-Server::Server(std::string fileString, size_t start) : _formatOk(true)
+Server::Server(std::string str) : _formatOk(true)
 {
-	size_t	lBlockPos = 0;
+	std::cout << "[Server] constructor from :\n" << str << std::endl << std::endl;
 
-	lBlockPos = fileString.find("location {", 0);
-	while (lBlockPos != std::string::npos)
+	std::vector<std::string> locBlocks;
+
+	Location::splitBlocks(locBlocks, str.substr(0, str.length() - 2), "location ");
+	for (int i = 0; i < locBlocks.size(); i++)
 	{
-		Location	newLoc(fileString, lBlockPos);
+		Location	newLoc(locBlocks[i]);
+
 		if (!newLoc.wellFormatted())
 			return ;
 		_locations.push_back(newLoc);
-		lBlockPos = fileString.find("location {", lBlockPos + 11); // change 11 with location of last "}"
-		std::cout << "new location added " << lBlockPos << std::endl;
 	}
 }
 
