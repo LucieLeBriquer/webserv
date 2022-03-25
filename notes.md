@@ -116,6 +116,13 @@ with :
 ## Configuration file
 `nginx.conf` inspiration -> parsing
 
+# To Do List
+- parsing of configuration file
+- server part, with one socket per server block in conf file
+- parsing of requests
+- handling easy requests
+- handling php CGIss
+
 # Ressources
 
 - [Basic explanations on how a web server works](https://developer.mozilla.org/fr/docs/Learn/Common_questions/What_is_a_web_server)
