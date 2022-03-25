@@ -1,16 +1,16 @@
-CC			= c++ -Wall -Wextra -Werror -std=c++98
+CC			= c++ -std=c++98 #-Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 NAME		= ./webserv
 NAME_SHORT	= webserv
 
-INCS_DIR	= ./
+INCS_DIR	= ./includes/
 MAIN_INC	= -I$(INCS_DIR)
 INCS		= $(shell find $(INCS_DIR) -type f -name "*.hpp")
 
-SRCS_DIR 	= ./
+SRCS_DIR 	= ./sources/
 SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 
-OBJS_DIR	= ./
+OBJS_DIR	= ./objects/
 OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
 _COLOR		= \033[32m
