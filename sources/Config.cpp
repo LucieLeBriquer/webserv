@@ -6,6 +6,27 @@
 
 
 
+static bool	uselessLine(std::string line)
+{
+	int		i = 0;
+
+	const char *str = line.c_str();
+
+	while (str[i] && isspace(str[i]))
+		i++;
+	return (!str[i] || str[i] == '#');
+}
+
+static std::string removeCommentary(std::string line)
+{
+	size_t	commentPos;
+
+	commentPos = line.find("#");
+ 	if (commentPos != std::string::npos)
+		return (line.substr(0, commentPos) + "\n");
+	return (line + "\n");
+}
+
 /*
 **		CONSTRUCTORS AND DESTRUCTOR
 */
@@ -26,26 +47,27 @@ Config::Config(std::string file)
 	std::ifstream	fileStream(file.c_str());
 	std::string 	fileString;
 	std::string		line;
-	size_t			sBlockPos;
+	size_t			sBlockPos = 0;
 
 	if (fileStream.is_open())
 	{
     	while(std::getline(fileStream, line))
 		{
 			if (!uselessLine(line))
-				fileString += line + "\n";
+				fileString += removeCommentary(line);
 		}
 		fileStream.close();
 		//std::cout << fileString;
-		sBlockPos = fileString.find("server {");
+		sBlockPos = fileString.find("server {", 0);
  		while (sBlockPos != std::string::npos)
 		{
 			Server	newServ(fileString, sBlockPos);
 			if (!newServ.wellFormatted())
 				return ;
 			_servers.push_back(newServ);
+			std::cout << "new server added " << sBlockPos << std::endl;
+			sBlockPos = fileString.find("server {", sBlockPos + 8);
 		}
-
 	}
 	else
 	{

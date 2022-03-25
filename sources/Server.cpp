@@ -16,15 +16,17 @@ Server::Server(const Server &server)
 
 Server::Server(std::string fileString, size_t start)
 {
-	size_t	lBlockPos;
+	size_t	lBlockPos = 0;
 
-	lBlockPos = fileString.find("location {");
+	lBlockPos = fileString.find("location {", 0);
 	while (lBlockPos != std::string::npos)
 	{
 		Location	newLoc(fileString, lBlockPos);
 		if (!newLoc.wellFormatted())
 			return ;
 		_locations.push_back(newLoc);
+		lBlockPos = fileString.find("location {", lBlockPos + 11); // change 11 with location of last "}"
+		std::cout << "new location added " << lBlockPos << std::endl;
 	}
 }
 

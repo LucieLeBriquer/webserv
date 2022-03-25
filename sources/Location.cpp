@@ -16,8 +16,7 @@ Location::Location(void) : _root(""), _index(""), _maxClientBody(0), _autoindex(
 	return ;
 }
 
-Location::Location(const Location &location) : _root(location._root), _index(location._index), _maxClientBody(location._maxClientBody),
-											_methods(location.)
+Location::Location(const Location &location)
 {
 	*this = location;
 }
@@ -40,7 +39,12 @@ Location	&Location::operator=(const Location &location)
 {
 	if (this != &location)
 	{
-		
+		_root = location._root;
+		_index = location._index;
+		_maxClientBody = location._maxClientBody;
+		_methods = location._methods;
+		_autoindex = location._autoindex;
+		_formatOk = location._formatOk;
 	}
 	return (*this);
 }

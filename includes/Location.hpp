@@ -16,7 +16,6 @@ class Location
 		bool				_autoindex;
 		bool				_formatOk;
 
-	
 	public:
 		Location(void);
 		Location(std::string fileString, size_t start);
@@ -26,6 +25,8 @@ class Location
 		Location	&operator=(const Location &location);
 
 		bool	wellFormatted(void) const;
+
+		static size_t	getClosingBracket(std::string str);
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);
