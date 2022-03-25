@@ -2,63 +2,107 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <iostream>
+#include <unistd.h>
 #include <cstring>
+#include <cstdio>
+#include <arpa/inet.h>
+#include <sys/epoll.h>
 
 #define PORT 8080
+#define MAX_EVENTS 10
 
 int		main(void)
 {
-	int		server_fd, new_socket;
+	int					listenSock, connSock, nfds, epollfd, n = 0;
 	struct sockaddr_in	address;
-	socklen_t	   	    len_addr;
-    char                buf[1024] = {0};
-    int                 byte_count;
-    int                 yes = 1;
+	socklen_t			lenAddr;
+	char				buf[1024] = {0};
+	int					byteCount;
+	int					yes = 1;
+	struct epoll_event	ev, events[MAX_EVENTS];
 
-    len_addr = sizeof(address);
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	lenAddr = sizeof(address);
+//TCP socket
+	if (listenSock = socket(AF_INET, SOCK_STREAM, 0) < 0)
 	{
-		std::cout << "Error with socket()" << std::endl;
+		perror("socket()");
+		exit(EXIT_FAILURE);
+	}
+// Forcefully attaching socket to the port 8080
+	if (setsockopt(listenSock, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)))
+	{
+		perror("setsockopt");
+		exit(EXIT_FAILURE);
+	}
+	address.sin_family = AF_INET;
+	address.sin_addr.s_addr = inet_addr("127.0.0.2");
+	address.sin_port = htons(PORT);
+	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
+
+	if (bind(listenSock, (struct sockaddr *)&address, (int)lenAddr) < 0)
+	{
+		perror("bind()");
+		exit(EXIT_FAILURE);
+	}
+	if (listen(listenSock, MAX_EVENTS) < 0)
+	{
+		perror("listen()");
 		exit(EXIT_FAILURE);
 	}
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
-    memset(address.sin_zero, '\0', sizeof(address.sin_zero));
+//epoll
+	if ((epollfd = epoll_create(MAX_EVENTS)) < 0)
+	{
+		perror("epoll_create()");
+		exit(EXIT_FAILURE);
+	}
 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)) < 0)
-    {
-        std::cout << "Error with setsockopt()" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if (bind(server_fd, (struct sockaddr *)&address, (int)len_addr) < 0)
-    {
-        std::cout << "Error with bind()" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    if (listen(server_fd, 10) < 0)
-    {
-        std::cout << "Error with listen()" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+	ev.events = EPOLLIN;
+	ev.data.fd = listenSock;
 
-    while (1)
-    {
-        std::cout << std::endl;
-        std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
-        std::cout << std::endl;
-        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, &len_addr)) < 0)
-        {
-            std::cout << "Error with accept()" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-        byte_count = recv(new_socket, buf, sizeof(buf), 0);
-        std::cout << buf << std::endl;
-        send(new_socket, "Hello world!", 12, 0);
-        std::cout << "---------- Hello message sent ----------" << std::endl;
-        // close(new_socket);
-    }
-    
+	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listenSock, &ev) < 0)
+	{
+		perror("epoll_ctl: listenSock");
+		exit(EXIT_FAILURE);
+	}
+
+	for (;;)
+	{
+		if (nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1) < 0)
+		{
+			perror("epoll_wait()");
+			exit(EXIT_FAILURE);
+		}
+		while (n < nfds)
+		{
+			if (events[n].data.fd == listenSock)
+			{
+				if ((connSock = accept(listenSock, (struct sockaddr *) &address, &lenAddr)) < 0)
+				{
+					perror("accept()");
+					exit(EXIT_FAILURE);
+				}
+				///////
+			}
+			n++;
+		}
+	}
+
+/*	while (1)
+	{
+		std::cout << std::endl;
+		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
+		std::cout << std::endl;
+		if ((connSock = accept(listenSock, (struct sockaddr *)&address, &lenAddr)) < 0)
+		{
+			perror("accept()");
+			exit(EXIT_FAILURE);
+		}
+		byteCount = recv(connSock, buf, sizeof(buf), 0);
+		std::cout << buf << std::endl;
+		send(connSock, "Hello world!", 12, 0);
+		std::cout << "---------- Hello message sent ----------" << std::endl;
+		close(new_socket);
+	}*/
 	return 0;
 }
