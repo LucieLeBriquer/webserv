@@ -17,7 +17,7 @@ int		main(void)
     int yes = 1;
 
     lenAddr = sizeof(address);
-//TCP socket
+// Create a TCP socket ipv4
 	if (server_fd = socket(AF_INET, SOCK_STREAM, 0) < 0)
 	{
 		std::cout << "Error with socket()" << std::endl;
