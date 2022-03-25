@@ -73,6 +73,7 @@ int		main(void)
 			perror("epoll_wait()");
 			exit(EXIT_FAILURE);
 		}
+		n = 0;
 		while (n < nfds)
 		{
 			if (events[n].data.fd == listenSock)
@@ -82,11 +83,21 @@ int		main(void)
 					perror("accept()");
 					exit(EXIT_FAILURE);
 				}
-				///////
+				//set non blocking connSock
+				ev.events = EPOLLIN | EPOLLET;
+				ev.data.fd = connSock;
+				if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock, &ev) < 0)
+				{
+					perror("epoll_ctl: connSock");
+					exit(EXIT_FAILURE);
+				}
 			}
+			else
+				//use fd
 			n++;
 		}
 	}
+	close(epollfd);
 
 /*	while (1)
 	{

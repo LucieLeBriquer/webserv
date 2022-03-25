@@ -1,3 +1,30 @@
 Big-endian =			Network Byte Order	(ordre des octets du reseau)
 My computer store in =	Host Byte Horder	(ordre des octets de l'hote)
 Little-endian depends on the computer
+
+/*********************************EPOLL************************************/
+
+Epoll() est une methode pour implementer des socket non bloquant baser sur des EVENTS.
+Epoll() est une API similaire a poll()
+Epoll() detecte les changement d'etats ou les changements de niveaux. (edge-triggered / level-triggered)
+Epoll() peut gerer un grand nombre de fd.
+Epoll() contient une structure/instance (dans le kernel) qui a 2 liste :
+		- interest list (= epoll set) : fd qui sont enregistrer
+		- ready list : fd qui sont "ready" for I/O
+Epoll(), par defaut est en mode detection de changement de niveaux (level-triggered) LT
+
+epoll_create() creer une nouvelle instance d'Epoll() ainsi que sont fd.
+
+epoll_ctl(1 arg, 2 arg, 3 arg, 4 arg)
+epoll_ctl() est un appel system
+epoll_ctl() peut ajouter / modifier / supprimer des entree de la "interest list" de l'instance d'Epoll()
+epoll_ctl() : l'operation definie par le 2eme arg sera executer par le 3eme arg (notre socket de base)
+epoll_ctl() : l'attribut "events" de la structure "epoll_event" (4eme arg) peut recevoir different "type"
+-> Ces "types" vont dicter le comportement du 3eme arg 
+-> exemple 1 : notre "sokcet de base" est disponible en lecture / en ecriture ...
+-> exemple 2 : EPOLLET est un flag de comportement, il passe en mode detection de changement de niveau (edge-triggered) ET
+
+epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
+epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
+epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
+epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
