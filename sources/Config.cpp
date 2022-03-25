@@ -41,12 +41,18 @@ Config::Config(const Config &config)
 	*this = config;
 }
 
+void	showFileString(std::string fileString)
+{
+	std::cout << "====================================================" << std::endl;
+	std::cout << fileString;
+	std::cout << "====================================================" << std::endl;
+}
 // parsing
 Config::Config(std::string file)
 {
 	std::ifstream	fileStream(file.c_str());
-	std::string 	fileString;
-	std::string		line;
+	std::string 	fileString = "";
+	std::string		line = "";
 	size_t			sBlockPos = 0;
 
 	if (fileStream.is_open())
@@ -57,7 +63,7 @@ Config::Config(std::string file)
 				fileString += removeCommentary(line);
 		}
 		fileStream.close();
-		//std::cout << fileString;
+		showFileString(fileString);
 		sBlockPos = fileString.find("server {", 0);
  		while (sBlockPos != std::string::npos)
 		{

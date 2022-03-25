@@ -14,7 +14,7 @@ Server::Server(const Server &server)
 	*this = server;
 }
 
-Server::Server(std::string fileString, size_t start)
+Server::Server(std::string fileString, size_t start) : _formatOk(true)
 {
 	size_t	lBlockPos = 0;
 
