@@ -11,6 +11,6 @@ void Requests::treatRequest(char buf[1024])
 
     for (i = 0; i < 4; i++)
     {
-        if (parseContent(buf) == )
+       // if (parseContent(buf) == )
     }
 }
