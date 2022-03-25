@@ -118,33 +118,33 @@ Example of a complete configuration file (`nginx.conf` inspiration):
 ```
 
 server {
-    listen			HOST:PORT
-    server_name		SERVER_NAME
-    root			ROOT
-    index			INDEX
+	listen			HOST:PORT
+	server_name		SERVER_NAME
+	root			ROOT
+	index			INDEX
 	client_body		MAX_CLIENT_BODY
 	methods			METHOD1 METHOD2 ...
 	error_page		
 
-    location *.php {
-        cgi_pass	CGI
-    }
+	location *.php {
+		cgi_pass	CGI
+	}
 }
 
 server {
-    listen			HOST:PORT
-    server_name		SERVER_NAME
-    root			ROOT
-    index			INDEX
+	listen			HOST:PORT
+	server_name		SERVER_NAME
+	root			ROOT
+	index			INDEX
 	client_body		MAX_CLIENT_BODY
 	methods			METHOD1 METHOD2 ...
 
-    location /DIRECTORY1 {
+	location /DIRECTORY1 {
 		root			ROOT
 		index			INDEX
 		client_body		MAX_CLIENT_BODY
 		methods			METHOD1 METHOD2 ...
-    }
+	}
 
 	location /DIRECTORY2 {
 		root			ROOT
@@ -152,10 +152,11 @@ server {
 		client_body		MAX_CLIENT_BODY
 		methods			METHOD1 METHOD2 ...
 		autoindex;
-    }
+	}
 
 	location /TOREDIR {
-    }
+
+	}
 }
 ```
 no regexp for location routes
