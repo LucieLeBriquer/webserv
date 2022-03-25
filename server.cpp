@@ -1,9 +1,4 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <iostream>
-#include <cstring>
-#include <arpa/inet.h>
+#include "webserv.h"
 
 #define PORT 8080
 
@@ -18,7 +13,7 @@ int		main(void)
 
     lenAddr = sizeof(address);
 // Create a TCP socket ipv4
-	if (server_fd = socket(AF_INET, SOCK_STREAM, 0) < 0)
+	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		std::cout << "Error with socket()" << std::endl;
 		exit(EXIT_FAILURE);
@@ -57,6 +52,7 @@ int		main(void)
         }
         byteCount = recv(newSocket, buf, sizeof(buf), 0);
         std::cout << buf << std::endl;
+        treatRequest(buf);
         send(newSocket, "Hello world!", 12, 0);
         std::cout << "---------- Hello message sent ----------" << std::endl;
         // close(new_socket);

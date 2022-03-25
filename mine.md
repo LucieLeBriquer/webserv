@@ -1,3 +1,4 @@
+
 **socket(domain, type, protocole) = creation d'un socket (la valeur de retour fait usite a la requete d'e l'ouverture d;une ligne de telephone chez sfr)
     -> domaine : AF_INET, AF_INET6 .. famille d'address
     -> type : type de service = SOCK_STREAM (virtual circuit service) = TCP  SOCK_DGRAM (datagram service) = UDP
@@ -30,3 +31,5 @@ Some of them are:
     DELETE — Delete a URL GET and POST (forms) are commonly used
 
 REST APIs use GET, PUT, POST, and DELETE.
+
+----------------------
