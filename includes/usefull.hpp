@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 14:53:24 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/26 16:39:52 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,14 @@ void	printFileError(std::string file);
 
 bool	checkHostFormat(std::string str);
 int		myAtoi(std::string str);
+
+template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
+{
+	for (int i = 0; i + 1 < vect.size(); i++)
+		o << vect[i] << " ";
+	if (vect.size() > 0)
+		o << vect[vect.size() - 1];
+	return (o);
+}
 
 #endif

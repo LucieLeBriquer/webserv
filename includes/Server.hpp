@@ -68,6 +68,7 @@ class Server
 		vecInt		getMethods(void) const;
 		mapErr		getErrorPages(void) const;
 		bool		getAutoIndex(void) const;
+		vecLoc		getLocations(void) const;
 
 		// static
 		static const int	nbKeywords = 8;

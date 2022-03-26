@@ -79,8 +79,16 @@ Server	&Server::operator=(const Server &server)
 std::ostream	&operator<<(std::ostream &o, const Server &server)
 {
 	o << BLUE << "Server" << END << std::endl;
-	o << "\t" << "host\t" << server.getHost() << std::endl;
-	o << "\t" << "port\t" << server.getPort() << std::endl;
+	o << "\t" << "host        \t" << server.getHost() << std::endl;
+	o << "\t" << "port        \t" << server.getPort() << std::endl;
+	o << "\t" << "server_names\t" << server.getServerNames() << std::endl;
+	o << "\t" << "root        \t" << server.getRoot() << std::endl;
+	o << "\t" << "index       \t" << server.getIndex() << std::endl;
+	o << "\t" << "client_body \t" << server.getMaxClientBody() << std::endl;
+	o << "\t" << "methods     \t" << server.getMethods() << std::endl;
+	//o << "\t" << "error_pages \t" << server.getErrorPages() << std::endl;
+	o << "\t" << "autoindex   \t" << server.getAutoIndex() << std::endl;
+	o << server.getLocations() << std::endl;
 	return (o);
 };
 
@@ -183,7 +191,10 @@ void	Server::_setListen(vecStr words)
 
 void	Server::_setServerNames(vecStr words)
 {
-	return ;
+	if (words.size() < 2)
+		return (_setWrontFormat());
+	for (size_t i = 1; i < words.size(); i++)
+		_serverNames.push_back(words[i]);
 }
 
 void	Server::_setRoot(vecStr words)
@@ -263,6 +274,12 @@ mapErr		Server::getErrorPages(void) const
 bool		Server::getAutoIndex(void) const
 {
 	return (_autoindex);
+}
+
+
+vecLoc		Server::getLocations(void) const
+{
+	return (_locations);
 }
 
 

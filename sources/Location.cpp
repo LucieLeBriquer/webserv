@@ -58,6 +58,7 @@ Location	&Location::operator=(const Location &location)
 std::ostream	&operator<<(std::ostream &o, const Location &location)
 {
 	(void)location;
+	o << GREEN << "\tLocation" << END << std::endl << std::endl;
 	return (o);
 };
 
