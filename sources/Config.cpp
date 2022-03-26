@@ -55,11 +55,13 @@ Config::Config(const Config &config)
 // parsing
 Config::Config(std::string file)
 {
+	std::cout << YELLOW << "[Config] constructor" << END << std::endl;
+
 	std::ifstream	fileStream(file.c_str());
 	std::string 	fileString = "";
 	std::string		line = "";
 	std::vector<std::string> serverBlocks;
-	std::string		configInfo = "";
+	std::string		configInfo;
 
 	if (fileStream.is_open())
 	{
@@ -70,13 +72,18 @@ Config::Config(std::string file)
 		}
 		fileStream.close();
 
-		Location::splitBlocks(serverBlocks, fileString, "server ", configInfo);
+		configInfo.clear();
+		Location::splitBlocks(serverBlocks, fileString, "server", configInfo);
+		std::cout << BLUE << "configInfo" << END << "--->" << configInfo << "<---" << std::endl;
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);
 
 			if (!newServ.wellFormatted())
+			{
+				Location::printFormatError();
 				return ;
+			}
 			_servers.push_back(newServ);
 		}
 	}

@@ -16,7 +16,8 @@ Location::Location(const Location &location)
 
 Location::Location(std::string str) : _formatOk(true)
 {
-	std::cout << "[Location] constructor from :\n" << str << std::endl << std::endl;
+	//std::cout << YELLOW << "[Location] constructor" << END << std::endl;
+	//std::cout << "from\n--->" << str << "<---" << std::endl << std::endl;
 }
 
 Location::~Location()
@@ -70,8 +71,8 @@ static size_t	endOfBlock(std::string str, size_t start)
 	lastBracket = bracketOpen;
 	while (needed > 0 && lastBracket != std::string::npos)
 	{
-		bracketOpen = str.find("{", lastBracket + 1);
-		bracketClose = str.find("}", lastBracket + 1);
+		bracketOpen = str.find("{\n", lastBracket + 1);
+		bracketClose = str.find("\n}\n", lastBracket + 1) + 1;
 		if (bracketClose == std::string::npos && bracketOpen == std::string::npos)
 			return (std::string::npos);
 		if (bracketOpen < bracketClose)
@@ -88,21 +89,87 @@ static size_t	endOfBlock(std::string str, size_t start)
 	return (lastBracket);
 }
 
+static std::string	substrPos(std::string str, size_t start, size_t end)
+{
+	if (end + 1 > start)
+		return (str.substr(start, end - start + 1));
+	return ("");
+}
+
+static size_t	newStartOfBlock(std::string str, std::string pattern, size_t start)
+{
+	size_t	pos;
+	size_t	brackOpen;
+
+	pos = str.find(pattern, start);
+	while (pos != std::string::npos)
+	{
+		brackOpen = str.find("{\n");
+		if (brackOpen != std::string::npos && str.find("\n", pos) > brackOpen)
+			return (pos);
+	}
+	return (std::string::npos);
+}
+
 void Location::splitBlocks(std::vector<std::string> &splitted, std::string str, std::string pattern, std::string &otherInfo)
 {
 	size_t	pos;
 	size_t	end = 0;
 
-	pos = str.find(pattern, 0);
+	pos = newStartOfBlock(str, pattern, 0);
 	while (pos != std::string::npos)
 	{
-		otherInfo += str.substr(end == 0 ? 0 : end + 1, pos - end - 1);
-		end = endOfBlock(str, pos); 
+		otherInfo += substrPos(str, end == 0 ? 0 : end + 2, pos - 1);
+		end = endOfBlock(str, pos);
 		if (end != std::string::npos)
 			splitted.push_back(str.substr(pos, end - pos + 1));
 		else
-			std::cerr << "Error: wrong format in configuration file" << std::endl;
-		pos = str.find(pattern, end);
+			return (printFormatError());
+		pos = newStartOfBlock(str, pattern, end);
 	}
-	otherInfo += str.substr(end, str.length() - end);
+	otherInfo += substrPos(str, end == 0 ? 0 : end + 2, str.length() - 1);
+}
+
+static std::string	removeInsideSpaces(std::string str)
+{
+	std::string res;
+	size_t		i = 0;		
+
+	res.clear();
+	while (i < str.length())
+	{
+		if (isspace(str.c_str()[i]))
+		{
+			while (i < str.length() && isspace(str.c_str()[i]))
+				i++;
+			res += " ";
+		}
+		if (i < str.length())
+			res += str.c_str()[i];
+		i++;
+	}	
+	return (res);
+}
+
+void	Location::splitLines(std::vector<std::string> &splitted, std::string str)
+{
+	size_t		pos;
+	size_t		prevPos = 0;
+	std::string	toAdd;
+
+	pos = str.find("\n", 0);
+	while (pos != std::string::npos)
+	{
+		toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + 1, pos - 1);
+		splitted.push_back(removeInsideSpaces(toAdd));
+		prevPos = pos;
+		pos = str.find("\n", pos + 1);
+	}
+	toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + 1, str.length() - 1);
+	splitted.push_back(removeInsideSpaces(toAdd));
+}
+
+void	Location::printFormatError(void)
+{
+	std::cerr << "Error: wrong format in configuration file" << std::endl;
 }
