@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 14:53:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/26 16:19:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Server::Server(void) : _formatOk(true)
+Server::Server(void) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
+					_autoindex(false), _formatOk(true)
 {
 	return ;
 }
@@ -60,14 +61,26 @@ Server	&Server::operator=(const Server &server)
 {
 	if (this != &server)
 	{
-		/* code */
+		_locations = server._locations;
+		_host = server._host;
+		_port = server._port;
+		_serverNames = server._serverNames;
+		_root = server._root;
+		_index = server._index;
+		_maxClientBody = server._maxClientBody;
+		_methods = server._methods;
+		_errorPages = server._errorPages;
+		_autoindex = server._autoindex;
+		_formatOk = server._formatOk;
 	}
 	return (*this);
 }
 
 std::ostream	&operator<<(std::ostream &o, const Server &server)
 {
-	(void)server;
+	o << BLUE << "Server" << END << std::endl;
+	o << "\t" << "host\t" << server.getHost() << std::endl;
+	o << "\t" << "port\t" << server.getPort() << std::endl;
 	return (o);
 };
 
@@ -152,7 +165,20 @@ void	Server::_setListen(vecStr words)
 
 	if (words.size() != 2)
 		return (_setWrontFormat());
-	
+	splitPattern(addr, words[1], ":");
+	if (addr.size() != 2)
+		return (_setWrontFormat());
+	if (addr[0] == "localhost")
+		_host = "127.0.0.1";
+	else
+	{
+		if (!checkHostFormat(addr[0]))
+			return (_setWrontFormat());
+		_host = addr[0];
+	}
+	_port = myAtoi(addr[1]);
+	if (_port < 0 || _port > 65535)
+		return (_setWrontFormat());
 }
 
 void	Server::_setServerNames(vecStr words)
@@ -188,6 +214,55 @@ void	Server::_setErrorPages(vecStr words)
 void	Server::_setAutoIndex(vecStr words)
 {
 	return ;
+}
+
+/*
+**		GETTER FUNCTIONS
+*/
+
+std::string	Server::getHost(void) const
+{
+	return (_host);
+}
+
+int			Server::getPort(void) const
+{
+	return (_port);
+}
+
+vecStr		Server::getServerNames(void) const
+{
+	return (_serverNames);
+}
+
+std::string	Server::getRoot(void) const
+{
+	return (_root);
+}
+
+vecStr		Server::getIndex(void) const
+{
+	return (_index);
+}
+
+size_t		Server::getMaxClientBody(void) const
+{
+	return (_maxClientBody);
+}
+
+vecInt		Server::getMethods(void) const
+{
+	return (_methods);
+}
+
+mapErr		Server::getErrorPages(void) const
+{
+	return (_errorPages);
+}
+
+bool		Server::getAutoIndex(void) const
+{
+	return (_autoindex);
 }
 
 

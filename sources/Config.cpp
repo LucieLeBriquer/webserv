@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:02 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 14:54:02 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/26 16:24:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ Config::Config(std::string file)
 
 		configInfo.clear();
 		splitBlocks(serverBlocks, fileString, "server", configInfo);
-		std::cout << BLUE << "configInfo" << END << "--->" << configInfo << "<---" << std::endl;
+		//std::cout << BLUE << "configInfo" << END << "--->" << configInfo << "<---" << std::endl;
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);
@@ -123,10 +123,19 @@ Config	&Config::operator=(const Config &config)
 
 std::ostream	&operator<<(std::ostream &o, const Config &config)
 {
-	(void)config;
+	vecSrv	servers = config.getServers();
+
+	o << ORANGE << "Configuration" << END << std::endl;
+	for (int i = 0; i < servers.size(); i++)
+		o << servers[i] << std::endl;
 	return (o);
 };
 
 /*
 **		MEMBER FUNCTIONS
 */
+
+vecSrv	Config::getServers(void) const
+{
+	return (_servers);
+}

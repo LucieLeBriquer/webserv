@@ -20,6 +20,7 @@ int	main(int argc, char **argv)
 		configFile = argv[1];
 	
 	Config	config(configFile);
-	
+
+	std::cout << config << std::endl;	
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 14:53:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/26 15:12:05 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,4 +133,31 @@ void	printFormatError(void)
 void	printFileError(std::string file)
 {
 	std::cerr << "Error: can't open configuration file " << file << std::endl;
+}
+
+int		myAtoi(std::string str)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (!isdigit(str.c_str()[i]))
+			return (-1);
+	}
+	return (atoi(str.c_str()));
+}
+
+bool	checkHostFormat(std::string str)
+{
+	vecStr	addr;
+	int		n;
+
+	splitPattern(addr, str, ".");
+	if (addr.size() != 4)
+		return (false);
+	for (int i = 0; i < addr.size(); i++)
+	{
+		n = myAtoi(addr[i]);
+		if (n < 0 || n > 255)
+			return (false);
+	}
+	return (true);
 }

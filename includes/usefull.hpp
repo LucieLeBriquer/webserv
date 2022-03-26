@@ -22,6 +22,8 @@
 # define END "\x1B[0m"
 # include <iostream>
 # include <vector>
+# include <string>
+# include <cstdlib>
 # include <map>
 
 typedef std::vector<std::string>	vecStr;
@@ -30,7 +32,11 @@ typedef	std::vector<int>			vecInt;
 
 void	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
+
 void	printFormatError(void);
 void	printFileError(std::string file);
+
+bool	checkHostFormat(std::string str);
+int		myAtoi(std::string str);
 
 #endif

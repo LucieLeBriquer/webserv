@@ -30,6 +30,8 @@ class Config
 		virtual ~Config();
 
 		Config	&operator=(const Config &config);
+
+		vecSrv	getServers(void) const;
 };
 
 std::ostream	&operator<<(std::ostream &o, const Config &config);
