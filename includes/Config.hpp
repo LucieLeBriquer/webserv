@@ -3,10 +3,12 @@
 # include <fstream>
 # include "Server.hpp"
 
+typedef	std::vector<Server>	vecSrv;
+
 class Config
 {
 	private:
-		std::vector<Server>	_servers;
+		vecSrv	_servers;
 
 		Config(const Config &config);
 		Config(void);

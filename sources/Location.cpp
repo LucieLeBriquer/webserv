@@ -104,6 +104,8 @@ static size_t	newStartOfBlock(std::string str, std::string pattern, size_t start
 	pos = str.find(pattern, start);
 	while (pos != std::string::npos)
 	{
+		if (!isspace(str.c_str()[pos + pattern.length()]))
+			return (std::string::npos);
 		brackOpen = str.find("{\n");
 		if (brackOpen != std::string::npos && str.find("\n", pos) > brackOpen)
 			return (pos);
@@ -151,23 +153,24 @@ static std::string	removeInsideSpaces(std::string str)
 	return (res);
 }
 
-void	Location::splitLines(std::vector<std::string> &splitted, std::string str)
+void	Location::splitPattern(std::vector<std::string> &splitted, std::string str, std::string pattern)
 {
 	size_t		pos;
 	size_t		prevPos = 0;
 	std::string	toAdd;
 
-	pos = str.find("\n", 0);
+	pos = str.find(pattern, 0);
 	while (pos != std::string::npos)
 	{
-		toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + 1, pos - 1);
+		toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + pattern.length(), pos - 1);
 		splitted.push_back(removeInsideSpaces(toAdd));
 		prevPos = pos;
-		pos = str.find("\n", pos + 1);
+		pos = str.find(pattern, pos + pattern.length());
 	}
-	toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + 1, str.length() - 1);
+	toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + pattern.length(), str.length() - 1);
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
+
 
 void	Location::printFormatError(void)
 {

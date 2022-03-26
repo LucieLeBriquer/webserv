@@ -3,31 +3,36 @@
 # include "Location.hpp"
 # include <map>
 
+typedef	std::vector<Location>		vecLoc;
+
 class Server
 {
 	private:
-		std::vector<Location>		_locations;
-		std::string					_host;
-		int							_port;
-		std::vector<std::string>	_serverNames;
-		std::string					_root;
-		std::vector<std::string>	_index;
-		size_t						_maxClientBody;
-		std::vector<int>			_methods;
-		std::map<int, std::string>	_errorPages;
-		bool						_autoindex;
-		bool						_formatOk;
+		vecLoc		_locations;
+		std::string	_host;
+		int			_port;
+		vecStr		_serverNames;
+		std::string	_root;
+		vecStr		_index;
+		size_t		_maxClientBody;
+		vecInt		_methods;
+		mapErr		_errorPages;
+		bool		_autoindex;
+		bool		_formatOk;
 
 		void	_fillServerInfo(std::string str);
 		void	_fillOneInfo(std::string str);
-		void	_setListen(std::string str);
-		void	_setServerNames(std::string str);
-		void	_setRoot(std::string str);
-		void	_setIndex(std::string str);
-		void	_setMaxClientBody(std::string str);
-		void	_setMethods(std::string str);
-		void	_setErrorPages(std::string str);
-		void	_setAutoIndex(std::string str);
+
+		void	_setListen(vecStr words);
+		void	_setServerNames(vecStr words);
+		void	_setRoot(vecStr words);
+		void	_setIndex(vecStr words);
+		void	_setMaxClientBody(vecStr words);
+		void	_setMethods(vecStr words);
+		void	_setErrorPages(vecStr words);
+		void	_setAutoIndex(vecStr words);
+
+		int		_keywordNumber(std::string str);
 
 	public:
 		Server(void);
@@ -45,5 +50,7 @@ class Server
 };
 
 std::ostream	&operator<<(std::ostream &o, const Server &server);
+
+typedef void (Server::*setFunc)(vecStr words);
 
 #endif

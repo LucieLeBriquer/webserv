@@ -22,9 +22,9 @@ Server::Server(std::string str) : _formatOk(true)
 	std::string					serverInfo;
 
 	serverInfo.clear();
-	Location::splitBlocks(locBlocks, str, "location ", serverInfo);
-	//std::cout << BLUE << "serverInfo" << END << "\n--->" << serverInfo << "<---" << std::endl;
+	Location::splitBlocks(locBlocks, str, "location", serverInfo);
 	_fillServerInfo(serverInfo);
+
 	for (int i = 0; i < locBlocks.size(); i++)
 	{
 		Location	newLoc(locBlocks[i]);
@@ -81,16 +81,40 @@ static bool	isBlockNameOk(std::string str, std::string pattern)
 	return (true);
 }
 
+int		Server::_keywordNumber(std::string str)
+{
+	for (int i = 0; i < nbKeywords; i++)
+	{
+		if (str == keywords[i])
+			return (i);
+	}
+	_formatOk = false;
+	return (-1);
+}
+
 void	Server::_fillOneInfo(std::string str)
 {
-	std::cout << str << std::endl;
+	int		keyword;
+	vecStr	words;
+	setFunc	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
+			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
+			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex};
+
+	Location::splitPattern(words, str, " ");
+	keyword = _keywordNumber(words[0]);
+	if (keyword < 0)
+	{
+		_formatOk = false;
+		return ;
+	}
+	
 }
 
 void	Server::_fillServerInfo(std::string str)
 {
 	std::vector<std::string>	lines;
 
-	Location::splitLines(lines, str);
+	Location::splitPattern(lines, str, "\n");
 	if (!isBlockNameOk(lines[0], "server"))
 	{
 		_formatOk = false;
@@ -99,25 +123,55 @@ void	Server::_fillServerInfo(std::string str)
 	for (int i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
+		if (!_formatOk)
+			return ;
 	}
 }
 
-
 /*
-
-private:
-	std::vector<Location>		_locations;
-	std::string					_host;
-	int							_port;
-	std::string					_root;
-	std::string					_index;
-	size_t						_maxClientBody;
-	std::vector<int>			_methods;
-	std::map<int, std::string>	_errorPages;
-	bool						_autoindex;
-	bool						_formatOk;
-
+**		SETTER FUNCTIONS
 */
+
+void	Server::_setListen(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setServerNames(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setRoot(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setIndex(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setMaxClientBody(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setMethods(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setErrorPages(vecStr words)
+{
+	return ;
+}
+
+void	Server::_setAutoIndex(vecStr words)
+{
+	return ;
+}
+
 
 std::string Server::keywords[8] = { "listen", "server_name", "root", "index", "client_body",
 									"methods", "error_page", "autoindex"};

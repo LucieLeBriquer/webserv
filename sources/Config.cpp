@@ -60,7 +60,7 @@ Config::Config(std::string file)
 	std::ifstream	fileStream(file.c_str());
 	std::string 	fileString = "";
 	std::string		line = "";
-	std::vector<std::string> serverBlocks;
+	vecStr 			serverBlocks;
 	std::string		configInfo;
 
 	if (fileStream.is_open())
