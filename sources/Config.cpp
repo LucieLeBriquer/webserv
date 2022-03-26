@@ -59,6 +59,7 @@ Config::Config(std::string file)
 	std::string 	fileString = "";
 	std::string		line = "";
 	std::vector<std::string> serverBlocks;
+	std::string		configInfo = "";
 
 	if (fileStream.is_open())
 	{
@@ -69,7 +70,7 @@ Config::Config(std::string file)
 		}
 		fileStream.close();
 
-		Location::splitBlocks(serverBlocks, fileString, "server ");
+		Location::splitBlocks(serverBlocks, fileString, "server ", configInfo);
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);

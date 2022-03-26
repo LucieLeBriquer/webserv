@@ -88,19 +88,21 @@ static size_t	endOfBlock(std::string str, size_t start)
 	return (lastBracket);
 }
 
-void Location::splitBlocks(std::vector<std::string> &splitted, std::string str, std::string pattern)
+void Location::splitBlocks(std::vector<std::string> &splitted, std::string str, std::string pattern, std::string &otherInfo)
 {
 	size_t	pos;
-	size_t	end;
+	size_t	end = 0;
 
 	pos = str.find(pattern, 0);
 	while (pos != std::string::npos)
 	{
-		end = endOfBlock(str, pos);
+		otherInfo += str.substr(end == 0 ? 0 : end + 1, pos - end - 1);
+		end = endOfBlock(str, pos); 
 		if (end != std::string::npos)
 			splitted.push_back(str.substr(pos, end - pos + 1));
 		else
 			std::cerr << "Error: wrong format in configuration file" << std::endl;
 		pos = str.find(pattern, end);
 	}
+	otherInfo += str.substr(end, str.length() - end);
 }

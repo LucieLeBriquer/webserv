@@ -27,7 +27,8 @@ class Location
 
 		bool	wellFormatted(void) const;
 
-		static void		splitBlocks(std::vector<std::string> &splitted, std::string str, std::string pattern);
+		static void		splitBlocks(std::vector<std::string> &splitted, std::string str,
+			std::string pattern, std::string &otherInfo);
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);

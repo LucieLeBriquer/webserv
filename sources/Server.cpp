@@ -34,9 +34,10 @@ Server::Server(std::string str) : _formatOk(true)
 {
 	std::cout << "[Server] constructor from :\n" << str << std::endl << std::endl;
 
-	std::vector<std::string> locBlocks;
+	std::vector<std::string> 	locBlocks;
+	std::string					serverInfo = "";
 
-	Location::splitBlocks(locBlocks, str.substr(0, str.length() - 2), "location ");
+	Location::splitBlocks(locBlocks, str.substr(0, str.length() - 2), "location ", serverInfo);
 	for (int i = 0; i < locBlocks.size(); i++)
 	{
 		Location	newLoc(locBlocks[i]);
@@ -45,6 +46,7 @@ Server::Server(std::string str) : _formatOk(true)
 			return ;
 		_locations.push_back(newLoc);
 	}
+	std::cout << "[Other info]" << std::endl << serverInfo << std::endl;
 }
 
 Server::~Server()
