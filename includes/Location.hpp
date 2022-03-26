@@ -1,14 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Location.hpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/26 14:54:29 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/03/26 14:54:34 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LOCATION_HPP
 # define LOCATION_HPP
-# include "Types.hpp"
-# define RED "\x1B[31m"
-# define GREEN "\x1B[32m"
-# define YELLOW "\x1B[33m"
-# define ORANGE "\x1B[34m"
-# define PURPLE "\x1B[35m"
-# define BLUE "\x1B[36m"
-# define BOLD "\x1B[1m"
-# define END "\x1B[0m"
+# include "usefull.hpp"
 
 class Location
 {
@@ -30,11 +34,6 @@ class Location
 		Location	&operator=(const Location &location);
 
 		bool	wellFormatted(void) const;
-
-		static void	splitBlocks(vecStr &splitted, std::string str, std::string pattern,
-								std::string &otherInfo);
-		static void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
-		static void	printFormatError(void);
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);

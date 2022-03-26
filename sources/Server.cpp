@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/03/26 14:53:56 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Server.hpp"
 
 /*
@@ -22,7 +34,7 @@ Server::Server(std::string str) : _formatOk(true)
 	std::string					serverInfo;
 
 	serverInfo.clear();
-	Location::splitBlocks(locBlocks, str, "location", serverInfo);
+	splitBlocks(locBlocks, str, "location", serverInfo);
 	_fillServerInfo(serverInfo);
 
 	for (int i = 0; i < locBlocks.size(); i++)
@@ -68,6 +80,11 @@ bool	Server::wellFormatted(void) const
 	return (_formatOk);
 }
 
+void	Server::_setWrontFormat(void)
+{
+	_formatOk = false;
+}
+
 static bool	isBlockNameOk(std::string str, std::string pattern)
 {
 	size_t	i = pattern.size();
@@ -100,26 +117,23 @@ void	Server::_fillOneInfo(std::string str)
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
 			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex};
 
-	Location::splitPattern(words, str, " ");
+	splitPattern(words, str, " ");
 	keyword = _keywordNumber(words[0]);
 	if (keyword < 0)
 	{
 		_formatOk = false;
 		return ;
 	}
-	
+	return ((this->*(setters[keyword]))(words));
 }
 
 void	Server::_fillServerInfo(std::string str)
 {
-	std::vector<std::string>	lines;
+	vecStr	lines;
 
-	Location::splitPattern(lines, str, "\n");
+	splitPattern(lines, str, "\n");
 	if (!isBlockNameOk(lines[0], "server"))
-	{
-		_formatOk = false;
-		return ;
-	}
+		return (_setWrontFormat());
 	for (int i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
@@ -134,7 +148,11 @@ void	Server::_fillServerInfo(std::string str)
 
 void	Server::_setListen(vecStr words)
 {
-	return ;
+	vecStr	addr;
+
+	if (words.size() != 2)
+		return (_setWrontFormat());
+	
 }
 
 void	Server::_setServerNames(vecStr words)

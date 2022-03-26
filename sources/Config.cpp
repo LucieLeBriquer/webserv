@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Config.cpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/26 14:54:02 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/03/26 14:54:02 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "Config.hpp"
 
 /*
@@ -73,7 +85,7 @@ Config::Config(std::string file)
 		fileStream.close();
 
 		configInfo.clear();
-		Location::splitBlocks(serverBlocks, fileString, "server", configInfo);
+		splitBlocks(serverBlocks, fileString, "server", configInfo);
 		std::cout << BLUE << "configInfo" << END << "--->" << configInfo << "<---" << std::endl;
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
@@ -81,16 +93,14 @@ Config::Config(std::string file)
 
 			if (!newServ.wellFormatted())
 			{
-				Location::printFormatError();
+				printFormatError();
 				return ;
 			}
 			_servers.push_back(newServ);
 		}
 	}
 	else
-	{
-		std::cerr << "Error: can't open configuration file " << file << std::endl;
-	}
+		printFileError(file);
 }
 
 Config::~Config()

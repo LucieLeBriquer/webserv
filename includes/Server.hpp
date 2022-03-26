@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/26 14:53:54 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/03/26 14:53:54 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef SERVER_HPP
 # define SERVER_HPP
 # include "Location.hpp"
@@ -33,6 +45,7 @@ class Server
 		void	_setAutoIndex(vecStr words);
 
 		int		_keywordNumber(std::string str);
+		void	_setWrontFormat(void);
 
 	public:
 		Server(void);
