@@ -63,30 +63,38 @@ Config::Config(const Config &config)
 	*this = config;
 }
 
+static bool	readFile(const std::string file, std::string &fileString)
+{
+	std::ifstream	fileStream(file.c_str());
+	std::string		line = "";
 
-// parsing
-Config::Config(std::string file)
+	if (!fileStream.is_open())
+		return (false);
+	while(std::getline(fileStream, line))
+	{
+		if (!uselessLine(line))
+			fileString += removeCommentary(line);
+	}
+	fileStream.close();
+	return (true);
+}
+
+Config::Config(const std::string file)
 {
 	std::cout << YELLOW << "[Config] constructor" << END << std::endl;
 
-	std::ifstream	fileStream(file.c_str());
 	std::string 	fileString = "";
-	std::string		line = "";
 	vecStr 			serverBlocks;
-	std::string		configInfo;
+	std::string		configInfo = "";
 
-	if (fileStream.is_open())
+	if (readFile(file, fileString))
 	{
-    	while(std::getline(fileStream, line))
-		{
-			if (!uselessLine(line))
-				fileString += removeCommentary(line);
-		}
-		fileStream.close();
-
-		configInfo.clear();
 		splitBlocks(serverBlocks, fileString, "server", configInfo);
-		//std::cout << BLUE << "configInfo" << END << "--->" << configInfo << "<---" << std::endl;
+		if (configInfo.length() > 0)
+		{
+			printFormatError();
+			return ;
+		}
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);
@@ -100,7 +108,7 @@ Config::Config(std::string file)
 		}
 	}
 	else
-		printFileError(file);
+		printFileError(file);	
 }
 
 Config::~Config()
@@ -116,7 +124,7 @@ Config	&Config::operator=(const Config &config)
 {
 	if (this != &config)
 	{
-		/* code */
+		_servers = config._servers;
 	}
 	return (*this);
 }

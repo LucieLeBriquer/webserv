@@ -26,7 +26,7 @@ class Config
 		Config(void);
 		
 	public:
-		Config(std::string file);
+		Config(const std::string file);
 		virtual ~Config();
 
 		Config	&operator=(const Config &config);
