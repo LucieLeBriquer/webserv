@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:02 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:49:33 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:59:24 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,18 @@ Config::Config(const std::string file) : _formatOk(true)
 
 	if (readFile(file, fileString))
 	{
-		splitBlocks(serverBlocks, fileString, "server", configInfo);
+		if (!splitBlocks(serverBlocks, fileString, "server", configInfo))
+		{
+			printFormatError("matching { } issues in a server block");
+			return ;
+		}
 		if (configInfo.length() > 0)
 		{
 			_formatOk = false;
 			printFormatError("not only server blocks");
 			return ;
 		}
+		
 		for (int i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);
@@ -101,6 +106,7 @@ Config::Config(const std::string file) : _formatOk(true)
 			if (!newServ.wellFormatted())
 			{
 				_formatOk = false;
+				
 				printFormatError(newServ.getFormatErr());
 				return ;
 			}
@@ -108,7 +114,7 @@ Config::Config(const std::string file) : _formatOk(true)
 		}
 	}
 	else
-		printFileError(file);	
+		printFileError(file);
 }
 
 Config::~Config()

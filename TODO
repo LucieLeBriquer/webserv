@@ -1,0 +1,9 @@
+# add a check no {} everywhere else
+
+server {
+	...
+
+	location ... {
+		...
+	}
+}

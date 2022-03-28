@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:40:23 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:57:41 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;
 typedef	std::vector<int>			vecInt;
 
-void	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
+bool	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
 
 void	printFormatError(void);

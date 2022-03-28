@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:51:35 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 19:15:38 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static size_t	newStartOfBlock(std::string str, std::string pattern, size_t start
 	return (std::string::npos);
 }
 
-void splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo)
+bool splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo)
 {
 	size_t	pos;
 	size_t	end = 0;
@@ -82,10 +82,11 @@ void splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::st
 		if (end != std::string::npos)
 			splitted.push_back(str.substr(pos, end - pos + 1));
 		else
-			return (printFormatError());
+			return (false);
 		pos = newStartOfBlock(str, pattern, end);
 	}
 	otherInfo += substrPos(str, end == 0 ? 0 : end + 2, str.length() - 1);
+	return (true);
 }
 
 static std::string	removeInsideSpaces(std::string str)
@@ -130,6 +131,9 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 void	printFormatError(void)
 {
 	std::cerr << "Error: wrong format in configuration file" << std::endl;
+	std::cerr << "Example :" << std::endl;
+	std::cerr << "server {\n" <<"\t...\t\tlocation ... {\n\t\t...\n" << std::endl;
+}
 }
 
 void	printFormatError(std::string str)

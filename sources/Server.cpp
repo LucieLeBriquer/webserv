@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:23:03 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 18:32:00 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,11 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	std::string					serverInfo;
 
 	serverInfo.clear();
-	splitBlocks(locBlocks, str, "location", serverInfo);
+	if (!splitBlocks(locBlocks, str, "location", serverInfo))
+	{
+		printFormatError("matching { } issues in a location block");
+		return ;
+	}
 	_fillServerInfo(serverInfo);
 
 	for (int i = 0; i < locBlocks.size(); i++)
