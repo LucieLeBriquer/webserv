@@ -1,28 +1,53 @@
-NAME = webserv
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2022/03/28 15:23:15 by lpascrea          #+#    #+#              #
+#    Updated: 2022/03/28 15:28:36 by lpascrea         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRCS = server.cpp
+#COLORS#
+_END	= \033[0m
+_GREEN	= \033[0;32m
+_RED	= \033[0;31m
+_BLUE	= \033[0;96m
+_YELLOW	= \033[0;33m
+_MAG 	= \033[0;35m
+#------#
 
-OBJS = $(SRCS:.cpp=.o)
+SRCS	= server.cpp
 
-CC = clang++ -Wall -Wextra -Werror -std=c++98 #-Wc++11-extensions #
+OBJS	= $(SRCS:.cpp=.o)
 
-RM = rm -rf
+CC		= c++
 
-.cpp.o:
-	@$(CC) -c $< -o ${<:.cpp=.o}
+CFLAGS	= -Wall -Wextra -Werror -std=c++98
 
-all: ${NAME}
+RM		= rm -rf
 
-$(NAME): ${OBJS}
-	@${CC} -I./* ${OBJS} -o ${NAME}
+NAME	= webserv
+
+all:		${NAME}
+			@echo "$(_GREEN)webserv is ready $(_END)"
+
+$(NAME):	${OBJS}
+			${CC} ${CFLAGS} -I. -I./* ${OBJS} -o ${NAME}
+
+%.o:		%.cpp
+			${CC} ${CFLAGS} -o $@ -c $< -I. -I./*
 
 clean:
-	@${RM} ${OBJS}
-	@echo "$(_RED) Everything was cleaned. $(_END)"
+			${RM} ${OBJS}
+			@echo "$(_YELLOW) \".o\" files deleted $(_END)"
 
-fclean: clean
-	@${RM} ${NAME}
+fclean:		clean
+			${RM} ${NAME}
+			@echo "$(_RED)webserv cleaned $(_END)"
 
-re: fclean all
+re: 		fclean all
 
 .PHONY: all clean fclean re

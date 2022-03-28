@@ -7,16 +7,36 @@
 #include <cstdio>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
+#include <fcntl.h>
+#include <stdlib.h>
 
 #define PORT 8080
 #define MAX_EVENTS 10
+#define BUFFER_SIZE	10
+
+void	setsocknonblock(int sock)
+{
+	int flag;
+
+	flag = fcntl(sock, F_GETFL, 0);
+	if (flag < 0)
+	{
+		perror("Fcntl (F_GETFL) failed");
+		exit(EXIT_FAILURE);
+	}
+	if (fcntl(sock, F_SETFL, flag | O_NONBLOCK) < 0)
+	{
+		perror("Fcntl (F_SETFL) failed");
+		exit(EXIT_FAILURE);
+	}
+}
 
 int		main(void)
 {
-	int					listenSock, connSock, nfds, epollfd, n = 0;
+	int					listenSock, connSock, nfds, epollfd, n = 0, sockfd;
 	struct sockaddr_in	address;
 	socklen_t			lenAddr;
-	char				buf[1024] = {0};
+	char				buf[30000] = {0};
 	int					byteCount;
 	int					yes = 1;
 	struct epoll_event	ev, events[MAX_EVENTS];
@@ -35,7 +55,7 @@ int		main(void)
 		exit(EXIT_FAILURE);
 	}
 	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = inet_addr("127.0.0.2");
+	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(PORT);
 	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 
@@ -66,8 +86,11 @@ int		main(void)
 		exit(EXIT_FAILURE);
 	}
 
-	for (;;)
+	while (1)
 	{
+		std::cout << std::endl;
+		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
+		std::cout << std::endl;
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
 			perror("epoll_wait()");
@@ -76,14 +99,14 @@ int		main(void)
 		n = 0;
 		while (n < nfds)
 		{
-			if (events[n].data.fd == listenSock)
+			sockfd = events[n].data.fd;
+			if (sockfd == listenSock)
 			{
 				if ((connSock = accept(listenSock, (struct sockaddr *) &address, &lenAddr)) < 0)
 				{
 					perror("accept()");
 					exit(EXIT_FAILURE);
 				}
-				//set non blocking connSock
 				ev.events = EPOLLIN | EPOLLET;
 				ev.data.fd = connSock;
 				if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock, &ev) < 0)
@@ -91,13 +114,105 @@ int		main(void)
 					perror("epoll_ctl: connSock");
 					exit(EXIT_FAILURE);
 				}
+				setsocknonblock(connSock);
 			}
 			else
-				//use fd
+			{
+				std::cout << "event trigger once" << std::endl;
+				memset(buf, 0, sizeof(buf));
+				byteCount = recv(connSock, buf, sizeof(buf), 0);
+				std::cout << "Received from connSock: " << connSock << " [" << buf << "] (size: " << byteCount << ")" << std::endl;
+				send(connSock, buf, byteCount, 0);
+				std::cout << "Send to connSock: " << connSock << " Done" << std::endl;
+				close(connSock);
+			}
 			n++;
 		}
 	}
+
+/*	while (1)
+	{
+		std::cout << std::endl;
+		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
+		std::cout << std::endl;
+		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
+		{
+			perror("epoll_wait()");
+			exit(EXIT_FAILURE);
+		}*/
+
+		// lt(events, nfds, epollfd, listenSock);
+	/*	for (int i = 0; i < nfds; i++)
+		{
+			sockfd = events[i].data.fd;
+			if (sockfd == listenSock)
+			{
+				connSock = accept(listenSock, (struct sockaddr *)&address, &lenAddr);
+				ev.events = EPOLLIN;
+				ev.data.fd = connSock;
+				if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock, &ev) < 0)
+				{
+					perror("epoll_ctl: connSock");
+					exit(EXIT_FAILURE);
+				}
+				setsocknonblock(connSock);
+			}
+			else if (events[i].events & EPOLLIN)
+			{
+				std::cout << "event trigger once" << std::endl;
+				memset(buf, 0, BUFFER_SIZE);
+				if ((byteCount = recv(sockfd, buf, BUFFER_SIZE - 1, 0)) <= 0)
+				{
+					close(sockfd);
+					continue ;
+				}
+				std::cout << "get " << byteCount << " bytes of content : [ " << buf << "]" << std::endl;
+			}
+			else
+				std::cout << "chehhhhh shit shit" << std::endl;
+		}*/
+
+		// et(events, nfds, epollfd, listenSock);
+		/*for (int i = 0; i < nfds; i++)
+		{
+			sockfd = events[i].data.fd;
+			if (sockfd == listenSock)
+			{
+				connSock = accept(listenSock, (struct sockaddr *)&address, &lenAddr);
+				ev.events = EPOLLIN | EPOLLET;
+				ev.data.fd = connSock;
+				if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connSock, &ev) < 0)
+				{
+					perror("epoll_ctl: connSock");
+					exit(EXIT_FAILURE);
+				}
+				setsocknonblock(connSock);
+			}
+			else if (events[i].events & EPOLLIN)
+			{
+				std::cout << "event trigger once" << std::endl;
+				while (1)
+				{
+					memset(buf, 0, BUFFER_SIZE);
+					byteCount = recv(sockfd, buf, BUFFER_SIZE - 1, 0);
+					if (byteCount < 0)
+					{
+						close(sockfd);
+						break ;
+					}
+					else if (byteCount == 0)
+						close(sockfd);
+					else
+						std::cout << "get " << byteCount << " bytes of content : [ " << buf << "]" << std::endl;
+				}
+			}
+			else
+				std::cout << "chehhhhh shit shit" << std::endl;
+		}*/
+//	}
+
 	close(epollfd);
+	close(listenSock);
 
 /*	while (1)
 	{
@@ -113,7 +228,7 @@ int		main(void)
 		std::cout << buf << std::endl;
 		send(connSock, "Hello world!", 12, 0);
 		std::cout << "---------- Hello message sent ----------" << std::endl;
-		close(new_socket);
+		close(connSock);
 	}*/
 	return 0;
 }
