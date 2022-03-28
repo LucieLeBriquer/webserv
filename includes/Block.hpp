@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:52 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:15:50 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 23:58:59 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ class Block
 	protected:
 		std::string	_root;
 		vecStr		_index;
-		size_t		_maxClientBody;
+		size_t		_maxClientBodySize;
 		vecInt		_methods;
 		mapErr		_errorPages;
 		std::string	_redirUrl;
@@ -27,7 +27,7 @@ class Block
 
 		bool	_rootSet;
 		bool	_indexSet;
-		bool	_maxClientBodySet;
+		bool	_maxClientBodySizeSet;
 		bool	_methodsSet;
 		bool	_errorPagesSet;
 		bool	_redirUrlSet;

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 20:02:14 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 00:01:55 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,26 +128,65 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
 
+
+/*
+
+server {
+	index			INDEX3 INDEX4
+	client_size		100
+	methods			DELETE		  GET
+
+	location /DIRECTORY1 {
+		root			ROOT
+		index			INDEX
+		client_size		2000
+		error_page		400 ERROR_PAGE1
+		methods			GET
+	}
+
+*/
+
 static void	printConfFormat(void)
 {
-	std::cerr << "Example :" << std::endl;
-	std::cout << "server {" << std::endl;
-	std::cout << "\t..." << std::endl;
-	std::cout << "\tlocation ... {" << std::endl;
-	std::cout << "\t\t..." << std::endl;
-	std::cout << "\t}" << std::endl;
-	std::cout << "}" << std::endl;
+	std::cerr << std::endl << YELLOW << "[Expected]" << END << std::endl;
+	std::cerr << "server {" << std::endl;
+	std::cerr << "\tlisten\t\t\tHOST:PORT" << std::endl;
+	std::cerr << "\tserver_name\t\tNAME0 NAME1 [...]" << std::endl;
+	std::cerr << "\troot\t\t\tROOT" << std::endl;
+	std::cerr << "\tindex\t\t\tINDEX0 INDEX1 [...]" << std::endl;
+	std::cerr << "\tclient_size\t\tSIZE" << std::endl;
+	std::cerr << "\tmethods\t\t\tMETHOD0 METHOD1 [...]" << std::endl;
+	std::cerr << "\treturn\t\t\tREDIR_URL" << std::endl;
+	std::cerr << "\terror_page\t\tERROR_NUM0 ERROR_PAGE0" << std::endl;
+	std::cerr << "\terror_page\t\tERROR_NUM1 ERROR_PAGE1" << std::endl;
+	std::cerr << "\t\t\t\t\t[...]" << std::endl;
+	std::cerr << "\tautoindex" << std::endl;
+
+	std::cerr << std::endl;
+	std::cerr << "\tlocation PATH {" << std::endl;
+	std::cerr << "\t\troot\t\t\tROOT" << std::endl;
+	std::cerr << "\t\tindex\t\t\tINDEX0 INDEX1 [...]" << std::endl;
+	std::cerr << "\t\tclient_size\t\tSIZE" << std::endl;
+	std::cerr << "\t\tmethods\t\t\tMETHOD0 METHOD1 [...]" << std::endl;
+	std::cerr << "\t\treturn\t\t\tREDIR_URL" << std::endl;
+	std::cerr << "\t\terror_page\t\tERROR_NUM0 ERROR_PAGE0" << std::endl;
+	std::cerr << "\t\terror_page\t\tERROR_NUM1 ERROR_PAGE1" << std::endl;
+	std::cerr << "\t\t\t\t\t\t[...]" << std::endl;
+	std::cerr << "\t\tautoindex" << std::endl;
+	std::cerr << "\t}" << std::endl;
+	std::cerr << "}" << std::endl;
 }
 
 void	printFormatError(void)
 {
-	std::cerr << "Error: wrong format in configuration file" << std::endl;
+	std::cerr << RED << "[Error]" << END << " wrong configuration file" << std::endl;
 	printConfFormat();
 }
 
 void	printFormatError(std::string str)
 {
-	std::cerr << "Error: wrong format in configuration file " << GRAY << "(" << str << ")" << END << std::endl;
+	std::cerr << RED << "[Error]" << END << " wrong configuration file ";
+	std::cerr << GRAY << "(" << str << ")" << END << std::endl;
 	printConfFormat();
 }
 

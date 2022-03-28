@@ -121,7 +121,7 @@ server {
 	server_name		SERVER_NAME
 	root			ROOT
 	index			INDEX
-	client_body		MAX_CLIENT_BODY
+	client_size		MAX_client_size
 	methods			METHOD1 METHOD2 ...
 	error_page		ERRROR_NUM0 ERROR_PAGE0
 	error_page		ERRROR_NUM1 ERROR_PAGE1
@@ -136,20 +136,20 @@ server {
 	server_name		SERVER_NAME0 SERVER_NAME1
 	root			ROOT
 	index			INDEX0 INDEX1
-	client_body		MAX_CLIENT_BODY 			# in MB, 0 implies no limitation
+	client_size		MAX_client_size 			# in MB, 0 implies no limitation
 	methods			METHOD1 METHOD2 ...
 
 	location /DIRECTORY1 {
 		root			ROOT
 		index			INDEX
-		client_body		MAX_CLIENT_BODY
+		client_size		MAX_client_size
 		methods			METHOD1 METHOD2 ...
 	}
 
 	location /DIRECTORY2 {
 		root			ROOT
 		index			INDEX
-		client_body		MAX_CLIENT_BODY
+		client_size		MAX_client_size
 		methods			METHOD1 METHOD2 ...
 		autoindex
 	}

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 18:32:00 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 23:58:16 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ std::ostream	&operator<<(std::ostream &o, const Server &server)
 	o << "\tserver_names\t" << server.getServerNames() << std::endl;
 	o << "\troot        \t" << server.getRoot() << std::endl;
 	o << "\tindex       \t" << server.getIndex() << std::endl;
-	o << "\tclient_body \t" << server.getMaxClientBody() << std::endl;
+	o << "\tclient_size \t" << server.getMaxClientBody() << std::endl;
 	o << "\tmethods     \t";
 	showMethod(o, server.getMethods()) << std::endl;
 	o << "\terror_pages \t" << server.getErrorPages() << std::endl;
@@ -226,4 +226,4 @@ vecLoc		Server::getLocations(void) const
 }
 
 std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
-			"client_body", "methods", "error_page", "autoindex", "return"};
+			"client_size", "methods", "error_page", "autoindex", "return"};

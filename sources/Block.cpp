@@ -6,15 +6,15 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:50 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:28:00 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 23:58:59 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Block.hpp"
 
 
-Block::Block(void) : _root("/"), _maxClientBody(1), _redirUrl(""), _autoindex(false),
-					_rootSet(false), _indexSet(false), _maxClientBodySet(false), _methodsSet(false), 
+Block::Block(void) : _root("/"), _maxClientBodySize(1), _redirUrl(""), _autoindex(false),
+					_rootSet(false), _indexSet(false), _maxClientBodySizeSet(false), _methodsSet(false), 
 					_errorPagesSet(false), _redirUrlSet(false), _autoindexSet(false), 
 					_formatOk(true), _formatErr("")
 {
@@ -41,7 +41,7 @@ Block	&Block::operator=(const Block &block)
 	{
 		_root = block._root;
 		_index = block._index;
-		_maxClientBody = block._maxClientBody;
+		_maxClientBodySize = block._maxClientBodySize;
 		_methods = block._methods;
 		_errorPages = block._errorPages;
 		_redirUrl = block._redirUrl;
@@ -49,7 +49,7 @@ Block	&Block::operator=(const Block &block)
 
 		_rootSet = block._rootSet;
 		_indexSet = block._indexSet;
-		_maxClientBodySet = block._maxClientBodySet;
+		_maxClientBodySizeSet = block._maxClientBodySizeSet;
 		_methodsSet = block._methodsSet;
 		_errorPagesSet = block._errorPagesSet;
 		_redirUrlSet = block._redirUrlSet;
@@ -108,16 +108,16 @@ void	Block::_setIndex(vecStr words)
 
 void	Block::_setMaxClientBody(vecStr words)
 {
-	if (_maxClientBodySet)
-		return (_setWrongFormat("client_body already defined"));
+	if (_maxClientBodySizeSet)
+		return (_setWrongFormat("client_size already defined"));
 	if (words.size() != 2)
-		return (_setWrongFormat("need client_body SIZE"));
-	_maxClientBody = myAtoi(words[1]);
-	if (_maxClientBody < 0)
-		return (_setWrongFormat("size for client_body not well formatted"));
-	if (_maxClientBody == 0)
-		_maxClientBody = std::numeric_limits<size_t>::max();
-	_maxClientBodySet = true;
+		return (_setWrongFormat("need client_size SIZE"));
+	_maxClientBodySize = myAtoi(words[1]);
+	if (_maxClientBodySize < 0)
+		return (_setWrongFormat("size for client_size not well formatted"));
+	if (_maxClientBodySize == 0)
+		_maxClientBodySize = std::numeric_limits<size_t>::max();
+	_maxClientBodySizeSet = true;
 }
 
 void	Block::_setMethods(vecStr words)
@@ -186,7 +186,7 @@ vecStr		Block::getIndex(void) const
 
 size_t		Block::getMaxClientBody(void) const
 {
-	return (_maxClientBody);
+	return (_maxClientBodySize);
 }
 
 vecInt		Block::getMethods(void) const

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:07 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:22:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 23:58:16 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ std::ostream	&operator<<(std::ostream &o, const Location &location)
 	o << GREEN << "\n\tLocation" << END << "\t" << location.getPath() << std::endl;
 	o << "\t\troot        \t" << location.getRoot() << std::endl;
 	o << "\t\tindex       \t" << location.getIndex() << std::endl;
-	o << "\t\tclient_body \t" << location.getMaxClientBody() << std::endl;
+	o << "\t\tclient_size \t" << location.getMaxClientBody() << std::endl;
 	o << "\t\tmethods     \t";
 	showMethod(o, location.getMethods()) << std::endl;
 	o << "\t\terror_pages \t" << location.getErrorPages() << std::endl;
@@ -146,4 +146,4 @@ std::string	Location::getCgiPass(void) const
 	return (_cgiPass);
 }
 
-std::string Location::keywords[nbKeywords] = {"root", "index", "client_body", "methods", "error_page", "autoindex", "return", "cgi_pass"};
+std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};
