@@ -1,29 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   Block.hpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/26 14:53:54 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 16:23:23 by lle-briq         ###   ########.fr       */
+/*   Created: 2022/03/28 16:05:52 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/03/28 16:21:21 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SERVER_HPP
-# define SERVER_HPP
-# include "Location.hpp"
-# include <map>
+#ifndef BLOCK_HPP
+# define BLOCK_HPP
+# include "usefull.hpp"
 
-typedef	std::vector<Location>		vecLoc;
-
-class Server
+class Block
 {
-	private:
-		vecLoc		_locations;
-		std::string	_host;
-		int			_port;
-		vecStr		_serverNames;
+	protected:
 		std::string	_root;
 		vecStr		_index;
 		size_t		_maxClientBody;
@@ -32,8 +25,6 @@ class Server
 		std::string	_redirUrl;
 		bool		_autoindex;
 
-		bool	_hostSet;
-		bool	_serverNamesSet;
 		bool	_rootSet;
 		bool	_indexSet;
 		bool	_maxClientBodySet;
@@ -45,11 +36,6 @@ class Server
 		bool		_formatOk;
 		std::string	_formatErr;
 
-		void	_fillServerInfo(std::string str);
-		void	_fillOneInfo(std::string str);
-
-		void	_setListen(vecStr words);
-		void	_setServerNames(vecStr words);
 		void	_setRoot(vecStr words);
 		void	_setIndex(vecStr words);
 		void	_setMaxClientBody(vecStr words);
@@ -58,25 +44,21 @@ class Server
 		void	_setAutoIndex(vecStr words);
 		void	_setRedirUrl(vecStr words);
 
-		int		_keywordNumber(std::string str);
 		void	_setWrongFormat(void);
 		void	_setWrongFormat(std::string str);
 
 	public:
-		Server(void);
-		Server(std::string str);
-		Server(const Server &server);
-		virtual ~Server();
+		Block(void);
+		Block(std::string str);
+		Block(const Block &block);
+		virtual ~Block();
 
-		Server	&operator=(const Server &server);
+		Block	&operator=(const Block &block);
 
 		// member functions
 		bool	wellFormatted(void) const;
 		
 		// getters
-		vecLoc		getLocations(void) const;
-		std::string	getHost(void) const;
-		int			getPort(void) const;
 		vecStr		getServerNames(void) const;
 		std::string	getRoot(void) const;
 		vecStr		getIndex(void) const;
@@ -86,14 +68,8 @@ class Server
 		std::string	getRedirUrl(void) const;
 		bool		getAutoIndex(void) const;
 		std::string	getFormatErr(void) const;
-
-		// static
-		static const int	nbKeywords = 9;
-		static std::string	keywords[nbKeywords];
 };
 
-std::ostream	&operator<<(std::ostream &o, const Server &server);
-
-typedef void (Server::*setFunc2)(vecStr words);
+typedef void (Block::*setFunc)(vecStr words);
 
 #endif

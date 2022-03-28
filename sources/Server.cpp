@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 15:09:37 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:10:20 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,10 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-/*
-vecLoc		_locations;
-vecStr		_serverNames;
-vecStr		_index;
-vecInt		_methods;
-mapErr		_errorPages;
-*/
-
-Server::Server(void) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
-					_autoindex(false), _formatOk(true), _formatErr(""), _hostSet(false), 
-					_serverNamesSet(false), _rootSet(false), _indexSet(false), _maxClientBodySet(false), 
-					_methodsSet(false), _errorPagesSet(false), _autoindexSet(false)
+Server::Server(void) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(1), _redirUrl(""),
+					_autoindex(false), _hostSet(false), _serverNamesSet(false), _rootSet(false), 
+					_indexSet(false), _maxClientBodySet(false), _methodsSet(false), _errorPagesSet(false), 
+					_redirUrlSet(false), _autoindexSet(false), _formatOk(true), _formatErr("")
 {
 	return ;
 }
@@ -37,10 +29,10 @@ Server::Server(const Server &server)
 	*this = server;
 }
 
-Server::Server(std::string str) :  _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
-					_autoindex(false), _formatOk(true), _formatErr(""), _hostSet(false), 
-					_serverNamesSet(false), _rootSet(false), _indexSet(false), _maxClientBodySet(false), 
-					_methodsSet(false), _errorPagesSet(false), _autoindexSet(false)
+Server::Server(std::string str) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(1), _redirUrl(""),
+					_autoindex(false), _hostSet(false), _serverNamesSet(false), _rootSet(false), 
+					_indexSet(false), _maxClientBodySet(false), _methodsSet(false), _errorPagesSet(false), 
+					_redirUrlSet(false), _autoindexSet(false), _formatOk(true), _formatErr("")
 {
 	std::vector<std::string> 	locBlocks;
 	std::string					serverInfo;
@@ -54,7 +46,11 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _root("/"), 
 		Location	newLoc(locBlocks[i]);
 
 		if (!newLoc.wellFormatted())
+		{
+			_formatOk = false;
+			_formatErr = newLoc.getFormatErr();
 			return ;
+		}
 		_locations.push_back(newLoc);
 	}
 }
@@ -81,9 +77,18 @@ Server	&Server::operator=(const Server &server)
 		_maxClientBody = server._maxClientBody;
 		_methods = server._methods;
 		_errorPages = server._errorPages;
+		_redirUrl = server._redirUrl;
 		_autoindex = server._autoindex;
 		_formatOk = server._formatOk;
 		_formatErr = server._formatErr;
+
+		_hostSet = server._hostSet;
+		_serverNamesSet = server._serverNamesSet;
+		_rootSet = server._rootSet;
+		_indexSet = server._indexSet;
+		_errorPagesSet = server._errorPagesSet;
+		_redirUrlSet = server._redirUrlSet;
+		_autoindexSet = server._autoindexSet;
 	}
 	return (*this);
 }
@@ -102,6 +107,7 @@ std::ostream	&operator<<(std::ostream &o, const Server &server)
 	o << "\tmethods     \t";
 	showMethod(o, server.getMethods()) << std::endl;
 	o << "\terror_pages \t" << server.getErrorPages() << std::endl;
+	o << "\treturn      \t" << server.getRedirUrl() << std::endl;
 	o << "\tautoindex   \t" << ((server.getAutoIndex() == 0) ? "off" : "on") << std::endl;
 	o << server.getLocations() << std::endl;
 	return (o);
@@ -120,7 +126,6 @@ void	Server::_setWrongFormat(void)
 {
 	_formatOk = false;
 }
-
 
 void	Server::_setWrongFormat(std::string str)
 {
@@ -156,15 +161,17 @@ void	Server::_fillOneInfo(std::string str)
 {
 	int		keyword;
 	vecStr	words;
-	setFunc	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
+	setFunc2	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
-			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex};
+			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex,
+			&Server::_setRedirUrl};
 
 	splitPattern(words, str, " ");
 	keyword = _keywordNumber(words[0]);
 	if (keyword < 0)
 	{
 		_formatOk = false;
+		_formatErr = "unknown keyword";
 		return ;
 	}
 	return ((this->*(setters[keyword]))(words));
@@ -276,7 +283,7 @@ void	Server::_setMethods(vecStr words)
 	_methodsSet = true;
 }
 
-void	Server::_setErrorPages(vecStr words) // TODO
+void	Server::_setErrorPages(vecStr words)
 {
 	std::pair<int, std::string>	err;
 	
@@ -290,6 +297,7 @@ void	Server::_setErrorPages(vecStr words) // TODO
 	_errorPagesSet = true;
 }
 
+
 void	Server::_setAutoIndex(vecStr words)
 {
 	if (_autoindexSet)
@@ -298,6 +306,16 @@ void	Server::_setAutoIndex(vecStr words)
 		return (_setWrongFormat("autoindex doesn't take arguments"));
 	_autoindex = true;
 	_autoindexSet = true;
+}
+
+void	Server::_setRedirUrl(vecStr words)
+{
+	if (_redirUrlSet)
+		return (_setWrongFormat("return already defined"));
+	if (words.size() != 2)
+		return (_setWrongFormat("need return REDIR_URL"));
+	_redirUrl = words[1];
+	_redirUrlSet = true;
 }
 
 /*
@@ -344,6 +362,11 @@ mapErr		Server::getErrorPages(void) const
 	return (_errorPages);
 }
 
+std::string	Server::getRedirUrl(void) const
+{
+	return (_redirUrl);
+}
+
 bool		Server::getAutoIndex(void) const
 {
 	return (_autoindex);
@@ -359,5 +382,5 @@ std::string	Server::getFormatErr(void) const
 	return (_formatErr);
 }
 
-
-std::string Server::keywords[8] = { "listen", "server_name", "root", "index", "client_body", "methods", "error_page", "autoindex"};
+std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
+			"client_body", "methods", "error_page", "autoindex", "return"};
