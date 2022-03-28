@@ -114,7 +114,7 @@ with :
 ### fcnt
 
 -----------------
-## HTTP requests
+## HTTP requests methods
 
 HTTP defines a set of request methods(or *verbs*) to indicate the desired action to be performed for a given resource.
 
@@ -161,7 +161,6 @@ Connection: close
 </body>
 </html>
 ```
-
 ---------------
 
 ## Configuration file

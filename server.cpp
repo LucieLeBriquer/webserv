@@ -1,5 +1,5 @@
-#include "webserv.h"
-
+#include "methods.hpp"
+#include <netdb.h> 
 #define PORT 8080
 
 int		main(void)
@@ -10,8 +10,10 @@ int		main(void)
     char                buf[1024] = {0};
     int                 byteCount;
     int yes = 1;
+    HTTPRequest         treat;
 
     lenAddr = sizeof(address);
+
 // Create a TCP socket ipv4
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
@@ -25,6 +27,13 @@ int		main(void)
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
+
+    // struct hostent *h;
+    // if ((h = gethostbyname("localhost")) == NULL) {  /* récupérer infos de l'hôte */
+    //     herror("gethostbyname");
+    //     exit(1);
+    // }
+    // address.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)h->h_addr)));
     address.sin_addr.s_addr = inet_addr("127.0.0.2");
     address.sin_port = htons(PORT);
     memset(address.sin_zero, '\0', sizeof(address.sin_zero));
@@ -52,7 +61,11 @@ int		main(void)
         }
         byteCount = recv(newSocket, buf, sizeof(buf), 0);
         std::cout << buf << std::endl;
-        treatRequest(buf);
+        if (treat.request(buf) == -1)
+        {
+            std::cout << "Connection closed by foreign host." << std::endl;
+            exit(EXIT_FAILURE);
+        }
         send(newSocket, "Hello world!", 12, 0);
         std::cout << "---------- Hello message sent ----------" << std::endl;
         // close(new_socket);

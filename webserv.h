@@ -11,6 +11,8 @@
 #define WHITE '\033[0;37m'
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/types.h>
@@ -19,6 +21,6 @@
 #include <arpa/inet.h>
 #include <map>
 
-void treatRequest(char buf[1024]);
+// void Request(char buf[1024]);
 
 #endif
