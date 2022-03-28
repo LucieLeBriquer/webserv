@@ -23,7 +23,7 @@ int		main(void)
 
 	lenAddr = sizeof(address);
 //TCP socket
-	if (listenSock = socket(AF_INET, SOCK_STREAM, 0) < 0)
+	if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
 		perror("socket()");
 		exit(EXIT_FAILURE);
@@ -68,7 +68,7 @@ int		main(void)
 
 	for (;;)
 	{
-		if (nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1) < 0)
+		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
 			perror("epoll_wait()");
 			exit(EXIT_FAILURE);
