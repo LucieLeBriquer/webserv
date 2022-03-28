@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 19:15:38 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 20:02:14 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,17 +128,27 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
 
+static void	printConfFormat(void)
+{
+	std::cerr << "Example :" << std::endl;
+	std::cout << "server {" << std::endl;
+	std::cout << "\t..." << std::endl;
+	std::cout << "\tlocation ... {" << std::endl;
+	std::cout << "\t\t..." << std::endl;
+	std::cout << "\t}" << std::endl;
+	std::cout << "}" << std::endl;
+}
+
 void	printFormatError(void)
 {
 	std::cerr << "Error: wrong format in configuration file" << std::endl;
-	std::cerr << "Example :" << std::endl;
-	std::cerr << "server {\n" <<"\t...\t\tlocation ... {\n\t\t...\n" << std::endl;
-}
+	printConfFormat();
 }
 
 void	printFormatError(std::string str)
 {
 	std::cerr << "Error: wrong format in configuration file " << GRAY << "(" << str << ")" << END << std::endl;
+	printConfFormat();
 }
 
 void	printFileError(std::string file)
