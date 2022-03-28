@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:48:34 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:51:53 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ std::ostream	&operator<<(std::ostream &o, const Server &server)
 	o << "\tmethods     \t";
 	showMethod(o, server.getMethods()) << std::endl;
 	o << "\terror_pages \t" << server.getErrorPages() << std::endl;
-	o << "\tautoindex   \t" << server.getAutoIndex() << std::endl;
+	o << "\tautoindex   \t" << ((server.getAutoIndex() == 0) ? "off" : "on") << std::endl;
 	o << server.getLocations() << std::endl;
 	return (o);
 };
