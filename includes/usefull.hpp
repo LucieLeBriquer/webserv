@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 16:39:52 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:34:43 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <string>
 # include <cstdlib>
 # include <map>
+# include <limits>
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;
@@ -34,10 +35,15 @@ void	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::st
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
 
 void	printFormatError(void);
+void	printFormatError(std::string);
 void	printFileError(std::string file);
 
 bool	checkHostFormat(std::string str);
 int		myAtoi(std::string str);
+
+int				getMethodNb(std::string method);
+std::string		getMethod(int methodNm);
+std::ostream	&showMethod(std::ostream &o, vecInt methods);
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
@@ -47,5 +53,10 @@ template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> ve
 		o << vect[vect.size() - 1];
 	return (o);
 }
+
+std::ostream	&operator<<(std::ostream &o, mapErr map);
+
+static const int			nbMethods = 3;
+static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
 
 #endif

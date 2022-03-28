@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 16:19:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:35:22 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@
 */
 
 Server::Server(void) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
-					_autoindex(false), _formatOk(true)
+					_autoindex(false), _formatOk(true), _formatErr(""), _hostSet(false), 
+					_serverNamesSet(false), _rootSet(false), _indexSet(false), _maxClientBodySet(false), 
+					_methodsSet(false), _errorPagesSet(false), _autoindexSet(false)
 {
 	return ;
 }
@@ -27,7 +29,10 @@ Server::Server(const Server &server)
 	*this = server;
 }
 
-Server::Server(std::string str) : _formatOk(true)
+Server::Server(std::string str) :  _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
+					_autoindex(false), _formatOk(true), _formatErr(""), _hostSet(false), 
+					_serverNamesSet(false), _rootSet(false), _indexSet(false), _maxClientBodySet(false), 
+					_methodsSet(false), _errorPagesSet(false), _autoindexSet(false)
 {
 	std::cout << YELLOW << "[Server] constructor" << END << std::endl;
 
@@ -72,22 +77,26 @@ Server	&Server::operator=(const Server &server)
 		_errorPages = server._errorPages;
 		_autoindex = server._autoindex;
 		_formatOk = server._formatOk;
+		_formatErr = server._formatErr;
 	}
 	return (*this);
 }
 
 std::ostream	&operator<<(std::ostream &o, const Server &server)
 {
+	size_t	maxCl;
+	
 	o << BLUE << "Server" << END << std::endl;
-	o << "\t" << "host        \t" << server.getHost() << std::endl;
-	o << "\t" << "port        \t" << server.getPort() << std::endl;
-	o << "\t" << "server_names\t" << server.getServerNames() << std::endl;
-	o << "\t" << "root        \t" << server.getRoot() << std::endl;
-	o << "\t" << "index       \t" << server.getIndex() << std::endl;
-	o << "\t" << "client_body \t" << server.getMaxClientBody() << std::endl;
-	o << "\t" << "methods     \t" << server.getMethods() << std::endl;
-	//o << "\t" << "error_pages \t" << server.getErrorPages() << std::endl;
-	o << "\t" << "autoindex   \t" << server.getAutoIndex() << std::endl;
+	o << "\thost        \t" << server.getHost() << std::endl;
+	o << "\tport        \t" << server.getPort() << std::endl;
+	o << "\tserver_names\t" << server.getServerNames() << std::endl;
+	o << "\troot        \t" << server.getRoot() << std::endl;
+	o << "\tindex       \t" << server.getIndex() << std::endl;
+	o << "\tclient_body \t" << server.getMaxClientBody() << std::endl;
+	o << "\tmethods     \t";
+	showMethod(o, server.getMethods()) << std::endl;
+	o << "\terror_pages \t" << server.getErrorPages() << std::endl;
+	o << "\tautoindex   \t" << server.getAutoIndex() << std::endl;
 	o << server.getLocations() << std::endl;
 	return (o);
 };
@@ -101,9 +110,16 @@ bool	Server::wellFormatted(void) const
 	return (_formatOk);
 }
 
-void	Server::_setWrontFormat(void)
+void	Server::_setWrongFormat(void)
 {
 	_formatOk = false;
+}
+
+
+void	Server::_setWrongFormat(std::string str)
+{
+	_formatOk = false;
+	_formatErr = str;
 }
 
 static bool	isBlockNameOk(std::string str, std::string pattern)
@@ -154,7 +170,7 @@ void	Server::_fillServerInfo(std::string str)
 
 	splitPattern(lines, str, "\n");
 	if (!isBlockNameOk(lines[0], "server"))
-		return (_setWrontFormat());
+		return (_setWrongFormat("wrong start of server block"));
 	for (int i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
@@ -171,60 +187,99 @@ void	Server::_setListen(vecStr words)
 {
 	vecStr	addr;
 
+	if (_hostSet)
+		return (_setWrongFormat("host and port already defined"));
 	if (words.size() != 2)
-		return (_setWrontFormat());
+		return (_setWrongFormat("need listen HOST:PORT"));
 	splitPattern(addr, words[1], ":");
 	if (addr.size() != 2)
-		return (_setWrontFormat());
+		return (_setWrongFormat("need listen HOST:PORT"));
 	if (addr[0] == "localhost")
 		_host = "127.0.0.1";
 	else
 	{
 		if (!checkHostFormat(addr[0]))
-			return (_setWrontFormat());
+			return (_setWrongFormat("wrong HOST format"));
 		_host = addr[0];
 	}
 	_port = myAtoi(addr[1]);
 	if (_port < 0 || _port > 65535)
-		return (_setWrontFormat());
+		return (_setWrongFormat("wrong PORT"));
+	_hostSet = true;
 }
 
 void	Server::_setServerNames(vecStr words)
 {
+	if (_serverNamesSet)
+		return (_setWrongFormat("server_names already defined"));
 	if (words.size() < 2)
-		return (_setWrontFormat());
+		return (_setWrongFormat("need at least one server name"));
 	for (size_t i = 1; i < words.size(); i++)
 		_serverNames.push_back(words[i]);
+	_serverNamesSet = true;
 }
 
 void	Server::_setRoot(vecStr words)
 {
-	return ;
+	if (_rootSet)
+		return (_setWrongFormat("root already defined"));
+	if (words.size() != 2)
+		return (_setWrongFormat("need root"));
+	_root = words[1];
+	_rootSet = true;
 }
 
 void	Server::_setIndex(vecStr words)
 {
-	return ;
+	if (_indexSet)
+		return (_setWrongFormat("index already defined"));
+	if (words.size() < 2)
+		return (_setWrongFormat("need at least one index page"));
+	for (size_t i = 1; i < words.size(); i++)
+		_index.push_back(words[i]);
+	_indexSet = true;
 }
 
 void	Server::_setMaxClientBody(vecStr words)
 {
-	return ;
+	if (_maxClientBodySet)
+		return (_setWrongFormat("client_body already defined"));
+	if (words.size() != 2)
+		return (_setWrongFormat("need client_body SIZE"));
+	_maxClientBody = myAtoi(words[1]);
+	if (_maxClientBody < 0)
+		return (_setWrongFormat("size for client_body not well formatted"));
+	if (_maxClientBody == 0)
+		_maxClientBody = std::numeric_limits<size_t>::max();
+	_maxClientBodySet = true;
 }
 
 void	Server::_setMethods(vecStr words)
 {
-	return ;
+	if (_methodsSet)
+		return (_setWrongFormat("methods already defined"));
+	if (words.size() < 2)
+		return (_setWrongFormat("need at least one method"));
+	for (size_t i = 1; i < words.size(); i++)
+	{
+		int method = getMethodNb(words[i]);
+		if (method < 0)
+			return (_setWrongFormat(words[i] + " is an unkown method"));
+		_methods.push_back(method);
+	}
+	_methodsSet = true;
 }
 
 void	Server::_setErrorPages(vecStr words)
 {
-	return ;
+	_errorPagesSet = true;
 }
 
 void	Server::_setAutoIndex(vecStr words)
 {
-	return ;
+	if (_autoindexSet)
+		return (_setWrongFormat("error_pages already defined"));
+	_autoindexSet = true;
 }
 
 /*
@@ -276,12 +331,15 @@ bool		Server::getAutoIndex(void) const
 	return (_autoindex);
 }
 
-
 vecLoc		Server::getLocations(void) const
 {
 	return (_locations);
 }
 
+std::string	Server::getFormatErr(void) const
+{
+	return (_formatErr);
+}
 
-std::string Server::keywords[8] = { "listen", "server_name", "root", "index", "client_body",
-									"methods", "error_page", "autoindex"};
+
+std::string Server::keywords[8] = { "listen", "server_name", "root", "index", "client_body", "methods", "error_page", "autoindex"};

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 15:12:05 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:34:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,11 @@ void	printFormatError(void)
 	std::cerr << "Error: wrong format in configuration file" << std::endl;
 }
 
+void	printFormatError(std::string str)
+{
+	std::cerr << "Error: wrong format in configuration file (" << str << ")" << std::endl;
+}
+
 void	printFileError(std::string file)
 {
 	std::cerr << "Error: can't open configuration file " << file << std::endl;
@@ -160,4 +165,39 @@ bool	checkHostFormat(std::string str)
 			return (false);
 	}
 	return (true);
+}
+
+std::ostream	&operator<<(std::ostream &o, mapErr map)
+{
+	for (int i = 0; i + 1 < map.size(); i++)
+		o << "(" << map[i][0] << "," << map[i][1] << ") ";
+	if (map.size() > 0)
+		o << "(" << map[map.size() - 1][0] << "," << map[map.size() - 1][1] << ")";
+	return (o);
+}
+
+int	getMethodNb(std::string method)
+{
+	for (int i = 0; i < nbMethods; i++)
+	{
+		if (methods[i] == method)
+			return (i);
+	}
+	return (-1);
+}
+
+std::string		getMethod(int methodNb)
+{
+	if (methodNb >= 0 && methodNb < nbMethods)
+		return (methods[methodNb]);
+	return ("unknown");
+}
+
+std::ostream	&showMethod(std::ostream &o, vecInt methods)
+{
+	for (int i = 0; i + 1 < methods.size(); i++)
+		o << getMethod(methods[i]) << " ";
+	if (methods.size() > 0)
+		o << getMethod(methods[methods.size() - 1]);
+	return (o);
 }

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:54 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 15:21:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:36:03 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,16 @@ class Server
 		mapErr		_errorPages;
 		bool		_autoindex;
 		bool		_formatOk;
+		std::string	_formatErr;
+
+		bool	_hostSet;
+		bool	_serverNamesSet;
+		bool	_rootSet;
+		bool	_indexSet;
+		bool	_maxClientBodySet;
+		bool	_methodsSet;
+		bool	_errorPagesSet;
+		bool	_autoindexSet;
 
 		void	_fillServerInfo(std::string str);
 		void	_fillOneInfo(std::string str);
@@ -45,7 +55,8 @@ class Server
 		void	_setAutoIndex(vecStr words);
 
 		int		_keywordNumber(std::string str);
-		void	_setWrontFormat(void);
+		void	_setWrongFormat(void);
+		void	_setWrongFormat(std::string str);
 
 	public:
 		Server(void);
@@ -69,6 +80,7 @@ class Server
 		mapErr		getErrorPages(void) const;
 		bool		getAutoIndex(void) const;
 		vecLoc		getLocations(void) const;
+		std::string	getFormatErr(void) const;
 
 		// static
 		static const int	nbKeywords = 8;

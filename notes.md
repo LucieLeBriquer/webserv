@@ -123,7 +123,8 @@ server {
 	index			INDEX
 	client_body		MAX_CLIENT_BODY
 	methods			METHOD1 METHOD2 ...
-	error_page		NUM_ERROR ERROR_FILE
+	error_page		ERRROR_NUM0 ERROR_PAGE0
+	error_page		ERRROR_NUM1 ERROR_PAGE1
 
 	location *.php {
 		cgi_pass	CGI
@@ -132,10 +133,10 @@ server {
 
 server {
 	listen			HOST:PORT
-	server_name		SERVER_NAME
+	server_name		SERVER_NAME0 SERVER_NAME1
 	root			ROOT
-	index			INDEX
-	client_body		MAX_CLIENT_BODY
+	index			INDEX0 INDEX1
+	client_body		MAX_CLIENT_BODY 			# in MB, 0 implies no limitation
 	methods			METHOD1 METHOD2 ...
 
 	location /DIRECTORY1 {

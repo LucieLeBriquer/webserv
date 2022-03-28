@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:02 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 16:24:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:26:17 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ Config::Config(const std::string file)
 		splitBlocks(serverBlocks, fileString, "server", configInfo);
 		if (configInfo.length() > 0)
 		{
-			printFormatError();
+			printFormatError("not only server blocks");
 			return ;
 		}
 		for (int i = 0; i < serverBlocks.size(); i++)
@@ -101,7 +101,7 @@ Config::Config(const std::string file)
 
 			if (!newServ.wellFormatted())
 			{
-				printFormatError();
+				printFormatError(newServ.getFormatErr());
 				return ;
 			}
 			_servers.push_back(newServ);
