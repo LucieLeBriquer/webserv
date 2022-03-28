@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:52 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 16:21:21 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:15:50 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,5 @@ class Block
 		bool		getAutoIndex(void) const;
 		std::string	getFormatErr(void) const;
 };
-
-typedef void (Block::*setFunc)(vecStr words);
 
 #endif

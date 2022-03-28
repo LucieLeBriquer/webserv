@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:54 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 16:23:23 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:19:57 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,50 +17,24 @@
 
 typedef	std::vector<Location>		vecLoc;
 
-class Server
+class Server : public Block
 {
 	private:
 		vecLoc		_locations;
 		std::string	_host;
 		int			_port;
 		vecStr		_serverNames;
-		std::string	_root;
-		vecStr		_index;
-		size_t		_maxClientBody;
-		vecInt		_methods;
-		mapErr		_errorPages;
-		std::string	_redirUrl;
-		bool		_autoindex;
-
-		bool	_hostSet;
-		bool	_serverNamesSet;
-		bool	_rootSet;
-		bool	_indexSet;
-		bool	_maxClientBodySet;
-		bool	_methodsSet;
-		bool	_errorPagesSet;
-		bool	_redirUrlSet;
-		bool	_autoindexSet;
 		
-		bool		_formatOk;
-		std::string	_formatErr;
+		bool		_hostSet;
+		bool		_serverNamesSet;
 
 		void	_fillServerInfo(std::string str);
 		void	_fillOneInfo(std::string str);
 
 		void	_setListen(vecStr words);
 		void	_setServerNames(vecStr words);
-		void	_setRoot(vecStr words);
-		void	_setIndex(vecStr words);
-		void	_setMaxClientBody(vecStr words);
-		void	_setMethods(vecStr words);
-		void	_setErrorPages(vecStr words);
-		void	_setAutoIndex(vecStr words);
-		void	_setRedirUrl(vecStr words);
 
 		int		_keywordNumber(std::string str);
-		void	_setWrongFormat(void);
-		void	_setWrongFormat(std::string str);
 
 	public:
 		Server(void);
@@ -70,22 +44,11 @@ class Server
 
 		Server	&operator=(const Server &server);
 
-		// member functions
-		bool	wellFormatted(void) const;
-		
 		// getters
 		vecLoc		getLocations(void) const;
 		std::string	getHost(void) const;
 		int			getPort(void) const;
 		vecStr		getServerNames(void) const;
-		std::string	getRoot(void) const;
-		vecStr		getIndex(void) const;
-		size_t		getMaxClientBody(void) const;
-		vecInt		getMethods(void) const;
-		mapErr		getErrorPages(void) const;
-		std::string	getRedirUrl(void) const;
-		bool		getAutoIndex(void) const;
-		std::string	getFormatErr(void) const;
 
 		// static
 		static const int	nbKeywords = 9;
