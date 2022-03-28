@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:34:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:41:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ void	printFormatError(void)
 
 void	printFormatError(std::string str)
 {
-	std::cerr << "Error: wrong format in configuration file (" << str << ")" << std::endl;
+	std::cerr << "Error: wrong format in configuration file " << GRAY << "(" << str << ")" << END << std::endl;
 }
 
 void	printFileError(std::string file)

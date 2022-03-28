@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:25 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/26 14:54:25 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:45:12 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ class Config
 {
 	private:
 		vecSrv	_servers;
+		bool	_formatOk;
 
 		Config(const Config &config);
 		Config(void);
@@ -32,6 +33,7 @@ class Config
 		Config	&operator=(const Config &config);
 
 		vecSrv	getServers(void) const;
+		bool	wellFormatted(void) const;
 };
 
 std::ostream	&operator<<(std::ostream &o, const Config &config);

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:02 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:26:17 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:49:33 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,12 +53,12 @@ static std::string removeCommentary(std::string line)
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Config::Config(void)
+Config::Config(void) : _formatOk(true)
 {
 	return ;
 }
 
-Config::Config(const Config &config)
+Config::Config(const Config &config) : _formatOk(true)
 {
 	*this = config;
 }
@@ -79,10 +79,8 @@ static bool	readFile(const std::string file, std::string &fileString)
 	return (true);
 }
 
-Config::Config(const std::string file)
+Config::Config(const std::string file) : _formatOk(true)
 {
-	std::cout << YELLOW << "[Config] constructor" << END << std::endl;
-
 	std::string 	fileString = "";
 	vecStr 			serverBlocks;
 	std::string		configInfo = "";
@@ -92,6 +90,7 @@ Config::Config(const std::string file)
 		splitBlocks(serverBlocks, fileString, "server", configInfo);
 		if (configInfo.length() > 0)
 		{
+			_formatOk = false;
 			printFormatError("not only server blocks");
 			return ;
 		}
@@ -101,6 +100,7 @@ Config::Config(const std::string file)
 
 			if (!newServ.wellFormatted())
 			{
+				_formatOk = false;
 				printFormatError(newServ.getFormatErr());
 				return ;
 			}
@@ -125,6 +125,7 @@ Config	&Config::operator=(const Config &config)
 	if (this != &config)
 	{
 		_servers = config._servers;
+		_formatOk = config._formatOk;
 	}
 	return (*this);
 }
@@ -132,8 +133,8 @@ Config	&Config::operator=(const Config &config)
 std::ostream	&operator<<(std::ostream &o, const Config &config)
 {
 	vecSrv	servers = config.getServers();
-
-	o << ORANGE << "Configuration" << END << std::endl;
+	
+	o << std::endl << ORANGE << "Configuration" << END << std::endl << std::endl;
 	for (int i = 0; i < servers.size(); i++)
 		o << servers[i] << std::endl;
 	return (o);
@@ -146,4 +147,9 @@ std::ostream	&operator<<(std::ostream &o, const Config &config)
 vecSrv	Config::getServers(void) const
 {
 	return (_servers);
+}
+
+bool	Config::wellFormatted(void) const
+{
+	return (_formatOk);
 }

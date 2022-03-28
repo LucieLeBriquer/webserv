@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:34:43 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:40:23 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # define PURPLE "\x1B[35m"
 # define BLUE "\x1B[36m"
 # define BOLD "\x1B[1m"
+# define GRAY "\x1B[90m"
 # define END "\x1B[0m"
 # include <iostream>
 # include <vector>

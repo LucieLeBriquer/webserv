@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:35:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:48:34 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _root("/"), 
 					_serverNamesSet(false), _rootSet(false), _indexSet(false), _maxClientBodySet(false), 
 					_methodsSet(false), _errorPagesSet(false), _autoindexSet(false)
 {
-	std::cout << YELLOW << "[Server] constructor" << END << std::endl;
-
 	std::vector<std::string> 	locBlocks;
 	std::string					serverInfo;
 
@@ -272,6 +270,8 @@ void	Server::_setMethods(vecStr words)
 
 void	Server::_setErrorPages(vecStr words)
 {
+	if (words.size() != 3)
+		return (_setWrongFormat("need error ERROR_NUM ERROR_PAGE"));
 	_errorPagesSet = true;
 }
 
