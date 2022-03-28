@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 15:15:50 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:51:35 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,11 @@ static size_t	endOfBlock(std::string str, size_t start)
 	while (needed > 0 && lastBracket != std::string::npos)
 	{
 		bracketOpen = str.find("{\n", lastBracket + 1);
-		bracketClose = str.find("\n}\n", lastBracket + 1) + 1;
-		if (bracketClose == std::string::npos && bracketOpen == std::string::npos)
+		bracketClose = str.find("\n}\n", lastBracket + 1);
+		if (bracketClose == std::string::npos)
 			return (std::string::npos);
+		else
+			bracketClose++;
 		if (bracketOpen < bracketClose)
 		{
 			needed++;
