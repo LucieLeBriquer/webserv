@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:51:53 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 15:09:37 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 
 /*
 **		CONSTRUCTORS AND DESTRUCTOR
+*/
+
+/*
+vecLoc		_locations;
+vecStr		_serverNames;
+vecStr		_index;
+vecInt		_methods;
+mapErr		_errorPages;
 */
 
 Server::Server(void) : _host("localhost"), _port(8080), _root("/"), _maxClientBody(0),
@@ -268,10 +276,17 @@ void	Server::_setMethods(vecStr words)
 	_methodsSet = true;
 }
 
-void	Server::_setErrorPages(vecStr words)
+void	Server::_setErrorPages(vecStr words) // TODO
 {
+	std::pair<int, std::string>	err;
+	
 	if (words.size() != 3)
 		return (_setWrongFormat("need error ERROR_NUM ERROR_PAGE"));
+	err.first = myAtoi(words[1]);
+	if (err.first < 0)
+		return (_setWrongFormat("unvalid ERROR_NUM"));
+	err.second = words[2];
+	_errorPages.insert(err);
 	_errorPagesSet = true;
 }
 
@@ -279,6 +294,9 @@ void	Server::_setAutoIndex(vecStr words)
 {
 	if (_autoindexSet)
 		return (_setWrongFormat("error_pages already defined"));
+	if (words.size() != 1)
+		return (_setWrongFormat("autoindex doesn't take arguments"));
+	_autoindex = true;
 	_autoindexSet = true;
 }
 

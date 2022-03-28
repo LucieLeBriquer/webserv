@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 14:41:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 15:15:50 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,10 +169,17 @@ bool	checkHostFormat(std::string str)
 
 std::ostream	&operator<<(std::ostream &o, mapErr map)
 {
-	for (int i = 0; i + 1 < map.size(); i++)
-		o << "(" << map[i][0] << "," << map[i][1] << ") ";
-	if (map.size() > 0)
-		o << "(" << map[map.size() - 1][0] << "," << map[map.size() - 1][1] << ")";
+	mapErr::iterator	it = map.begin();
+	while (it != map.end())
+	{
+		if (it == map.begin())
+			o << "(" << it->first << " " << it->second << ")";
+		else
+			o << "\t\t\t\t\t(" << it->first << " " << it->second << ")";
+		it++;
+		if (it != map.end())
+			o << std::endl;
+	}
 	return (o);
 }
 
