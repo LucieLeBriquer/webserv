@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:07 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:13:24 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/28 17:22:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ void	Location::_fillOneInfo(std::string str)
 	if (keyword < 0)
 	{
 		_formatOk = false;
-		_formatErr = "unknown keyword";
+		_formatErr = "unknown keyword \"" + words[0] + "\"";
 		return ;
 	}
 	return ((this->*(setters[keyword]))(words));
