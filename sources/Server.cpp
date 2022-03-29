@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 14:28:42 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 15:17:54 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	serverInfo.clear();
 	if (!splitBlocks(locBlocks, str, "location", serverInfo))
 	{
-		printFormatError("matching { } issues in a location block");
+		_formatErr = "matching { } issues in a location block";
+		_formatOk = false;
 		return ;
 	}
 	_fillServerInfo(serverInfo);
@@ -173,6 +174,8 @@ void	Server::_fillServerInfo(std::string str)
 void	Server::_setListen(vecStr words)
 {
 	vecStr	addr;
+	bool	success;
+	size_t	res;
 
 	if (_hostSet)
 		return (_setWrongFormat("host and port already defined"));
@@ -189,9 +192,10 @@ void	Server::_setListen(vecStr words)
 			return (_setWrongFormat("wrong HOST format"));
 		_host = addr[0];
 	}
-	_port = myAtoi(addr[1]);
-	if (_port < 0 || _port > 65535)
+	res = myAtoi(addr[1], success);
+	if (!success || res > 65535)
 		return (_setWrongFormat("wrong PORT"));
+	_port = res;
 	_hostSet = true;
 }
 
@@ -202,7 +206,11 @@ void	Server::_setServerNames(vecStr words)
 	if (words.size() < 2)
 		return (_setWrongFormat("need at least one server name"));
 	for (size_t i = 1; i < words.size(); i++)
+	{
+		if (!checkWordFormat(words[i]))
+			return (_setWrongFormat("unvalid SERVER_NAME"));
 		_serverNames.push_back(words[i]);
+	}
 	_serverNamesSet = true;
 }
 

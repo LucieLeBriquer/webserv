@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 13:33:25 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 14:44:23 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,10 @@ void	printFormatError(std::string);
 void	printFileError(std::string file);
 
 bool	checkHostFormat(std::string str);
-int		myAtoi(std::string str);
+bool	checkWordFormat(std::string str);
+
+size_t	myAtoi(std::string str);
+size_t	myAtoi(std::string str, bool &success);
 
 int				getMethodNb(std::string method);
 std::string		getMethod(int methodNm);

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:50 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 14:28:58 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 15:08:50 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,8 @@ void	Block::_setRoot(vecStr words)
 		return (_setWrongFormat("root already defined"));
 	if (words.size() != 2)
 		return (_setWrongFormat("need \"root PATH\""));
+	if (!checkWordFormat(words[1]))
+		return (_setWrongFormat("unvalid PATH for root"));
 	_root = words[1];
 	_rootSet = true;
 }
@@ -108,19 +110,25 @@ void	Block::_setIndex(vecStr words)
 	if (words.size() < 2)
 		return (_setWrongFormat("need at least one index page"));
 	for (size_t i = 1; i < words.size(); i++)
+	{
+		if (!checkWordFormat(words[i]))
+			return (_setWrongFormat("unvalid INDEX"));
 		_index.push_back(words[i]);
+	}
 	_indexSet = true;
 }
 
 void	Block::_setMaxClientBody(vecStr words) // to fix negative value
 {
+	bool	success;
+	
 	if (_maxClientBodySizeSet)
 		return (_setWrongFormat("client_size already defined"));
 	if (words.size() != 2)
 		return (_setWrongFormat("need client_size SIZE"));
-	_maxClientBodySize = myAtoi(words[1]);
-	if (_maxClientBodySize < 0)
-		return (_setWrongFormat("size for client_size not well formatted"));
+	_maxClientBodySize = myAtoi(words[1], success);
+	if (!success)
+		return (_setWrongFormat("wrong size for client_size"));
 	if (_maxClientBodySize == 0)
 		_maxClientBodySize = std::numeric_limits<size_t>::max();
 	_maxClientBodySizeSet = true;
@@ -136,7 +144,7 @@ void	Block::_setMethods(vecStr words)
 	{
 		int method = getMethodNb(words[i]);
 		if (method < 0)
-			return (_setWrongFormat(words[i] + " is an unkown method"));
+			return (_setWrongFormat( "unknown method \"" + words[i] + "\""));
 		_methods.push_back(method);
 	}
 	_methodsSet = true;
@@ -145,12 +153,17 @@ void	Block::_setMethods(vecStr words)
 void	Block::_setErrorPages(vecStr words)
 {
 	std::pair<int, std::string>	err;
+	size_t	res;
+	bool	success;
 	
 	if (words.size() != 3)
 		return (_setWrongFormat("need error ERROR_NUM ERROR_PAGE"));
-	err.first = myAtoi(words[1]); // to fix
-	if (err.first < 0)
+	res = myAtoi(words[1], success);
+	if (!success || res > 599)
 		return (_setWrongFormat("unvalid ERROR_NUM"));
+	err.first = res;
+	if (!checkWordFormat(words[2]))
+		return (_setWrongFormat("unvalid ERROR_URL"));
 	err.second = words[2];
 	_errorPages.insert(err);
 	_errorPagesSet = true;
@@ -172,6 +185,8 @@ void	Block::_setRedirUrl(vecStr words)
 		return (_setWrongFormat("return already defined"));
 	if (words.size() != 2)
 		return (_setWrongFormat("need return REDIR_URL"));
+	if (!checkWordFormat(words[1]))
+		return (_setWrongFormat("unvalid REDIR_URL"));
 	_redirUrl = words[1];
 	_redirUrlSet = true;
 }

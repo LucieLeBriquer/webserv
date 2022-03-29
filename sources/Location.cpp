@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:07 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 14:27:49 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 15:16:11 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,14 @@ bool	Location::_setPath(std::string str)
 	vecStr	words;
 
 	splitPattern(words, str, " ");
-	if (words.size() != 3)
+	if (words.size() > 3 || words.size() < 2)
 		return (false);
-	_path = words[1];
+	if (words.size() == 3)
+		_path = words[1];
+	else
+		_path = words[1].substr(0, words[1].size() - 1);
+	if (!checkWordFormat(_path))
+		return (false);
 	return (true);
 }
 
@@ -102,6 +107,8 @@ void	Location::_setCgiPass(vecStr words)
 		return (_setWrongFormat("cgi_pass already defined"));
 	if (words.size() != 2)
 		return (_setWrongFormat("need cgi_pass CGI"));
+	if (!checkWordFormat(words[1]))
+		return (_setWrongFormat("unvalid CGI_PASS"));
 	_cgiPass = words[1];
 	_cgiPassSet = true;
 }

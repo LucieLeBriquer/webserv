@@ -6,13 +6,15 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 13:41:43 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 15:10:10 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "usefull.hpp"
 
-// splitting functions
+/*
+**		SPLIT FUNCTIONS
+*/
 
 static size_t	endOfBlock(std::string str, size_t start)
 {
@@ -62,8 +64,6 @@ static size_t	newStartOfBlock(std::string str, std::string pattern, size_t start
 	pos = str.find(pattern, start);
 	while (pos != std::string::npos)
 	{
-		if (!isspace(str.c_str()[pos + pattern.length()]))
-			return (std::string::npos);
 		brackOpen = str.find("{\n");
 		if (brackOpen != std::string::npos && str.find("\n", pos) > brackOpen)
 			return (pos);
@@ -130,7 +130,10 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
 
-// print errors and help
+
+/*
+**		PRINT ERRORS AND HELP
+*/
 
 static void	printConfFormat(std::string str)
 {
@@ -183,9 +186,12 @@ void	printFileError(std::string file)
 	std::cerr << RED << "[Error]" << END << " can't open configuration file " << GRAY << file << END << std::endl;
 }
 
-// atoi only digit
 
-int		myAtoi(std::string str)
+/*
+**		ATOI
+*/
+
+size_t	myAtoi(std::string str)
 {
 	for (size_t i = 0; i < str.length(); i++)
 	{
@@ -195,26 +201,60 @@ int		myAtoi(std::string str)
 	return (atoi(str.c_str()));
 }
 
-// check format for host
+
+size_t	myAtoi(std::string str, bool &succeed)
+{
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (!isdigit(str.c_str()[i]))
+		{
+			succeed = false;
+			return (-1);
+		}
+	}
+	succeed = true;
+	return (atoi(str.c_str()));
+}
+
+
+/*
+**		CHECK FORMAT
+*/
 
 bool	checkHostFormat(std::string str)
 {
 	vecStr	addr;
-	int		n;
+	size_t	n;
+	bool	success;
 
 	splitPattern(addr, str, ".");
 	if (addr.size() != 4)
 		return (false);
 	for (int i = 0; i < addr.size(); i++)
 	{
-		n = myAtoi(addr[i]);
-		if (n < 0 || n > 255)
+		n = myAtoi(addr[i], success);
+		if (!success || n > 255)
 			return (false);
 	}
 	return (true);
 }
 
-// map overload
+bool	checkWordFormat(std::string str)
+{
+	std::string validChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
+
+	for (int i = 0; i < str.size(); i++)
+	{
+		if (validChar.find(str[i], 0) == std::string::npos)
+			return (false);
+	}
+	return (true);
+}
+
+
+/*
+**		MAP PRINTING OVERLOAD
+*/
 
 std::ostream	&operator<<(std::ostream &o, mapErr map)
 {
@@ -232,7 +272,10 @@ std::ostream	&operator<<(std::ostream &o, mapErr map)
 	return (o);
 }
 
-// methods functions
+
+/*
+**		METHODS FUNCTIONS
+*/
 
 int	getMethodNb(std::string method)
 {
@@ -260,7 +303,10 @@ std::ostream	&showMethod(std::ostream &o, vecInt methods)
 	return (o);
 }
 
-// get file name
+
+/*
+**		GET FILE NAME
+*/
 
 std::string	fileName(int argc, char **argv)
 {
