@@ -6,11 +6,13 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 13:25:44 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 13:33:11 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "usefull.hpp"
+
+// splitting functions
 
 static size_t	endOfBlock(std::string str, size_t start)
 {
@@ -69,26 +71,6 @@ static size_t	newStartOfBlock(std::string str, std::string pattern, size_t start
 	return (std::string::npos);
 }
 
-bool splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo)
-{
-	size_t	pos;
-	size_t	end = 0;
-
-	pos = newStartOfBlock(str, pattern, 0);
-	while (pos != std::string::npos)
-	{
-		otherInfo += substrPos(str, end == 0 ? 0 : end + 2, pos - 1);
-		end = endOfBlock(str, pos);
-		if (end != std::string::npos)
-			splitted.push_back(str.substr(pos, end - pos + 1));
-		else
-			return (false);
-		pos = newStartOfBlock(str, pattern, end);
-	}
-	otherInfo += substrPos(str, end == 0 ? 0 : end + 2, str.length() - 1);
-	return (true);
-}
-
 static std::string	removeInsideSpaces(std::string str)
 {
 	std::string res;
@@ -110,6 +92,26 @@ static std::string	removeInsideSpaces(std::string str)
 	return (res);
 }
 
+bool splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo)
+{
+	size_t	pos;
+	size_t	end = 0;
+
+	pos = newStartOfBlock(str, pattern, 0);
+	while (pos != std::string::npos)
+	{
+		otherInfo += substrPos(str, end == 0 ? 0 : end + 2, pos - 1);
+		end = endOfBlock(str, pos);
+		if (end != std::string::npos)
+			splitted.push_back(str.substr(pos, end - pos + 1));
+		else
+			return (false);
+		pos = newStartOfBlock(str, pattern, end);
+	}
+	otherInfo += substrPos(str, end == 0 ? 0 : end + 2, str.length() - 1);
+	return (true);
+}
+
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 {
 	size_t		pos;
@@ -127,6 +129,8 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	toAdd = substrPos(str, prevPos == 0 ? 0 : prevPos + pattern.length(), str.length() - 1);
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
+
+// print errors and help
 
 static void	printConfFormat(std::string str)
 {
@@ -179,6 +183,8 @@ void	printFileError(std::string file)
 	std::cerr << RED << "[Error]" << END << " can't open configuration file " << GRAY << file << END << std::endl;
 }
 
+// atoi only digit
+
 int		myAtoi(std::string str)
 {
 	for (size_t i = 0; i < str.length(); i++)
@@ -188,6 +194,8 @@ int		myAtoi(std::string str)
 	}
 	return (atoi(str.c_str()));
 }
+
+// check format for host
 
 bool	checkHostFormat(std::string str)
 {
@@ -206,6 +214,8 @@ bool	checkHostFormat(std::string str)
 	return (true);
 }
 
+// map overload
+
 std::ostream	&operator<<(std::ostream &o, mapErr map)
 {
 	mapErr::iterator	it = map.begin();
@@ -221,6 +231,8 @@ std::ostream	&operator<<(std::ostream &o, mapErr map)
 	}
 	return (o);
 }
+
+// methods functions
 
 int	getMethodNb(std::string method)
 {
@@ -246,4 +258,15 @@ std::ostream	&showMethod(std::ostream &o, vecInt methods)
 	if (methods.size() > 0)
 		o << getMethod(methods[methods.size() - 1]);
 	return (o);
+}
+
+// get file name
+
+std::string	fileName(int argc, char **argv)
+{
+	std::string		configFile = "config/basic.conf";
+
+	if (argc >= 2)
+		configFile = argv[1];
+	return (configFile);
 }
