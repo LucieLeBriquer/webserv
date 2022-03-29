@@ -1,12 +1,13 @@
 #ifndef REQUESTS_HPP
 # define REQUESTS_HPP
 
-# include "webserv.h"
+# include "webserv.hpp"
 
 class HTTPRequest
 {
 	private:
 		std::string	_scheme; // protocole de requete (HTTP/HTTPS)
+		std::string	_protocolv;
 		std::string _body;
 		std::string _path; // le chemin vers la page demandee
 		std::string _method;
@@ -22,6 +23,8 @@ class HTTPRequest
 		void		mdelete( void );
     public:
         int request(char buf[1024]);
+		int parsePathNProtocol(const std::string cmd, int err);
+		int parseMethod(const std::string cmd, const std::string *methods);
 };
 
 #endif

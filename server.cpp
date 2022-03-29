@@ -1,4 +1,4 @@
-#include "methods.hpp"
+#include "webserv.hpp"
 #include <netdb.h> 
 #define PORT 8080
 
@@ -63,6 +63,7 @@ int		main(void)
         std::cout << buf << std::endl;
         if (treat.request(buf) == -1)
         {
+            //en fonction du user-agent : curl ou telnet ou mozilla  (curl/7.68.0)
             std::cout << "Connection closed by foreign host." << std::endl;
             exit(EXIT_FAILURE);
         }
