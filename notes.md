@@ -113,6 +113,56 @@ with :
 
 ### fcnt
 
+-----------------
+## HTTP requests methods
+
+HTTP defines a set of request methods(or *verbs*) to indicate the desired action to be performed for a given resource.
+
+The HTTP/1.0 specification defined the GET, HEAD, and POST methods, and the HTTP/1.1 specification added five new methods: PUT, DELETE, CONNECT, OPTIONS, and TRACE.
+
+- `GET` = requests that the target resource transfer a representation of its state (**HTTP status codes**). Requests using GET should only retrieve data without making changes.
+- `HEAD` = asks for a response identical to a GET request, but without the response body (only the header). 
+- `POST` = submits an entity to the specified resource, often causing a change in state or side effects on the server.
+- `PUT` = requests that the target resource create or update its state with the state defined by the submitted request. A distinction from POST is that the client specifies the target location on the server.
+- `DELETE` = deletes the specified resource.
+- `CONNECT` =  establishes a tunnel to the server identified by the target resource.(?)
+- `OPTIONS` =  requests that the target resource transfer the HTTP methods that it supports. This can be used to check the functionality of a web server by requesting '*' instead of a specific resource.
+- `TRACE` =  requests that the target resource transfer the received request in the response body. That way a client can see what (if any) changes or additions have been made by intermediaries.
+- `PATCH` = applies partial modifications to a resource.
+```
+GET / HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0
+Accept: *
+Accept-Language: en-GB,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+```
+
+## HTTP/1.1 response
+A response message is sent by a server to a client as a reply to its former request message. They define how information sent/received, the session verification and identification of the client (cookies, IP, user-agent) or their anonymity (VPN or proxy), how the server should handle data (Do-Not-Track)... 
+```
+HTTP/1.1 200 OK
+Date: Mon, 23 May 2005 22:38:34 GMT
+Content-Type: text/html; charset=UTF-8
+Content-Length: 155
+Last-Modified: Wed, 08 Jan 2003 23:11:55 GMT
+Server: BestServ (Unix) (Red-Hat/Linux)
+ETag: "3f80f-1b6-3e1cb03b"
+Accept-Ranges: bytes
+Connection: close
+
+<html>
+<head>
+    <title>An Example Page</title>
+</head>
+<body>
+    <p>Exemple of a server response.</p>
+</body>
+</html>
+```
+---------------
+
 ## Configuration file
 Example of a complete configuration file (`nginx.conf` inspiration):
 ```
