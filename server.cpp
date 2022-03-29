@@ -109,6 +109,7 @@ int		main(void)
 			exit(EXIT_FAILURE);
 		}
 		n = 0;
+		std::cout << "nfds = " << nfds << " linstenSock = " << listenSock << " events[n].data.fd = " << events[n].data.fd << std::endl;
 		while (n < nfds)
 		{
 			if ((events[n].events & EPOLLERR) || (events[n].events & EPOLLHUP) || (!(events[n].events & EPOLLIN)))
@@ -128,7 +129,6 @@ int		main(void)
 
 					if ((connSock = accept(listenSock, (struct sockaddr *) &in_addr, &in_addr_len)) < 0)
 					{
-					//	std::cout << "errno = " << errno << " EAGAIN = " << EAGAIN << " EWOULDBLOCK = " << EWOULDBLOCK << std::endl;
 						if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
 						{
 							std::cout << "we already processed all incoming connections" << std::endl;
@@ -154,34 +154,34 @@ int		main(void)
 			else
 			{
 				/*Data waiting to be read on our waiting fd*/
-			//	done = 0;
 				memset(buf, 0, sizeof(buf));
 				while (1)
 				{
-					byteCount = recv(events[n].data.fd, buf, sizeof(buf), /*MSG_DONTWAIT*/0);
-					if (byteCount <= 0)
+					byteCount = recv(events[n].data.fd, buf, sizeof(buf), MSG_DONTWAIT);
+					if (byteCount == 0)
 					{
-			//			done = 1;
-						if (byteCount == 0)
-						{
-							std::cout << "Finished with " << events[n].data.fd << std::endl;
-							close(events[n].data.fd);
-						}
+						epoll_ctl(epollfd, EPOLL_CTL_DEL, events[n].data.fd, NULL);
+						break ;
+					}
+					else if (byteCount < 0)
+					{
+						close(events[n].data.fd);
 						break ;
 					}
 					else
 					{
+						std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
+
 						std::cout << "get " << byteCount << " bytes of content from " << events[n].data.fd << " [ " << buf << " ] " << std::endl;
-						if (send(events[n].data.fd, buf, byteCount, /*MSG_DONTWAIT*/0) < 0)
+						if (send(events[n].data.fd, hello.c_str(), hello.size(), MSG_DONTWAIT) < 0)
 						{
 							perror("send()");
 							exit(EXIT_FAILURE);
 						}
 						std::cout << "sending data to " << events[n].data.fd << std::endl;
+						close(events[n].data.fd);
 					}
 				}
-			//	if (done)
-			//		close(events[n].data.fd);
 			}
 			n++;
 		}
