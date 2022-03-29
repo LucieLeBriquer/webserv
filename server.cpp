@@ -123,18 +123,21 @@ int		main(void)
 				/*We have one or more incoming connections, notifications on the listening socket*/
 				while (1)
 				{
-					if ((connSock = accept(listenSock, (struct sockaddr *) &address, &lenAddr)) < 0)
+					struct sockaddr	in_addr;
+					socklen_t		in_addr_len = sizeof(in_addr);
+
+					if ((connSock = accept(listenSock, (struct sockaddr *) &in_addr, &in_addr_len)) < 0)
 					{
-						std::cout << "errno = " << errno << " EAGAIN = " << EAGAIN << " EWOULDBLOCK = " << EWOULDBLOCK << std::endl;
+					//	std::cout << "errno = " << errno << " EAGAIN = " << EAGAIN << " EWOULDBLOCK = " << EWOULDBLOCK << std::endl;
 						if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
 						{
-							std::cout << "processed all incoming connections" << std::endl;
+							std::cout << "we already processed all incoming connections" << std::endl;
 							break ;
 						}
 						else
 						{
 							perror("accept()");
-							break ;
+							exit(EXIT_FAILURE);
 						}
 					}
 					if (setsocknonblock(connSock) < 0)
@@ -155,21 +158,27 @@ int		main(void)
 				memset(buf, 0, sizeof(buf));
 				while (1)
 				{
-					byteCount = recv(events[n].data.fd, buf, sizeof(buf), MSG_DONTWAIT);
+					byteCount = recv(events[n].data.fd, buf, sizeof(buf), /*MSG_DONTWAIT*/0);
 					if (byteCount <= 0)
 					{
 			//			done = 1;
+						if (byteCount == 0)
+						{
+							std::cout << "Finished with " << events[n].data.fd << std::endl;
+							close(events[n].data.fd);
+						}
 						break ;
 					}
 					else
-						std::cout << "get " << byteCount << " bytes of content from " << events[n].data.fd << " [ " << buf << " ] " << std::endl;
-					if (send(events[n].data.fd, buf, byteCount, MSG_DONTWAIT) < 0)
 					{
-						perror("send()");
-						exit(EXIT_FAILURE);
-					}
-					else
+						std::cout << "get " << byteCount << " bytes of content from " << events[n].data.fd << " [ " << buf << " ] " << std::endl;
+						if (send(events[n].data.fd, buf, byteCount, /*MSG_DONTWAIT*/0) < 0)
+						{
+							perror("send()");
+							exit(EXIT_FAILURE);
+						}
 						std::cout << "sending data to " << events[n].data.fd << std::endl;
+					}
 				}
 			//	if (done)
 			//		close(events[n].data.fd);
