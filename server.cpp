@@ -39,7 +39,7 @@ int		main(void)
 	struct sockaddr_in	address;
 	socklen_t			lenAddr;
 	char				buf[30000] = {0};
-	int					byteCount, done;
+	int					byteCount/*, done*/;
 	int					yes = 1;
 	struct epoll_event	ev, events[MAX_EVENTS];
 
@@ -151,25 +151,28 @@ int		main(void)
 			else
 			{
 				/*Data waiting to be read on our waiting fd*/
-				done = 0;
+			//	done = 0;
+				memset(buf, 0, sizeof(buf));
 				while (1)
 				{
 					byteCount = recv(events[n].data.fd, buf, sizeof(buf), MSG_DONTWAIT);
 					if (byteCount <= 0)
 					{
-						done = 1;
+			//			done = 1;
 						break ;
 					}
 					else
-						std::cout << "get " << byteCount << " bytes of content : [ " << buf << "]" << std::endl;
+						std::cout << "get " << byteCount << " bytes of content from " << events[n].data.fd << " [ " << buf << " ] " << std::endl;
 					if (send(events[n].data.fd, buf, byteCount, MSG_DONTWAIT) < 0)
 					{
 						perror("send()");
 						exit(EXIT_FAILURE);
 					}
+					else
+						std::cout << "sending data to " << events[n].data.fd << std::endl;
 				}
-				if (done)
-					close(events[n].data.fd);
+			//	if (done)
+			//		close(events[n].data.fd);
 			}
 			n++;
 		}
