@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:50 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 23:58:59 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 13:21:29 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	Block::_setRoot(vecStr words)
 	if (_rootSet)
 		return (_setWrongFormat("root already defined"));
 	if (words.size() != 2)
-		return (_setWrongFormat("need \"root ROOT\""));
+		return (_setWrongFormat("need \"root PATH\""));
 	_root = words[1];
 	_rootSet = true;
 }

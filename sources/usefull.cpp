@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 00:01:55 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 13:25:44 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,26 +128,10 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
 
-
-/*
-
-server {
-	index			INDEX3 INDEX4
-	client_size		100
-	methods			DELETE		  GET
-
-	location /DIRECTORY1 {
-		root			ROOT
-		index			INDEX
-		client_size		2000
-		error_page		400 ERROR_PAGE1
-		methods			GET
-	}
-
-*/
-
-static void	printConfFormat(void)
+static void	printConfFormat(std::string str)
 {
+	if (str.find("{ }") == std::string::npos)
+		return ;
 	std::cerr << std::endl << YELLOW << "[Expected]" << END << std::endl;
 	std::cerr << "server {" << std::endl;
 	std::cerr << "\tlisten\t\t\tHOST:PORT" << std::endl;
@@ -180,19 +164,19 @@ static void	printConfFormat(void)
 void	printFormatError(void)
 {
 	std::cerr << RED << "[Error]" << END << " wrong configuration file" << std::endl;
-	printConfFormat();
+	printConfFormat("");
 }
 
 void	printFormatError(std::string str)
 {
 	std::cerr << RED << "[Error]" << END << " wrong configuration file ";
 	std::cerr << GRAY << "(" << str << ")" << END << std::endl;
-	printConfFormat();
+	printConfFormat(str);
 }
 
 void	printFileError(std::string file)
 {
-	std::cerr << "Error: can't open configuration file " << file << std::endl;
+	std::cerr << RED << "[Error]" << END << " can't open configuration file " << GRAY << file << END << std::endl;
 }
 
 int		myAtoi(std::string str)
