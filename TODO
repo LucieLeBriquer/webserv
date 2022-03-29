@@ -1,5 +1,2 @@
-# add a check no {} everywhere else
-
-# print example only when {} isssues
-
-# put a lot of config file too test everything
+- add a check no {} everywhere else -> err = "use {} only for block delimitations"
+- client size < 0 => error

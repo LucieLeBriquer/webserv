@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:50 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 13:21:29 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 14:28:58 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ Block::Block(const Block &block)
 
 Block::~Block()
 {
-	return ;
+	_index.clear();
+	_methods.clear();
+	_errorPages.clear();
 }
 
 /*
@@ -39,6 +41,10 @@ Block	&Block::operator=(const Block &block)
 {
 	if (this != &block)
 	{
+		_index.clear();
+		_methods.clear();
+		_errorPages.clear();
+
 		_root = block._root;
 		_index = block._index;
 		_maxClientBodySize = block._maxClientBodySize;
@@ -106,7 +112,7 @@ void	Block::_setIndex(vecStr words)
 	_indexSet = true;
 }
 
-void	Block::_setMaxClientBody(vecStr words)
+void	Block::_setMaxClientBody(vecStr words) // to fix negative value
 {
 	if (_maxClientBodySizeSet)
 		return (_setWrongFormat("client_size already defined"));
@@ -142,7 +148,7 @@ void	Block::_setErrorPages(vecStr words)
 	
 	if (words.size() != 3)
 		return (_setWrongFormat("need error ERROR_NUM ERROR_PAGE"));
-	err.first = myAtoi(words[1]);
+	err.first = myAtoi(words[1]); // to fix
 	if (err.first < 0)
 		return (_setWrongFormat("unvalid ERROR_NUM"));
 	err.second = words[2];

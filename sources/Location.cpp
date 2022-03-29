@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:07 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 23:58:16 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/29 14:27:49 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ Location	&Location::operator=(const Location &location)
 	if (this != &location)
 	{
 		(Block)(*this) = (Block)(location);
+		
 		_path = location._path;
 		_cgiPass = location._cgiPass;
 		_cgiPassSet = location._cgiPassSet;
