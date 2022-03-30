@@ -6,7 +6,7 @@
 #    By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/28 15:23:15 by lpascrea          #+#    #+#              #
-#    Updated: 2022/03/28 15:28:36 by lpascrea         ###   ########.fr        #
+#    Updated: 2022/03/30 09:41:43 by lpascrea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,8 @@ _YELLOW	= \033[0;33m
 _MAG 	= \033[0;35m
 #------#
 
-SRCS	= server.cpp
+SRCS	=	main.cpp \
+			./engine/Socket.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 

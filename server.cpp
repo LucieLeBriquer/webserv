@@ -1,38 +1,3 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <iostream>
-#include <unistd.h>
-#include <cstring>
-#include <cstdio>
-#include <arpa/inet.h>
-#include <sys/epoll.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <errno.h>
-
-#define PORT 8080
-#define MAX_EVENTS 10
-#define BUFFER_SIZE	10
-
-int		setsocknonblock(int sock)
-{
-	int flag;
-
-	flag = fcntl(sock, F_GETFL, 0);
-	if (flag < 0)
-	{
-		perror("Fcntl (F_GETFL) failed");
-		return -1;
-	}
-	if (fcntl(sock, F_SETFL, flag | O_NONBLOCK) < 0)
-	{
-		perror("Fcntl (F_SETFL) failed");
-		return -1;
-	}
-	return 1;
-}
-
 int		main(void)
 {
 	int					listenSock, connSock, nfds, epollfd, n = 0/*, sockfd*/;
