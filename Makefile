@@ -11,8 +11,9 @@ END=\033[0m
 NAME = webserv
 
 SRCS = server.cpp \
-		get_methods.cpp \
-		error4xx.cpp \
+		Request/httpRequest.cpp \
+		Response/httpResponse.cpp \
+		Response/statusCode.cpp \
 		strManip.cpp
 
 OBJS = $(SRCS:.cpp=.o)

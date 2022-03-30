@@ -11,7 +11,9 @@
 #include <iostream>
 #include <cstring>
 #include <arpa/inet.h>
+#include <vector>
 #include <map>
+#include <sstream>
 
 #define BLACK "\033[0;30m"
 #define RED  "\033[0;31m"
@@ -23,12 +25,12 @@
 #define WHITE "\033[0;37m"
 #define END "\033[0m"
 
-# include "methods.hpp"
-# include "errors.hpp"
+ # include "httpRequest.hpp"
+ # include "httpResponse.hpp"
 
 // void Request(char buf[1024]);
 
-std::string splitThis(const std::string str, int i);
+std::vector<std::string> splitThis(std::string str);
 std::string copystr(std::string str, int start);
 
 
