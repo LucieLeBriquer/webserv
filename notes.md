@@ -114,8 +114,9 @@ with :
 ### fcnt
 
 -----------------
-## HTTP requests methods
+## HTTP requests
 
+### **Methods**
 HTTP defines a set of request methods(or *verbs*) to indicate the desired action to be performed for a given resource.
 
 The HTTP/1.0 specification defined the GET, HEAD, and POST methods, and the HTTP/1.1 specification added five new methods: PUT, DELETE, CONNECT, OPTIONS, and TRACE.
@@ -129,6 +130,12 @@ The HTTP/1.0 specification defined the GET, HEAD, and POST methods, and the HTTP
 - `OPTIONS` =  requests that the target resource transfer the HTTP methods that it supports. This can be used to check the functionality of a web server by requesting '*' instead of a specific resource.
 - `TRACE` =  requests that the target resource transfer the received request in the response body. That way a client can see what (if any) changes or additions have been made by intermediaries.
 - `PATCH` = applies partial modifications to a resource.
+
+### **Header**
+
+A request header is an HTTP header that can be used in an HTTP request to provide information about the request context.
+
+### Exemple of a full http request
 ```
 GET / HTTP/1.1
 Host: www.example.com
@@ -161,6 +168,13 @@ Connection: close
 </body>
 </html>
 ```
+
+###  `General, entity and representation header`
+
+Current versions of the HTTP/1.1 specification do not specifically categorize headers as "**general headers**" or "**entity headers**". These are now simply referred to as response or request headers depending on context.
+
+**Representation header** describes the particular representation of the resource sent in an HTTP message body. Representation headers include: **Content-Type**, **Content-Encoding** , **Content-Language**, and **Content-Location**. 
+
 ---------------
 
 ## Configuration file

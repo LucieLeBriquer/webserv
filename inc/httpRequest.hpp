@@ -22,9 +22,11 @@ class HTTPRequest
 		void		mdelete( void );
 	public:
 		int		request(char buf[1024]);
+		int		method(char buf[1024]);
 		int		parsePath(const std::string url);
 		int 	parseProtocol(const std::string prot);
 		int		parseMethod(const std::string cmd, const std::string *methods);
+		int		header(char buf[1024]);
 };
 
 #endif

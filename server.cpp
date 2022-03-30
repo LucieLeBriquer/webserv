@@ -27,13 +27,6 @@ int		main(void)
         exit(EXIT_FAILURE);
     }
     address.sin_family = AF_INET;
-
-    // struct hostent *h;
-    // if ((h = gethostbyname("localhost")) == NULL) {  /* récupérer infos de l'hôte */
-    //     herror("gethostbyname");
-    //     exit(1);
-    // }
-    // address.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)h->h_addr)));
     address.sin_addr.s_addr = inet_addr("127.0.0.2");
     address.sin_port = htons(PORT);
     memset(address.sin_zero, '\0', sizeof(address.sin_zero));
@@ -61,7 +54,7 @@ int		main(void)
         }
         byteCount = recv(newSocket, buf, sizeof(buf), 0);
         std::cout << buf << std::endl;
-        if (treat.request(buf) == -1)
+        if (treat.request(buf))
         {
             //en fonction du user-agent : curl ou telnet ou mozilla  (curl/7.68.0)
             std::cout << "Connection closed by foreign host." << std::endl;
