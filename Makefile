@@ -13,6 +13,8 @@ SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 OBJS_DIR	= ./objects/
 OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
+SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing)
+
 _COLOR		= \033[32m
 _BOLDCOLOR	= \033[32;1m
 _RESET		= \033[0m
@@ -20,7 +22,7 @@ _CLEAR		= \033[0K\r\c
 _OK			= [\033[32mOK\033[0m]
 
 $(OBJS_DIR)%.o	: $(SRCS_DIR)%.cpp
-			@mkdir -p $(OBJS_DIR)
+			@mkdir -p $(OBJS_DIR) $(SUB_DIRS)
 			@echo "[..] $(NAME_SHORT)... compiling $*.cpp\r\c"
 			@$(CC) $(MAIN_INC) -c $< -o $@
 			@echo "$(_CLEAR)"
