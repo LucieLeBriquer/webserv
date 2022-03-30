@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/30 10:56:17 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/30 16:17:52 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,28 +17,38 @@ Socket::Socket()
 	std::cout << "socket constructor" << std::endl;
 }
 
-int		Socket::getSocket(int nbr)
+const int &					Socket::getSocket(int nbr) const
 {
-	std::vector<int>::iterator	it;
+	std::vector<int>::const_iterator	it = this->_socket.begin() + nbr;
 
-	it = this->_socket.begin() + nbr;
 	return *it;
 }
 
-void	Socket::setSocket(int newSocket)
+void						Socket::setSocket(int newSocket)
 {
 	this->_socket.push_back(newSocket);
 }
 
-struct sockaddr_in	Socket::getAddress(int nbr)
+int &						Socket::getConnSock(int nbr)
 {
-	std::vector<struct sockaddr_in>::iterator	it;
+	std::vector<int>::iterator	it = this->_connSock.begin() + nbr;
 
-	it = this->_Address.begin() + nbr;
 	return *it;
 }
 
-void	Socket::setAddress(int port, const char *ip)
+void						Socket::setConnSock(int newConnSock)
+{
+	this->_connSock.push_back(newConnSock);
+}
+
+const struct sockaddr_in &	Socket::getAddress(int nbr) const
+{
+	std::vector<struct sockaddr_in>::const_iterator	it = this->_Address.begin() + nbr;
+
+	return *it;
+}
+
+void						Socket::setAddress(int port, const char *ip)
 {
 	struct sockaddr_in	address;
 	
@@ -51,15 +61,27 @@ void	Socket::setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-socklen_t	Socket::getAddrLen(int nbr)
+const socklen_t &			Socket::getAddrLen(int nbr) const
 {
-	std::vector<socklen_t>::iterator	it;
+	std::vector<socklen_t>::const_iterator	it = this->_addrLen.begin() + nbr;
 
-	it = this->_addrLen.begin() + nbr;
 	return *it;
+}
+
+int							Socket::getSocketNbr(void) const
+{
+	return this->_socket.size();
 }
 
 Socket::~Socket()
 {
 	std::cout << "socket destructor" << std::endl;
+}
+
+std::ostream &	operator<<(std::ostream &o, Socket const &obj)
+{
+	for (int i = 0; i < obj.getSocketNbr(); i++)
+		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
+
+	return o;
 }

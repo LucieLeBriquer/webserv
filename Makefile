@@ -6,7 +6,7 @@
 #    By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/28 15:23:15 by lpascrea          #+#    #+#              #
-#    Updated: 2022/03/30 09:41:43 by lpascrea         ###   ########.fr        #
+#    Updated: 2022/03/30 15:54:49 by lpascrea         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,9 @@ _MAG 	= \033[0;35m
 #------#
 
 SRCS	=	main.cpp \
-			./engine/Socket.cpp
+			./engine/Socket.cpp \
+			./engine/init_sockets.cpp \
+			./engine/epoll.cpp
 
 OBJS	= $(SRCS:.cpp=.o)
 

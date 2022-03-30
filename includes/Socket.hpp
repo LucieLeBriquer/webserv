@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/30 11:03:10 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/30 16:18:01 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,28 @@ class Socket
 	Socket();
 	~Socket();
 
-	int		getSocket(int nbr);
-	void	setSocket(int newSocket);
-	
-	struct sockaddr_in	getAddress(int nbr);
-	void				setAddress(int port, const char *ip);
+	const int &					getSocket(int nbr) const;
+	void						setSocket(int newSocket);
 
-	socklen_t	getAddrLen(int nbr);
+	int &						getConnSock(int nbr);
+	void						setConnSock(int newConnSock);
+	
+	const struct sockaddr_in &	getAddress(int nbr) const;
+	void						setAddress(int port, const char *ip);
+
+	const socklen_t &			getAddrLen(int nbr) const;
+
+	int							getSocketNbr(void) const;
 	
 	private:	
 
 	std::vector<int>				_socket;
+	std::vector<int>				_connSock;
 	std::vector<struct sockaddr_in>	_Address;
 	std::vector<socklen_t>			_addrLen;
 	
 };
+
+std::ostream &	operator<<(std::ostream &o, Socket const &obj);
 
 #endif
