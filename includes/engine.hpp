@@ -34,6 +34,6 @@ int		initSockets(Socket *sock, const Config config);
 int		initEpoll(Socket *sock, const Config config);
 int		socketMatch(int fde, Socket *sock);
 Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);
-int		requestReponse(int epollfd, int *fde);
+int		requestReponse(int epollfd, int fde);
 
 #endif

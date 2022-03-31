@@ -129,7 +129,7 @@ int		initEpoll(Socket *sock, const Config config)
 			}
 			else
 			{
-				if (!requestReponse(epollfd, &events[n].data.fd))
+				if (!requestReponse(epollfd, events[n].data.fd))
 					return -1;
 			}
 		}
