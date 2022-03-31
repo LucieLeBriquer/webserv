@@ -3,23 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 12:44:03 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/31 14:44:19 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Socket.hpp"
 
-Socket::Socket()
+Socket::Socket() : _check(0)
 {
 	std::cout << "socket constructor" << std::endl;
 }
 
-Socket::Socket(const Config config)
+Socket::Socket(const Config config) : _config(config.getServers()), _check(0)
 {
-	return ;
+	if (!initSockets(this, config))
+		this->_check = -1;
 }
 
 const int &					Socket::getSocket(int nbr) const
@@ -83,6 +84,11 @@ const socklen_t &			Socket::getAddrLen(int nbr) const
 int							Socket::getSocketNbr(void) const
 {
 	return this->_socket.size();
+}
+
+int							Socket::getCheck(void) const
+{
+	return this->_check;
 }
 
 Socket::~Socket()
