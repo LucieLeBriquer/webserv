@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:27:43 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 14:33:40 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 15:24:29 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int		initSockets(Socket *sock, const Config config)
 	int			listenSock;
 	int			yes = 1;
 	vecSrv		servers = config.getServers();
+	int			sockfd;
 
 	for (int i = 0; i < servers.size(); i++)
 	{
@@ -56,7 +57,13 @@ int		initSockets(Socket *sock, const Config config)
 			perror("bind()");
 			return -1;
 		}
-		if (setsocknonblock(sock->getSocket(i)) < 0)
+	/*	if ((sockfd = getsockname(listenSock, (struct sockaddr *)&sock->getAddress(i), (socklen_t *)&sock->getAddrLen(i))) < 0)
+		{
+			perror("getsockname()");
+			exit(EXIT_FAILURE);
+		}
+		std::cout << "sockfd (getsockname) = " << sockfd << "  host = " << servers[i].getHost().c_str() << std::endl;
+	*/	if (setsocknonblock(sock->getSocket(i)) < 0)
 			return -1;
 		if (listen(sock->getSocket(i), MAX_EVENTS) < 0)
 		{

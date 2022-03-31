@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 14:44:19 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 15:26:28 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Socket::Socket() : _check(0)
 
 Socket::Socket(const Config config) : _config(config.getServers()), _check(0)
 {
-	if (!initSockets(this, config))
+	if (initSockets(this, config) < 0)
 		this->_check = -1;
 }
 
