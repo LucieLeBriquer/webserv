@@ -21,7 +21,7 @@ class HTTPRequest
 		void		post( void );
 		void		mdelete( void );
 	public:
-		int		request(char buf[1024]);
+	//	int		request(char buf[1024]);
 		int		method(char buf[1024]);
 		int		parsePath(const std::string url);
 		int 	parseProtocol(const std::string prot);

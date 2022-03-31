@@ -11,7 +11,8 @@ END=\033[0m
 NAME = webserv
 
 SRCS = server.cpp \
-		Request/httpRequest.cpp \
+		Request/httpHeader.cpp \
+		Request/httpMethod.cpp \
 		Response/httpResponse.cpp \
 		Response/statusCode.cpp \
 		strManip.cpp
