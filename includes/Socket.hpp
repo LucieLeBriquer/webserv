@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/30 16:18:01 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 09:26:06 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,28 +24,29 @@ class Socket
 {
 	public:
 
-	Socket();
-	~Socket();
+		Socket();
+		~Socket();
 
-	const int &					getSocket(int nbr) const;
-	void						setSocket(int newSocket);
+		const int &					getSocket(int nbr) const;
+		void						setSocket(int newSocket);
 
-	int &						getConnSock(int nbr);
-	void						setConnSock(int newConnSock);
-	
-	const struct sockaddr_in &	getAddress(int nbr) const;
-	void						setAddress(int port, const char *ip);
+		const int &					getConnSock(int nbr) const;
+		void						setConnSock(int newConnSock);
+		int &						modConnSock(int nbr);
+		
+		const struct sockaddr_in &	getAddress(int nbr) const;
+		void						setAddress(int port, const char *ip);
 
-	const socklen_t &			getAddrLen(int nbr) const;
+		const socklen_t &			getAddrLen(int nbr) const;
 
-	int							getSocketNbr(void) const;
+		int							getSocketNbr(void) const;
 	
 	private:	
 
-	std::vector<int>				_socket;
-	std::vector<int>				_connSock;
-	std::vector<struct sockaddr_in>	_Address;
-	std::vector<socklen_t>			_addrLen;
+		std::vector<int>				_socket;
+		std::vector<int>				_connSock;
+		std::vector<struct sockaddr_in>	_Address;
+		std::vector<socklen_t>			_addrLen;
 	
 };
 

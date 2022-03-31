@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/30 16:17:52 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 10:07:53 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,9 @@ void						Socket::setSocket(int newSocket)
 	this->_socket.push_back(newSocket);
 }
 
-int &						Socket::getConnSock(int nbr)
+const int &					Socket::getConnSock(int nbr) const
 {
-	std::vector<int>::iterator	it = this->_connSock.begin() + nbr;
+	std::vector<int>::const_iterator	it = this->_connSock.begin() + nbr;
 
 	return *it;
 }
@@ -39,6 +39,13 @@ int &						Socket::getConnSock(int nbr)
 void						Socket::setConnSock(int newConnSock)
 {
 	this->_connSock.push_back(newConnSock);
+}
+
+int &						Socket::modConnSock(int nbr)
+{
+	std::vector<int>::iterator	it = this->_connSock.begin() + nbr;
+
+	return *it;
 }
 
 const struct sockaddr_in &	Socket::getAddress(int nbr) const

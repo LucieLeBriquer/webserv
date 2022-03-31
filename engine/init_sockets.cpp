@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:27:43 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/30 16:15:25 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 09:23:16 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,12 +58,6 @@ int		init_sockets(Socket *sock, std::map<int, const char *> map)
 			perror("bind()");
 			return -1;
 		}
-		// if ((sockfd = getsockname(listenSock, (struct sockaddr *)&address, &lenAddr)) < 0)
-		// {
-		// 	perror("getsockname()");
-		// 	exit(EXIT_FAILURE);
-		// }
-		// std::cout << "sockfd (getsockname) = " << sockfd << std::endl;
 		if (setsocknonblock(sock->getSocket(i)) < 0)
 			return -1;
 		if (listen(sock->getSocket(i), MAX_EVENTS) < 0)
