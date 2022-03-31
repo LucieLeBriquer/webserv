@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/engine.hpp"
+#include "engine.hpp"
 
 void	printStatus(int i, int nfds, Socket *sock, int fde)
 {
@@ -29,27 +29,6 @@ void	printStatus(int i, int nfds, Socket *sock, int fde)
 			break ;
 		}
 	}
-}
-
-int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, std::map<int, const char *> map)
-{
-	if ((*epollfd = epoll_create(MAX_EVENTS)) < 0)
-	{
-		perror("epoll_create()");
-		return -1;
-	}
-	
-	for (int i = 0; i < (int)map.size(); i++)
-	{
-		ev.events = EPOLLIN | EPOLLET;
-		ev.data.fd = sock->getSocket(i);
-		if (epoll_ctl(*epollfd, EPOLL_CTL_ADD, sock->getSocket(i), &ev) < 0)
-		{
-			perror("epoll_ctl: sock.getSocket(i)");
-			return -1;
-		}
-	}
-	return 1;
 }
 
 int		socketMatch(int fde, Socket *sock)
@@ -96,12 +75,33 @@ Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 	return sock;
 }
 
-int		init_epoll(Socket *sock, std::map<int, const char *> map)
+int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, const Config config)
+{
+	if ((*epollfd = epoll_create(MAX_EVENTS)) < 0)
+	{
+		perror("epoll_create()");
+		return -1;
+	}
+	
+	for (int i = 0; i < config.getServers().size(); i++)
+	{
+		ev.events = EPOLLIN | EPOLLET;
+		ev.data.fd = sock->getSocket(i);
+		if (epoll_ctl(*epollfd, EPOLL_CTL_ADD, sock->getSocket(i), &ev) < 0)
+		{
+			perror("epoll_ctl: sock.getSocket(i)");
+			return -1;
+		}
+	}
+	return 1;
+}
+
+int		initEpoll(Socket *sock, const Config config)
 {
 	struct epoll_event	ev, events[MAX_EVENTS];
 	int					nfds, epollfd, i;
 	
-	if (!addCreateSocketEpoll(sock, ev, &epollfd, map))
+	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
 		return -1;
 
 	while (1)

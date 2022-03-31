@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 11:18:52 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 12:44:03 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 Socket::Socket()
 {
 	std::cout << "socket constructor" << std::endl;
+}
+
+Socket::Socket(const Config config)
+{
+	return ;
 }
 
 const int &					Socket::getSocket(int nbr) const

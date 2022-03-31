@@ -12,19 +12,19 @@
 
 #ifndef SOCKET_HPP
 # define SOCKET_HPP
-
 # include <vector>
 # include <iostream>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <cstring>
+# include "Config.hpp"
 
 class Socket
 {
 	public:
-
 		Socket();
+		Socket(const Config config);
 		~Socket();
 
 		const int &					getSocket(int nbr) const;
@@ -41,8 +41,8 @@ class Socket
 
 		int							getSocketNbr(void) const;
 	
-	private:	
-
+	private:
+		std::vector<Server>				_config;
 		std::vector<int>				_socket;
 		std::vector<int>				_connSock;
 		std::vector<struct sockaddr_in>	_Address;
