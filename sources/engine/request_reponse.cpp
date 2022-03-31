@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   request_reponse.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 13:44:54 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/03/31 18:12:44 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,16 @@
 
 int		requestReponse(int epollfd, int fde)
 {
-	char	buf[30000] = {0};
-	int		byteCount;
+	char		buf[2] = {0};
+	int			byteCount;
+	// std::string string;
 
 	memset(buf, 0, sizeof(buf));
 	while (1)
 	{
 		byteCount = recv(fde, buf, sizeof(buf), MSG_DONTWAIT);
+		// string += buf;
+		// std::cout << "byteCounte = " << byteCount << "  string = " << string << std::endl;
 		if (byteCount == 0)
 		{
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
