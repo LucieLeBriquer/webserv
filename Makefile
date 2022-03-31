@@ -1,44 +1,48 @@
-BLACK=\033[0;30m
-RED=\033[0;31m
-GREEN=\033[0;32m
-YELLOW=\033[0;33m
-BLUE=\033[0;34m
-PURPLE=\033[0;35m
-CYAN=\033[0;36m
-WHITE=\033[0;37m
-END=\033[0m
+CC			= c++ -std=c++98 #-Wall -Wextra -Werror -std=c++98
+RM			= rm -rf
+NAME		= ./webserv
+NAME_SHORT	= webserv
 
-NAME = webserv
+INCS_DIR	= ./includes/
+MAIN_INC	= -I$(INCS_DIR)
+INCS		= $(shell find $(INCS_DIR) -type f -name "*.hpp")
 
-SRCS = server.cpp \
-		Request/httpHeader.cpp \
-		Request/httpMethod.cpp \
-		Response/httpResponse.cpp \
-		Response/statusCode.cpp \
-		strManip.cpp
+SRCS_DIR 	= ./sources/
+SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 
-OBJS = $(SRCS:.cpp=.o)
+OBJS_DIR	= ./objects/
+OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
-CC = clang++ -Wall -Wextra -Werror -std=c++98 #-Wc++11-extensions #
+SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine request response)
 
-RM = rm -rf
+_COLOR		= \033[32m
+_BOLDCOLOR	= \033[32;1m
+_RESET		= \033[0m
+_CLEAR		= \033[0K\r\c
+_OK			= [\033[32mOK\033[0m]
 
-.cpp.o:
-	@$(CC) -c $< -o ${<:.cpp=.o}
+$(OBJS_DIR)%.o	: $(SRCS_DIR)%.cpp
+			@mkdir -p $(OBJS_DIR) $(SUB_DIRS)
+			@echo "[..] $(NAME_SHORT)... compiling $*.cpp\r\c"
+			@$(CC) $(MAIN_INC) -c $< -o $@
+			@echo "$(_CLEAR)"
 
-all: ${NAME}
+all			: $(NAME)
 
-$(NAME): ${OBJS}
-	@${CC} -I./* ${OBJS} -o ${NAME}
-	@echo "[$(GREEN)ok$(END)] Compilation"
+$(NAME)		: $(OBJS) $(INCS)
+			@$(CC) $(OBJS) $(MAIN_INC) -o $(NAME)
+			@echo "$(_OK) $(NAME_SHORT) compiled"
 
-clean:
-	@${RM} ${OBJS}
-	@echo "$(RED) Everything was cleaned. $(END)"
+clean		:
+ifeq ($(OBJS_DIR), ./)
+			@$(RM) $(OBJS)
+else
+			@$(RM) $(OBJS_DIR)
+endif
 
-fclean: clean
-	@${RM} ${NAME}
+fclean		: clean
+			@$(RM) $(NAME)
 
-re: fclean all
+re			: fclean all
 
-.PHONY: all clean fclean re
+.PHONY		: all clean fclean re
