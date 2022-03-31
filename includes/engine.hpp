@@ -30,11 +30,10 @@
 # define MAX_EVENTS 10
 
 int		setsocknonblock(int sock);
-int		init_sockets(Socket *sock, std::map<int, const char *> map);
-int		init_epoll(Socket *sock, std::map<int, const char *> map);
-int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, std::map<int, const char *> map);
+int		initSockets(Socket *sock, const Config config);
+int		initEpoll(Socket *sock, const Config config);
 int		socketMatch(int fde, Socket *sock);
 Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);
-int		requestReponse(int epollfd, int *fde);
+int		requestReponse(int epollfd, int fde);
 
 #endif

@@ -1,0 +1,3 @@
+*.o
+webserv
+.vscode/**

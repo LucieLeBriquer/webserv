@@ -1,57 +1,48 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/03/28 15:23:15 by lpascrea          #+#    #+#              #
-#    Updated: 2022/03/31 12:06:49 by lpascrea         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+CC			= c++ -std=c++98 #-Wall -Wextra -Werror -std=c++98
+RM			= rm -rf
+NAME		= ./webserv
+NAME_SHORT	= webserv
 
-#COLORS#
-_END	= \033[0m
-_GREEN	= \033[0;32m
-_RED	= \033[0;31m
-_BLUE	= \033[0;96m
-_YELLOW	= \033[0;33m
-_MAG 	= \033[0;35m
-#------#
+INCS_DIR	= ./includes/
+MAIN_INC	= -I$(INCS_DIR)
+INCS		= $(shell find $(INCS_DIR) -type f -name "*.hpp")
 
-SRCS	=	main.cpp \
-			./engine/Socket.cpp \
-			./engine/init_sockets.cpp \
-			./engine/epoll.cpp \
-			./engine/request_reponse.cpp
+SRCS_DIR 	= ./sources/
+SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 
-OBJS	= $(SRCS:.cpp=.o)
+OBJS_DIR	= ./objects/
+OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
-CC		= c++
+SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine)
 
-CFLAGS	= -Wall -Wextra -Werror -std=c++98
+_COLOR		= \033[32m
+_BOLDCOLOR	= \033[32;1m
+_RESET		= \033[0m
+_CLEAR		= \033[0K\r\c
+_OK			= [\033[32mOK\033[0m]
 
-RM		= rm -rf
+$(OBJS_DIR)%.o	: $(SRCS_DIR)%.cpp
+			@mkdir -p $(OBJS_DIR) $(SUB_DIRS)
+			@echo "[..] $(NAME_SHORT)... compiling $*.cpp\r\c"
+			@$(CC) $(MAIN_INC) -c $< -o $@
+			@echo "$(_CLEAR)"
 
-NAME	= webserv
+all			: $(NAME)
 
-all:		${NAME}
-			@echo "$(_GREEN)webserv is ready $(_END)"
+$(NAME)		: $(OBJS) $(INCS)
+			@$(CC) $(OBJS) $(MAIN_INC) -o $(NAME)
+			@echo "$(_OK) $(NAME_SHORT) compiled"
 
-$(NAME):	${OBJS}
-			${CC} ${CFLAGS} -I. -I./* ${OBJS} -o ${NAME}
+clean		:
+ifeq ($(OBJS_DIR), ./)
+			@$(RM) $(OBJS)
+else
+			@$(RM) $(OBJS_DIR)
+endif
 
-%.o:		%.cpp
-			${CC} ${CFLAGS} -o $@ -c $< -I. -I./*
+fclean		: clean
+			@$(RM) $(NAME)
 
-clean:
-			${RM} ${OBJS}
-			@echo "$(_YELLOW) \".o\" files deleted $(_END)"
+re			: fclean all
 
-fclean:		clean
-			${RM} ${NAME}
-			@echo "$(_RED)webserv cleaned $(_END)"
-
-re: 		fclean all
-
-.PHONY: all clean fclean re
+.PHONY		: all clean fclean re
