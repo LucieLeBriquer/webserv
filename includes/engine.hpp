@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 10:17:14 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/01 10:25:51 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@
 # include <stdlib.h>
 # include <errno.h>
 
-# define PORT 8080
 # define MAX_EVENTS 10
+# define BUFFER_SIZE 1024
 
 int		setsocknonblock(int sock);
 int		initSockets(Socket *sock, const Config config);
