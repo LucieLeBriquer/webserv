@@ -43,16 +43,6 @@ uint16_t ntohs(uint16_t netshort);
 
 By default, `epoll()` is looking only at level changes.
 
-epoll_ctl() : l'attribut "events" de la structure "epoll_event" (4eme arg) peut recevoir different "type"
--> Ces "types" vont dicter le comportement du 3eme arg 
--> exemple 1 : notre "sokcet de base" est disponible en lecture / en ecriture ...
--> exemple 2 : EPOLLET est un flag de comportement, il passe en mode detection de changement de niveau (edge-triggered) ET
-
-epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
-epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
-epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
-epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
-
 #### epoll_create
 ```c++
 int epoll_create(int nb);
