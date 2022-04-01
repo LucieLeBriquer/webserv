@@ -1,3 +1,9 @@
+# ToDo
+- parsing of requests
+- handling classic requests
+- handling php CGI's
+
+
 # Webserv
 
 ## HTTP server
@@ -210,14 +216,46 @@ server {
 ```
 no regexp for location routes
 
-# To Do List
-- parsing of configuration file
-- server part, with one socket per server block in conf file
-- parsing of requests
-- handling easy requests
-- handling php CGIss
+---
+## CGI
+CIG (Common Gateway Interface) enables web servers to execute an external program, for example to process user request.
 
-# Ressources
+Those programs requires additionnal informations (passed as environnement variables) to be executed. In return they provide all the informations needed by the server to respond to the client.
+
+Our server should be able to specify which URLs should be handled by a specific CGI (cf `location *.php { cgi_pass CGI_PATH }` blocks).
+
+As mentionned in the subject, we can fork to execute the CGI.
+```
+execve(CGI_PATH, args, env);
+```
+where `env` is filled as above :
+
+Server specific variables:
+- `SERVER_SOFTWARE` : name/version of HTTP server.
+- `SERVER_NAME` : host name of the server, may be dot-decimal IP address.
+- `GATEWAY_INTERFACE` : CGI/version.
+
+Request specific variables:
+- `SERVER_PROTOCOL` : HTTP/version.
+- `SERVER_PORT` : TCP port (decimal).
+- `REQUEST_METHOD` : name of HTTP method (see above)
+- `PATH_INFO` : path suffix, if appended to URL after program name and a slash
+- `PATH_TRANSLATED` : corresponding full path as supposed by server, if `PATH_INFO` is present.
+- `SCRIPT_NAME` : relative path to the program, like `/cgi-bin/script.cgi`.
+- `QUERY_STRING` : the part of URL after `?` character
+- `REMOTE_HOST` : host name of the client, unset if server did not perform such lookup
+- `REMOTE_ADDR` : IP address of the client (dot-decimal)
+- `AUTH_TYPE` : identification type, if applicable
+- `REMOTE_USER` : used for certain AUTH_TYPEs
+- `REMOTE_IDENT` : see ident, only if server performed such lookup.
+- `CONTENT_TYPE` : Internet media type of input data if `PUT` or `POST` method are used, as provided via HTTP header
+- `CONTENT_LENGTH` : similarly, size of input data (decimal, in octets) if provided via HTTP header
+- Variables passed by user agent (HTTP_ACCEPT, HTTP_ACCEPT_LANGUAGE, HTTP_USER_AGENT, HTTP_COOKIE and possibly others) contain values of corresponding HTTP headers and therefore have the same sense.
+
+Convention : we should have a `cgi-bin` directory in our root
+
+---
+## Ressources
 
 - [Basic explanations on how a web server works](https://developer.mozilla.org/fr/docs/Learn/Common_questions/What_is_a_web_server)
 - [RFC documentation](https://datatracker.ietf.org/doc/html/rfc2616)
