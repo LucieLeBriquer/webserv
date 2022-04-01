@@ -35,25 +35,55 @@ uint16_t ntohs(uint16_t netshort);
 - `htons()` : converts a short integer (e.g. address) to a network representation 
 - etc.
 
-### select, poll, epoll -- synchronous I/O multiplexing
+### epoll -- synchronous I/O multiplexing
+
+`epoll()` is a method used to monitor several sockets. It waits for changing state or changing level for each socket monitored. `epoll()` can handle a lot of sockets descriptors. It contains a internal structure containing two lists :
+- an interest list : which corresponds to all the file descriptors monitored
+- a ready list which corresponds to the file descriptors ready for I/O
+
+By default, `epoll()` is looking only at level changes.
+
+epoll_ctl() : l'attribut "events" de la structure "epoll_event" (4eme arg) peut recevoir different "type"
+-> Ces "types" vont dicter le comportement du 3eme arg 
+-> exemple 1 : notre "sokcet de base" est disponible en lecture / en ecriture ...
+-> exemple 2 : EPOLLET est un flag de comportement, il passe en mode detection de changement de niveau (edge-triggered) ET
+
+epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
+epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
+epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
+epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
+
+#### epoll_create
 ```c++
-int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
+int epoll_create(int nb);
 ```
+creates a new `epoll` instance and returns a descriptor.
 
-Some macro available to deal with `fd_set` :
+#### epoll_ctl
 ```c++
-void FD_CLR(int fd, fd_set *set)        # remove fd from set
-void FD_ZERO(fd_set *set)               # clear set
-void FD_SET(int fd, fd_set *set)        # add fd in set
-int  FD_ISSET(int fd, fd_set *set)      # check if fd is in set
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 ```
+changes the behavior of our `epoll` instance.
 
-`select()` waits until one of `readfds` is ready for reading, or until one of `writefds` is ready for writing, or until one of `exceptfds` has encoutered an exception (cf. test.cpp) or until `timeout` is reached.
+- `epfd` is the descriptor of the `epoll` instance created
+- `op` is the operation wanted on the epoll structure (for example add an new fd in the interest list, modify it or delete it)
+- `fd` is the concerned descriptor
+- `event` should be filled with the concerned `fd` and `flags` we want to apply on this `fd`
 
-### kqueue, kevent -- kernel event notification mechanism
-The `kqueue()` system call creates a new kernel event queue and returns a descriptor.
+####  epoll_wait
+```c++
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+```
+waits for an event on any descriptor in the interest list.
 
-The `EV_SET()` macro is provided for ease of initializing a `kevent` structure.
+- `epfd` is the descriptor of the `epoll` instance created
+- `maxevents` is the maximum of events returned
+- `events` is used to return information from the ready list
+
+This function will block until :
+- a file descriptor delivers an event
+- the call is interrupted by a signal handler
+- the timeout expires
 
 ### socket -- create a socket
 ```c++
@@ -68,32 +98,32 @@ int socket(int domain, int type, int protocol);
 
 ### accept -- accept a connection on a socket
 ```c++
-int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
+int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen);
 ```
 `accept` grabs the first connection request and create a new socket for communication (the listening socket should be used only for listening purpose). `addr` and `addrlen` are filled by the function.
 
 ### listen -- listen for connections on a socket
 ```c++
-int listen(int sockfd, int backlog)
+int listen(int sockfd, int backlog);
 ```
 marks the socket `sockfd` as a listening socket. The `backlog` argument defines the maximum lenght of the queue of pending connection requests.
 
 ### send -- send a message on a socket
 ```c++
-ssize_t send(int sockfd, const void *buf, size_t len, int flags)
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
 ```
 The only difference between `write()` and `send()` is the presence of flags.
 
 ### recv -- receive a message from a socket
 ```c++
-ssize_t recv(int sockfd, void *buf, size_t len, int flags)
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
 ```
 The only difference between `read()` and `recv()` is the presence of flags.
 
 ### bind -- identify a socket
 Almost like assigning an address to a mailbox
 ```c++
-int bind(int sockfd, const struct sockaddr *address, socklen_t address_len)
+int bind(int sockfd, const struct sockaddr *address, socklen_t address_len);
 
 struct sockaddr_in 
 { 
@@ -110,14 +140,19 @@ with :
 - `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`)
 
 ### connect
+TO FILL
 
 ### inet_addr
+TO FILL
 
 ### setsockopt
+TO FILL
 
 ### getsockname
+TO FILL
 
 ### fcnt
+TO FILL
 
 -----------------
 ## HTTP requests methods
@@ -214,7 +249,6 @@ server {
 	}
 }
 ```
-no regexp for location routes
 
 ---
 ## CGI
