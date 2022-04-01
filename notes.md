@@ -228,14 +228,14 @@ As mentionned in the subject, we can fork to execute the CGI.
 ```
 execve(CGI_PATH, args, env);
 ```
-where `env` is filled as above :
+where `env` is filled as above.
 
-Server specific variables:
+Server specific variables :
 - `SERVER_SOFTWARE` : name/version of HTTP server.
 - `SERVER_NAME` : host name of the server, may be dot-decimal IP address.
 - `GATEWAY_INTERFACE` : CGI/version.
 
-Request specific variables:
+Request specific variables :
 - `SERVER_PROTOCOL` : HTTP/version.
 - `SERVER_PORT` : TCP port (decimal).
 - `REQUEST_METHOD` : name of HTTP method (see above)
@@ -254,6 +254,8 @@ Request specific variables:
 
 Convention : we should have a `cgi-bin` directory in our root
 
+Uploading files could be handled by CGI (for example python) 
+
 ---
 ## Ressources
 
@@ -261,3 +263,4 @@ Convention : we should have a `cgi-bin` directory in our root
 - [RFC documentation](https://datatracker.ietf.org/doc/html/rfc2616)
 - [Socket programming](https://www.geeksforgeeks.org/socket-programming-cc/)
 - [How to build a simple HTTP server from scratch](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
+- [File upload using Pyhon CGI](https://www.tutorialspoint.com/How-do-we-do-a-file-upload-using-Python-CGI-Programming)
