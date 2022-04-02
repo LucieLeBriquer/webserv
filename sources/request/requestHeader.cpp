@@ -1,11 +1,6 @@
 //#include "usefull.hpp"
 #include "../../includes/usefull.hpp"
 
-std::string	HTTPRequest::HTTPMethod::getProtocol( void );
-{
-	return this->_httpv;
-}
-
 int HTTPRequest::header(char buf[30000])
 {
 	HTTPRequest::HTTPHeader h;

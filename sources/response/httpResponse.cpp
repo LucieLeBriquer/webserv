@@ -1,9 +1,9 @@
 //#include "usefull.hpp"
 #include "../../includes/usefull.hpp"
 
-std::string HTTPResponse::getHeader( void )
+char *HTTPResponse::getHeader( void )
 {
-	return this->_header;
+	return this->_cheader;
 }
 
 void HTTPResponse::response(int code, int type, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
@@ -11,12 +11,29 @@ void HTTPResponse::response(int code, int type, HTTPResponse::STATUS *sc, HTTPRe
 	this->_statusCode = sc->status(code, type);
 	//this->_ = sc->get;
 	this->_protocol = m->getProtocol();
-	std::cout << "code here = " << this->_statusCode << std::endl; 
+//	std::cout << "code here = " << this->_statusCode << std::endl; 
 }
 
 void HTTPResponse::header( void )
 {
-	std::cout << "code = " << this->_statusCode << std::endl;
-	this->_header = this->_protocol + ' ' + this->_statusCode + "OK";
+	time_t rawtime = time(0);
+	// struct tm * ptm;
+	// time ( &rawtime );
+  	// ptm = gmtime ( &rawtime );
+	std::string time = ctime(&rawtime);
 
+//	std::cout << "code = " << this->_statusCode << std::endl;
+	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: 1589\nDate: " + time;
+	char *_tmp[this->_header.length() + 1];
+	int i = 0;
+	while (_header[i] != '\0')
+	{
+		tmp[i] = _header[i];
+		i++;
+	}
+	tmp[i] = '\0';
+	this->_cheader = tmp;
+ 
+ //  cout << "The local date and time is: " << dt << endl;
+	// this->_header += "Date: "+ ptm->tm_mday + ", " + ptm->tm_mon + ", " + ptm->tm_year + ", " + ptm->tm_hour + ":" + ptm->tm_min + ":" + ptm->tm_sec + " GMT\n"; 
 }

@@ -1,7 +1,8 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
-#include "httpResponse.hpp"
+class HTTPResponse;
+///#include "httpResponse.hpp"
 
 class HTTPRequest
 {
@@ -33,7 +34,7 @@ class HTTPRequest
 				int		parseMethod(const std::string cmd, const std::string *methods);
 				std::string		getMethod();
 				std::string		getUrl();
-				std::string	getProtocol();
+				std::string		getProtocol( void );
 		};
 		class HTTPHeader
 		{
@@ -47,12 +48,5 @@ class HTTPRequest
 		};
 		int		method(char buf[30000], HTTPResponse *deliver);
 		int		header(char buf[30000]);
-		//getProtcol( void );
-
-		protected:
-			HTTPMethod	*_methodPtr;
-			HTTPHeader	*_headerPtr;
 };
-
-
 #endif

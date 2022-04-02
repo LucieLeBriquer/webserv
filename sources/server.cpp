@@ -64,15 +64,16 @@ int		main(void)
 			{
 				std::cout << "HTTP/1.1 404 Not Found [continue]" << std::endl;
 			}
+			deliver.header();
+			send(newSocket, deliver.getHeader(), 12, 0);
+			std::cout << deliver.getHeader() << std::endl;
+			std::cout << "---------- Hello message sent ----------" << std::endl;
 			if (i == -1)
 			{
 				//en fonction du user-agent : curl ou telnet ou mozilla  (curl/7.68.0)
 				std::cout << "Connection closed by foreign host." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			deliver.header();
-			send(newSocket, deliver.getHeader().c_str(), 12, 0);
-			std::cout << "---------- Hello message sent ----------" << std::endl;
 			// close(new_socket);
 		}
 	}
