@@ -10,7 +10,8 @@ int		main(void)
 	char                buf[1024] = {0};
 	int                 byteCount;
 	int yes = 1;
-	HTTPRequest	treat;
+	HTTPRequest			treat;
+	HTTPResponse		deliver;
 
 	lenAddr = sizeof(address);
 
@@ -56,7 +57,7 @@ int		main(void)
 		while (1)
 		{
 			byteCount = recv(newSocket, buf, sizeof(buf), 0);
-			i = treat.method(buf);
+			i = treat.method(buf, &deliver);
 			byteCount = recv(newSocket, buf, sizeof(buf), 0);
 			std::cout << buf << std::endl;
 			if (treat.header(buf) == -1)
@@ -69,7 +70,8 @@ int		main(void)
 				std::cout << "Connection closed by foreign host." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			send(newSocket, "Hello world!", 12, 0);
+			deliver.header();
+			send(newSocket, deliver.getHeader().c_str(), 12, 0);
 			std::cout << "---------- Hello message sent ----------" << std::endl;
 			// close(new_socket);
 		}

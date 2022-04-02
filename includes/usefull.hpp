@@ -31,8 +31,9 @@
 # include <limits>
 # include <sstream>
 # include <arpa/inet.h>
-# include "httpRequest.hpp"
-# include "httpResponse.hpp"
+
+#include "httpResponse.hpp"
+#include "httpRequest.hpp"
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;

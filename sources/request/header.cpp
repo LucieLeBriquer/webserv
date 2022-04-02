@@ -1,6 +1,11 @@
 //#include "usefull.hpp"
 #include "../../includes/usefull.hpp"
 
+std::string	HTTPRequest::HTTPMethod::getProtocol( void );
+{
+	return this->_httpv;
+}
+
 int HTTPRequest::header(char buf[30000])
 {
 	HTTPRequest::HTTPHeader h;
@@ -18,12 +23,20 @@ int HTTPRequest::header(char buf[30000])
 		return (-1);
 
 	j = header[i].length();
-	if (buf[j + 1] == ' ')
+	if (buf[j] == ' ')
 		j++;
-	std::string value = stringFromj(head, j);
+	int pos = j;
+	while (buf[j] != '\n' && buf[j] != '\r' && buf[j] != ' ')
+	{
+	    j++;
+	}
+	int len = j - pos;
+	char tmp[len + 1];
+	head.copy(tmp, len, pos);
+	tmp[len] = '\0';
+//	std::cout << "tmp =" << tmp << std::endl;
+	std::string value(tmp);
 	*info[i] = value;
-	std::cout <<  "value = " << value << std::endl;
-
 	if (i == 0)
 	{
 		if (value != "127.0.0.2")

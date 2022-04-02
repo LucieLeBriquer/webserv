@@ -5,7 +5,7 @@ std::string copystr(std::string str, int start)
 {
     std::string dest;
 
-    for (int j = 0; str[start]; start++, j++)
+    for (int j = 0; str[start] ; start++, j++)
         dest[j] = str[start];
     return dest;
 }
@@ -28,19 +28,4 @@ std::vector<std::string> splitThis(std::string str)
     std::cout << "3)["<< splited[2] << "]" << std::endl;
 
     return splited;
-}
-
-std::string stringFromj(std::string str, int j)
-{
-    std::string string;
-
-    int i = 0;
-    while (str[j])
-    {
-        string[i] = str[j];
-        i++;
-        j++;
-    }
-    string[i] = '\0';
-    return string;
 }

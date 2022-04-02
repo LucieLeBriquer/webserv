@@ -3,28 +3,25 @@
 
 void HTTPResponse::STATUS::err4xx(int type)
 {
-    HTTPResponse response;
-
-    response._statusCode = 400 + type;
-    std::cout << "400 ===" << response._statusCode << std::endl;
+    this->_code = 400 + type;
+    std::cout << "Error " << this->_code << std::endl;
 }
 
 void HTTPResponse::STATUS::status2xx(int type)
 {
-    this->_code = 200;
-    std::cout << "200 OK " << this->_code << std::endl; 
+    this->_code = 200 + type;
+    std::cout << "Error " << this->_code << std::endl;
 }
 
 void HTTPResponse::STATUS::err5xx(int type)
 {
-    this->_code = 500;
-    std::cout << " 50" << this->_code << " Not Found" << std::endl; 
+    this->_code = 500 + type;
+    std::cout << "Error " << this->_code << std::endl;
 }
 
-void HTTPResponse::STATUS::status(int code, int type)
+int HTTPResponse::STATUS::status(int code, int type)
 {
     std::map<int, int> status;
-    HTTPResponse response;
 
     status[4] = 0;
     status[2] = 1;
@@ -35,5 +32,5 @@ void HTTPResponse::STATUS::status(int code, int type)
 
     int x = status[code];
     (this->*(getStatus[x]))(type);
-    response.header();
+    return this->_code;
 }
