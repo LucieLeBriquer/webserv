@@ -23,11 +23,11 @@ class Config
 		vecSrv	_servers;
 		bool	_formatOk;
 
-		Config(const Config &config);
 		Config(void);
 		
 	public:
 		Config(const std::string file);
+		Config(const Config &config);
 		virtual ~Config();
 
 		Config	&operator=(const Config &config);

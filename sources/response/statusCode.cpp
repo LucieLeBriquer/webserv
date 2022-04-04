@@ -3,7 +3,6 @@
 
 void HTTPResponse::STATUS::err4xx(int type)
 {
-//	std::string stype = std::to_string(type);
 	std::ostringstream s;
 	s << type;
 	const std::string stype(s.str());
@@ -20,7 +19,6 @@ void HTTPResponse::STATUS::err4xx(int type)
 
 void HTTPResponse::STATUS::status2xx(int type)
 {
-//	std::string stype = std::to_string(type);
 	std::ostringstream s;
 	s << type;
 	const std::string stype(s.str());
@@ -32,7 +30,6 @@ void HTTPResponse::STATUS::status2xx(int type)
 
 void HTTPResponse::STATUS::err5xx(int type)
 {
-//	std::string stype = std::to_string(type);
 	std::ostringstream s;
 	s << type;
 	const std::string stype(s.str());

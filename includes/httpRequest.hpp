@@ -2,7 +2,6 @@
 # define REQUEST_HPP
 
 class HTTPResponse;
-///#include "httpResponse.hpp"
 
 class HTTPRequest
 {
