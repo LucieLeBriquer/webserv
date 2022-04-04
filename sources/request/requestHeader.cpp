@@ -1,5 +1,5 @@
-//#include "usefull.hpp"
-#include "../../includes/usefull.hpp"
+#include "usefull.hpp"
+//#include "../../includes/usefull.hpp"
 
 int HTTPRequest::header(char buf[30000])
 {

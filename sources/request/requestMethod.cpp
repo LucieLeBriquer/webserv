@@ -1,5 +1,5 @@
-//#include "usefull.hpp"
-#include "../../includes/usefull.hpp"
+#include "usefull.hpp"
+//#include "../../includes/usefull.hpp"
 
 std::string	HTTPRequest::HTTPMethod::getProtocol( void )
 {
@@ -8,7 +8,6 @@ std::string	HTTPRequest::HTTPMethod::getProtocol( void )
 
 int HTTPRequest::HTTPMethod::parseMethod(const std::string req, const std::string *methods)
 {
-//	std::cout << "2) meth = " << req << std::endl;
 	int i;
 	for (i = 0; req[i]; i++)
 	{
@@ -25,7 +24,6 @@ int HTTPRequest::HTTPMethod::parseMethod(const std::string req, const std::strin
 
 int HTTPRequest::HTTPMethod::parsePath(const std::string url)
 {
-	//std::cout << "3) url = " << url << std::endl;
 	if (url == "")
 		return 1;
 	if (url[0] != '/')

@@ -17,7 +17,8 @@ int		requestReponse(int epollfd, int fde)
 {
 	char		buf[30000] = {0};
 	int			byteCount;
-	HTTPRequest	treat;
+	HTTPRequest			treat;
+	HTTPResponse		deliver;
 
 	memset(buf, 0, sizeof(buf));
 	while (1)
@@ -37,15 +38,19 @@ int		requestReponse(int epollfd, int fde)
 		{
 			std::cout << buf << std::endl;
 			int i = 0;
-			i = treat.method(buf);
-			treat.header(buf);
-			std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
-			std::cout << "get " << byteCount << " bytes of content from " << fde << " [ " << buf << " ] " << std::endl;
-			if (send(fde, hello.c_str(), hello.size(), MSG_DONTWAIT) < 0)
+			i = treat.method(buf, &deliver);
+			if (treat.header(buf) == -1)
+			{
+				std::cout << "HTTP/1.1 404 Not Found [continue]" << std::endl;
+			}
+			deliver.header();
+			if (send(fde, (deliver.getHeader()).c_str() , (deliver.getHeader()).length(), MSG_DONTWAIT) < 0)
 			{
 				perror("send()");
 				return -1;
 			}
+			std::cout << deliver.getHeader() << std::endl;
+//			std::cout << "get " << byteCount << " bytes of content from " << fde << " [ " << buf << " ] " << std::endl;
 			std::cout << "sending data to " << fde << std::endl;
 			if (i == -1)
 			{

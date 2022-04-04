@@ -1,5 +1,5 @@
-//#include "usefull.hpp"
-#include "../../includes/usefull.hpp"
+#include "usefull.hpp"
+//#include "../../includes/usefull.hpp"
 
 void HTTPResponse::STATUS::err4xx(int type)
 {

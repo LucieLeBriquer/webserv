@@ -3,29 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:12 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/31 14:44:14 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/29 13:33:34 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.hpp"
+#include "Config.hpp"
 
 int	main(int argc, char **argv)
 {
-	Config		config(fileName(argc, argv));
-	Socket		sock(config);
+	Config	config(fileName(argc, argv));
 
 	if (!config.wellFormatted())
 		return (1);
-	//std::cout << config << std::endl;
-	
-	// if (!initSockets(&sock, config))
-		// exit(EXIT_FAILURE);
-	if (sock.getCheck() < 0)
-		exit(EXIT_FAILURE);
-	if (!initEpoll(&sock, config))
-		exit(EXIT_FAILURE);
+	std::cout << config << std::endl;
 	return (0);
 }
