@@ -44,19 +44,17 @@ int HTTPRequest::HTTPMethod::parseProtocol(const std::string protocol)
 	return 1;
 }
 
-int HTTPRequest::method(char buf[30000], HTTPResponse *deliver)
+int HTTPRequest::method(std::string buf, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code)
 {
 	std::string methods[3] = {"GET", "POST", "DELETE"};
-	HTTPRequest::HTTPMethod m;
-	HTTPResponse::STATUS code;
-
+	
 	int i, j, k;
 
 	getFct[0] = &HTTPRequest::get;
 	getFct[1] = &HTTPRequest::post;
 	getFct[2] = &HTTPRequest::mdelete;
 
-	std::vector<std::string> request = splitThis(std::string(buf));
+	std::vector<std::string> request = splitThis(buf);
 	std::vector<std::string>::iterator it;
 	int arg = 0;
 	for (it = request.begin(); it != request.end(); it++)
@@ -65,31 +63,31 @@ int HTTPRequest::method(char buf[30000], HTTPResponse *deliver)
 			arg++;
 	}
 	std::cout << "arg = "<< arg << std::endl;
-	m._httpv = "HTTP/1.0";
-	m._url = "/";
-	if ((i = m.parseMethod(request[0], methods)) == -1)
+	m->_httpv = "HTTP/1.0";
+	m->_url = "/";
+	if ((i = m->parseMethod(request[0], methods)) == -1)
 	{
-		deliver->response(4, 5, &code, &m);
+		deliver->response(code->status(4, 5), m->getProtocol(), code, m);
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	else
 		(this->*(getFct[i]))();
-	if (!(j = m.parsePath(request[1])))
+	if (!(j = m->parsePath(request[1])))
 	{
-		deliver->response(4, 4, &code, &m);
+		deliver->response(code->status(4, 4), m->getProtocol(), code, m);
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
-	if (!(k = m.parseProtocol(request[2])))
+	if (!(k = m->parseProtocol(request[2])))
 	{
-		deliver->response(4, 0, &code, &m);
+		deliver->response(code->status(4, 0), m->getProtocol(), code, m);
 		return -1;
 	}
 	if (arg != 3)
 		return -1;
-	deliver->response(2, 0, &code, &m);
+	deliver->response(code->status(2, 0), m->getProtocol(), code, m);
 	return 1;
 }

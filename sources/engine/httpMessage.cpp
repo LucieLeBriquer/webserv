@@ -34,8 +34,13 @@ int		requestReponse(int epollfd, int fde)
 	std::string	string;
 	HTTPRequest			treat;
 	HTTPResponse		deliver;
+	HTTPRequest::HTTPHeader	head;
+	HTTPRequest::HTTPMethod	method;
+	HTTPResponse::STATUS	code;
 	int					i;
+	int					line;
 
+	line = 0;
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -47,28 +52,25 @@ int		requestReponse(int epollfd, int fde)
 		}
 		else if (byteCount < 0)
 		{
-			/*verifier chaque ligne si il s'agit d'une requete valide, si non, on break et bad request
-			if (badRequest(string))
-				break ; 
-			*/
-			if (i == -1)
-			{
-				std::cout << "Connection closed by foreign host." << std::endl;
-				break ;	
-			}
+			if (line == 1)
+				if ((treat.method(string, &deliver, &method, &code)) == -1)
+				{
+					std::cout << "Connection closed by foreign host." << std::endl;
+					break ;
+				}
+			treat.header(string, &head, &deliver, &method, &code);
+			deliver.header();
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
+			string.clear();
 		}
 		else
 		{
-			i = treat.method(buf, &deliver);
-			if (treat.header(buf) == -1)
-				std::cout << "HTTP/1.1 404 Not Found [continue]" << std::endl;
-			deliver.header();
 			recv_len += byteCount;
 			std::cout << "get " << recv_len << " bytes from " << fde << " : buf = [ " << buf << " ] " << std::endl;
 		}
 		string += buf;
+		line++;
 	}
 	std::cout << "final string = " << string << std::endl;
 	std::cout << "header = " << deliver.getHeader() << std::endl;

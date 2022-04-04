@@ -39,13 +39,22 @@ class HTTPRequest
 		{
 			friend class HTTPRequest;
 			protected:
+				int			_active;
 				std::string	_host;
 				std::string	_useragent;
 				std::string	_accept;
 			public:
+				typedef void (HTTPRequest::HTTPHeader::*ptr)(std::string);
+				ptr			setFct[3];
+				HTTPHeader(): _host(NULL), _useragent(NULL), _accept(NULL), _active(0)
+				{ };
 				void	getContext();
+				void	setHost(std::string value);
+				void	setUserA(std::string value);
+				void	setAccept(std::string value);
 		};
-		int		method(char buf[30000], HTTPResponse *deliver);
-		int		header(char buf[30000]);
+		int		method(std::string buf, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code);
+//		int		method(std::string buf, HTTPResponse *deliver);
+		int		header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code);
 };
 #endif

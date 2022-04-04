@@ -12,4 +12,4 @@ void HTTPRequest::post(void ){
 
 void HTTPRequest::mdelete(void ){
 	this->_method  = "DELETE";
-}
+}	
