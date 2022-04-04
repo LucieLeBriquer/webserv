@@ -72,11 +72,8 @@ static const int			nbMethods = 3;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
 
 std::string	fileName(int argc, char **argv);
-
-
 std::vector<std::string>	splitThis(std::string str);
 std::string					copystr(std::string str, int start);
 std::string					stringFromj(std::string str, int j);
-
 
 #endif

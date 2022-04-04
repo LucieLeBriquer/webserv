@@ -3,7 +3,11 @@
 
 void HTTPResponse::STATUS::err4xx(int type)
 {
-	std::string stype = std::to_string(type);
+//	std::string stype = std::to_string(type);
+	std::ostringstream s;
+	s << type;
+	const std::string stype(s.str());
+
 	this->_code = "40" + stype;
 	if ( type == 0 )
 		this->_code += " Bad Request";
@@ -16,19 +20,22 @@ void HTTPResponse::STATUS::err4xx(int type)
 
 void HTTPResponse::STATUS::status2xx(int type)
 {
-	std::string stype = std::to_string(type);
+//	std::string stype = std::to_string(type);
+	std::ostringstream s;
+	s << type;
+	const std::string stype(s.str());
 	this->_code = "20" + stype;
 	if ( type == 0 )
-	{
 		this->_code += " OK";
-	std::cout << "Error " << this->_code << std::endl;
-	}
-	std::cout << "Erro =" << this->_code << std::endl;
+//	std::cout << "Erro =" << this->_code << std::endl;
 }
 
 void HTTPResponse::STATUS::err5xx(int type)
 {
-	std::string stype = std::to_string(type);
+//	std::string stype = std::to_string(type);
+	std::ostringstream s;
+	s << type;
+	const std::string stype(s.str());
 	this->_code = "50" + stype;
 	if ( type == 0 )
 		this->_code += " Bad Request";

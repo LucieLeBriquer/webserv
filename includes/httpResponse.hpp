@@ -31,6 +31,7 @@ class HTTPResponse
 		std::string	getHeader( void );
 		void		header( void );
 		void		response(int code, int type, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m);
+		void		body(int code, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m);
 
 };
 

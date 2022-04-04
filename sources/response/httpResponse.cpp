@@ -6,10 +6,16 @@ std::string HTTPResponse::getHeader( void )
 	return this->_header;
 }
 
+void HTTPResponse::body(int code, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
+{
+	//retour d'erreur
+}
+
 void HTTPResponse::response(int code, int type, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
 {
 	this->_statusCode = sc->status(code, type);
 	this->_protocol = m->getProtocol();
+	this->body(code + type, sc, m);
 }
 
 void HTTPResponse::header( void )
