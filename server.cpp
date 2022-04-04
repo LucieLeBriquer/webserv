@@ -1,4 +1,4 @@
-#include "inc/webserv.hpp"
+#include "../includes/usefull.hpp"
 #include <netdb.h> 
 #define PORT 8080
 
@@ -10,7 +10,8 @@ int		main(void)
 	char                buf[1024] = {0};
 	int                 byteCount;
 	int yes = 1;
-	HTTPRequest         treat;
+	HTTPRequest			treat;
+	HTTPResponse		deliver;
 
 	lenAddr = sizeof(address);
 
@@ -42,7 +43,7 @@ int		main(void)
 		exit(EXIT_FAILURE);
 	}
 	int i = 0;
-	int j = 0;
+	//int j = 0;
 	while (1)
 	{
 		std::cout << std::endl;
@@ -56,19 +57,23 @@ int		main(void)
 		while (1)
 		{
 			byteCount = recv(newSocket, buf, sizeof(buf), 0);
-			std::cout << buf << std::endl;
-			i = treat.method(buf);
+			i = treat.method(buf, &deliver);
 			byteCount = recv(newSocket, buf, sizeof(buf), 0);
 			std::cout << buf << std::endl;
-			j = treat.header(buf);
+			if (treat.header(buf) == -1)
+			{
+				std::cout << "HTTP/1.1 404 Not Found [continue]" << std::endl;
+			}
+			deliver.header();
+			send(newSocket, (deliver.getHeader()).c_str() , (deliver.getHeader()).length(), 0);
+			std::cout << deliver.getHeader() << std::endl;
+			std::cout << "---------- Hello message sent ----------" << std::endl;
 			if (i == -1)
 			{
 				//en fonction du user-agent : curl ou telnet ou mozilla  (curl/7.68.0)
 				std::cout << "Connection closed by foreign host." << std::endl;
 				exit(EXIT_FAILURE);
 			}
-			send(newSocket, "Hello world!", 12, 0);
-			std::cout << "---------- Hello message sent ----------" << std::endl;
 			// close(new_socket);
 		}
 	}

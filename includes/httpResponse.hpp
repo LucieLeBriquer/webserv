@@ -28,7 +28,7 @@ class HTTPResponse
 				void        status2xx(int type);
 				void        err5xx( int type);
 		};
-		char		*getHeader( void );
+		std::string	getHeader( void );
 		void		header( void );
 		void		response(int code, int type, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m);
 

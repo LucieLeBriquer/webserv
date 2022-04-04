@@ -1,9 +1,10 @@
 //#include "usefull.hpp"
 #include "../../includes/usefull.hpp"
 
-char *HTTPResponse::getHeader( void )
+std::string HTTPResponse::getHeader( void )
 {
-	return this->_cheader;
+
+	return this->_header;
 }
 
 void HTTPResponse::response(int code, int type, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
@@ -24,16 +25,15 @@ void HTTPResponse::header( void )
 
 //	std::cout << "code = " << this->_statusCode << std::endl;
 	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: 1589\nDate: " + time;
-	char *_tmp[this->_header.length() + 1];
-	int i = 0;
-	while (_header[i] != '\0')
-	{
-		tmp[i] = _header[i];
-		i++;
-	}
-	tmp[i] = '\0';
-	this->_cheader = tmp;
- 
- //  cout << "The local date and time is: " << dt << endl;
+	// char _tmp[this->_header.length() + 1];
+	// int i = 0;
+	// while (_header[i] != '\0')
+	// {
+	// 	_tmp[i] = _header[i];
+	// 	i++;
+	// }
+	// _tmp[i] = '\0';
+	// this->_cheader = strcpy(_cheader, _tmp);
+	// std::cout << "_tmp: " << _tmp << std::endl;
 	// this->_header += "Date: "+ ptm->tm_mday + ", " + ptm->tm_mon + ", " + ptm->tm_year + ", " + ptm->tm_hour + ":" + ptm->tm_min + ":" + ptm->tm_sec + " GMT\n"; 
 }
