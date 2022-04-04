@@ -28,3 +28,34 @@ epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
 epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
 epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
 epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
+
+/**********************************POST************************************/
+
+methode
+Host
+accept
+content-type
+content-length
+
+/*******first example*******/
+
+POST / HTTP/1.1
+host: 178.128.163.152:31557      
+user-agent: mozilla/5.0
+Connection: keep-alive
+content-type: application/x-www-form-urlencoded
+content-length: 29
+
+username=admin&password=admin
+
+/*******second example********/
+
+POST /search.php HTTP/1.1
+host: 178.128.163.152:31557
+user-agent: mozilla/5.0
+Connection: keep-alive
+Content-Type: application/json
+content-length: 19
+cookie: PHPSESSID=grl31sfko3omqcmkq5q0i0pq5g
+
+{"search":"london"}
