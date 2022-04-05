@@ -1,22 +1,57 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request_reponse.cpp                                :+:      :+:    :+:   */
+/*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/01 10:29:48 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/05 11:02:40 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <sstream>
+#define B_SIZE 2
+
+void	GetRightFile(std::string *file, int *tot_size)
+{
+	std::string 		body;
+	std::stringstream	ss;
+	int			fd;
+	int			ret;
+	char		buf[B_SIZE + 1];
+
+	// open le bon file en fonction de la requete
+	fd = open("/html/index.html", O_RDWR);
+	// remplir le header reponse
+	(*file) += "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
+	// garder la size a jour pour send()
+	(*tot_size) += (*file).length();
+	// lire notre file open
+	while ((ret = read(fd, buf, B_SIZE)) > 0)
+	{
+		body += buf;
+		(*tot_size) += ret;
+	}
+	// recup le content length
+	ss << (*tot_size);
+	(*file) += ss.str();
+	// set les 2 \n avant le body
+	(*file) += "\n\n";
+	// taille du content length et les 2 \n
+	(*tot_size) += (ss.str()).length() + 2;
+	// response entiere
+	(*file) += body;
+}
 
 int		sendReponse(int fde)
 {
-	std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
-
-	if (send(fde, hello.c_str(), hello.size(), 0) < 0)
+	std::string	file;
+	int			tot_size = 0;
+	
+	GetRightFile(&file, &tot_size);
+	if (send(fde, file.c_str(), tot_size, 0) < 0)
 	{
 		perror("send()");
 		return -1;
