@@ -2,22 +2,22 @@
 
 //#include "../../includes/usefull.hpp"
 
-void HTTPRequest::HTTPHeader::setHost(std::string value)
+void HTTPHeader::setHost(std::string value)
 {
 	this->_host = value;
 }
 
-void HTTPRequest::HTTPHeader::setUserA(std::string value)
+void HTTPHeader::setUserA(std::string value)
 {
 	this->_useragent = value;
 }
 
-void HTTPRequest::HTTPHeader::setAccept(std::string value)
+void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
 }
 
-int HTTPRequest::header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code)
+int HTTPRequest::header(std::string buf, HTTPHeader *h)
 {
 	std::string header[3] = {"host:", "user-agent:", "accept:"};
 	
@@ -33,10 +33,7 @@ int HTTPRequest::header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPRespons
 			break;
 	}
 	if (i == 3)
-	{
-		deliver->response(code->status(4, 0), m->getProtocol(), code, m);
-		return (-1);
-	}
+		return (0);
 	j = header[i].length();
 	if (buf[j] == ' ')
 		j++;

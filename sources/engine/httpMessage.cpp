@@ -31,14 +31,14 @@ int		requestReponse(int epollfd, int fde)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
-	std::string	string;
-	HTTPRequest			treat;
-	HTTPResponse		deliver;
-	HTTPRequest::HTTPHeader	head;
-	HTTPRequest::HTTPMethod	method;
-	HTTPResponse::STATUS	code;
-	int					i;
-	int					line;
+	std::string		string;
+	HTTPRequest		treat;
+	HTTPResponse	deliver;
+	HTTPHeader		head;
+	HTTPMethod		method;
+	STATUS			code;
+	int				i;
+	int				line;
 
 	line = 0;
 	while (1)
@@ -53,13 +53,13 @@ int		requestReponse(int epollfd, int fde)
 		else if (byteCount < 0)
 		{
 			if (line == 1)
-				if ((treat.method(string, &deliver, &method, &code)) == -1)
+				if ((treat.method(string, &method, &code)) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
-			treat.header(string, &head, &deliver, &method, &code);
-			deliver.header();
+			if (!treat.header(string, &head))
+				code.statusCode(code.status(4, 0), method.getProtocol());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
 			string.clear();
@@ -74,6 +74,7 @@ int		requestReponse(int epollfd, int fde)
 	}
 	std::cout << "final string = " << string << std::endl;
 	std::cout << "header = " << deliver.getHeader() << std::endl;
+	deliver.rendering();
 	if (sendReponse(fde, deliver.getHeader()) < 0)
 		return -1;
 	return 1;
