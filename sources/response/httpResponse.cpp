@@ -12,10 +12,21 @@ int HTTPHeader::getContext( void )
 	return this->_active;
 }
 
-void HTTPHeader::checkContext()
+std::string HTTPResponse::checkUrl()
 {
-//	if (this->_host != NULL && this->_host != "127.0.0.2")
-		//this->_statusCode = 404;
+	std::string filename("html");
+	std::stringstream ss;
+	int status;
+
+	ss << this->_statusCode;
+	ss >> status;
+	if (status > 299 )
+	{
+		this->_url = "/404.html";
+	}
+	if (this->_url == "/")
+		this->_url = "/index.html";
+	return filename += this->_url;
 }
 
 // void HTTPResponse::body(int code, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
@@ -31,10 +42,13 @@ void HTTPResponse::setContentLen(int len)
 	this->_contentLen = tot_len;
 }
 
-void HTTPResponse::statusCode(std::string status, std::string prot)
+void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
+	std::vector<std::string> line = splitThis(firstLine);
+
 	this->_statusCode = status;
-	this->_protocol = prot;
+	this->_protocol = line[2];
+	this->_url = line[1];
 //	this->body(, sc, m);
 }
 

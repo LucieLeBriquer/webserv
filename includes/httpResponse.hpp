@@ -10,6 +10,7 @@ class HTTPResponse
 		std::string _contentLen;
 		std::string _protocol;
 		std::string	_statusCode;
+		std::string	_url;
 		std::string	_header;
 	public:
 		HTTPResponse() {};
@@ -17,7 +18,8 @@ class HTTPResponse
 		std::string	getHeader( void );
 		void		rendering( void );
 		void		setContentLen( int len );
-		void		statusCode(std::string status, std::string prot);
+		std::string	checkUrl();
+		void		statusCode(std::string status, std::string firstLine);
 	//	void		body(int code, STATUS *sc, HTTPMethod *m);
 };
 

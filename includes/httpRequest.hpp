@@ -9,7 +9,7 @@ class HTTPRequest
 {
 	protected:
 	//	std::string	_scheme;  protocole de requete (HTTP/HTTPS)
-	//	std::string _GET; // tous les parametres get
+	//	sttreatd::string _GET; // tous les parametres get
 	//	std::string _POST;
 	//	std::string _COOKIES;
 	//	std::string _FILES;
@@ -32,6 +32,8 @@ class HTTPRequest
 
 class HTTPMethod : public HTTPRequest
 {
+	protected:
+		std::string _fLine;
 	public:
 		friend class HTTPRequest;
 		HTTPMethod() {};
@@ -41,7 +43,7 @@ class HTTPMethod : public HTTPRequest
 		int		parseMethod(const std::string cmd, const std::string *methods);
 		std::string		getMethod();
 		std::string		getUrl();
-		std::string		getProtocol( void );
+		std::string		getFirstLine( void );
 };
 
 class HTTPHeader : protected HTTPRequest

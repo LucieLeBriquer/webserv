@@ -2,9 +2,9 @@
 
 //#include "../../includes/usefull.hpp"
 
-std::string	HTTPMethod::getProtocol( void )
+std::string	HTTPMethod::getFirstLine( void )
 {
-	return this->_httpv;
+	return this->_fLine;
 }
 
 int HTTPMethod::parseMethod(const std::string req, const std::string *methods)

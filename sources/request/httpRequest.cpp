@@ -37,7 +37,7 @@ int HTTPRequest::method(std::string buf, HTTPMethod *m, STATUS *code)
 	this->_url = "/";
 	if ((i = m->parseMethod(request[0], methods)) == -1)
 	{
-		code->statusCode(code->status(4, 5), m->getProtocol());
+		code->statusCode(code->status(4, 5), m->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -46,18 +46,18 @@ int HTTPRequest::method(std::string buf, HTTPMethod *m, STATUS *code)
 		(this->*(getFct[i]))();
 	if (!(j = m->parsePath(request[1])))
 	{
-		code->statusCode(code->status(4, 4), m->getProtocol());
+		code->statusCode(code->status(4, 4), m->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	if (!(k = m->parseProtocol(request[2])))
 	{
-		code->statusCode(code->status(4, 0), m->getProtocol());
+		code->statusCode(code->status(4, 0), m->getFirstLine());
 		return -1;
 	}
 	if (arg != 3)
 		return -1;
-	code->statusCode(code->status(2, 0), m->getProtocol());
+	code->statusCode(code->status(2, 0), m->getFirstLine());
 	return 1;
 }

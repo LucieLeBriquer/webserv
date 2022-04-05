@@ -17,12 +17,14 @@
 void	GetRightFile(HTTPResponse *deliver, int *tot_size, std::string *file)
 {
 	std::string 		body;
+	std::string 		filename;
 	int			fd;
 	int			ret;
 	char		buf[B_SIZE + 1];
 
+	filename = deliver->checkUrl();
 	// open le bon file en fonction de la requete
-	fd = open("html/index.html", O_RDWR);
+	fd = open(filename.c_str(), O_RDWR);
 	// lire notre file open
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
@@ -101,7 +103,7 @@ int		requestReponse(int epollfd, int fde)
 			else
 			{
 				if (!treat.header(string, &head))
-					code.statusCode(code.status(4, 0), method.getProtocol());
+					code.statusCode(code.status(4, 0), method.getFirstLine());
 			}
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
