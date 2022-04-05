@@ -52,17 +52,23 @@ int		requestReponse(int epollfd, int fde)
 		}
 		else if (byteCount < 0)
 		{
-			if (line == 1)
+			if (line == 0)
+			{
 				if ((treat.method(string, &method, &code)) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
-			if (!treat.header(string, &head))
-				code.statusCode(code.status(4, 0), method.getProtocol());
+			}
+			else
+			{
+				if (!treat.header(string, &head))
+					code.statusCode(code.status(4, 0), method.getProtocol());
+			}
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
 			string.clear();
+			line++;
 		}
 		else
 		{
@@ -70,9 +76,8 @@ int		requestReponse(int epollfd, int fde)
 			std::cout << "get " << recv_len << " bytes from " << fde << " : buf = [ " << buf << " ] " << std::endl;
 		}
 		string += buf;
-		line++;
 	}
-	std::cout << "final string = " << string << std::endl;
+//	std::cout << "final string = " << string << std::endl;
 	std::cout << "header = " << deliver.getHeader() << std::endl;
 	deliver.rendering();
 	if (sendReponse(fde, deliver.getHeader()) < 0)

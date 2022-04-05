@@ -11,7 +11,7 @@ class HTTPResponse
 		std::string	_statusCode;
 		std::string	_header;
 	public:
-		HTTPResponse(): _protocol(NULL), _statusCode(NULL),	 _header(NULL) { };
+		HTTPResponse() {};
 		~HTTPResponse() {};
 		std::string	getHeader( void );
 		void		rendering( void );

@@ -52,7 +52,7 @@ class HTTPHeader : protected HTTPRequest
 		std::string	_useragent;
 		std::string	_accept;
 	public:
-		HTTPHeader(): _host(NULL), _useragent(NULL), _accept(NULL){ };
+		HTTPHeader() {};
 		~HTTPHeader() {};
 		typedef void (HTTPHeader::*ptr)(std::string);
 		ptr			setFct[3];
