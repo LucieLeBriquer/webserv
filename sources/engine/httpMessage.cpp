@@ -17,16 +17,12 @@
 void	GetRightFile(HTTPResponse *deliver, int *tot_size, std::string *file)
 {
 	std::string 		body;
-	std::stringstream	ss;
 	int			fd;
 	int			ret;
 	char		buf[B_SIZE + 1];
 
 	// open le bon file en fonction de la requete
 	fd = open("html/index.html", O_RDWR);
-	// remplir le header reponse
-//	(*file) += "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
-	// garder la size a jour pour send()
 	// lire notre file open
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
@@ -36,15 +32,17 @@ void	GetRightFile(HTTPResponse *deliver, int *tot_size, std::string *file)
 	// recup le content length
 	std::cout << "laa" << *tot_size << std::endl;
 	deliver->setContentLen(*tot_size);
+	// remplir le header reponse
 	deliver->rendering();
-	*file = deliver->getHeader();
+	*file += deliver->getHeader();
+	// garder la size a jour pour send()
 	(*tot_size) += (*file).length();
+	std::cout << "laa aussi " << *tot_size << std::endl;
 
-	(*file) += ss.str();
 	// set les 2 \n avant le body
 	(*file) += "\n\n";
 	// taille du content length et les 2 \n
-	(*tot_size) += (ss.str()).length() + 2;
+	(*tot_size) += 2;
 	// response entiere
 	(*file) += body;
 }
@@ -55,7 +53,7 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	int			tot_size = 0;
 
 	GetRightFile(deliver, &tot_size, &file);
-	if (send(fde, file.c_str(), file.size(), 0) < 0)
+	if (send(fde, file.c_str(), tot_size, 0) < 0)
 	{
 		perror("send()");
 		return -1;
@@ -63,6 +61,7 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	std::cout << "sending data to " << fde << std::endl;
 	/*si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd*/
 	close(fde);
+	std::cout << "mais donc " << std::endl;
 	return 1;
 }
 
@@ -119,5 +118,6 @@ int		requestReponse(int epollfd, int fde)
 //	std::cout << "final string = " << string << std::endl;
 	if (sendReponse(fde, &deliver) < 0)
 		return -1;
+	std::cout << "mais donc la" << std::endl;
 	return 1;
 }

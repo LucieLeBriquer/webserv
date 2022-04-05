@@ -25,7 +25,10 @@ void HTTPHeader::checkContext()
 
 void HTTPResponse::setContentLen(int len)
 {
-	this->_contentLen = len;
+	std::ostringstream s;
+	s << len;
+	const std::string tot_len(s.str());
+	this->_contentLen = tot_len;
 }
 
 void HTTPResponse::statusCode(std::string status, std::string prot)
