@@ -1,6 +1,7 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
 
+// #include "httpResponse.hpp"
 class HTTPResponse;
 
 class HTTPRequest
@@ -28,6 +29,8 @@ class HTTPRequest
 				std::string	_httpv; // version 1.0 ou 1.1
 				std::string _url; // le chemin vers la page demandee
 			public:
+				HTTPMethod(): _httpv(NULL), _url(NULL) {};
+				~HTTPMethod() {};
 				int		parsePath(const std::string url);
 				int 	parseProtocol(const std::string prot);
 				int		parseMethod(const std::string cmd, const std::string *methods);
@@ -44,17 +47,17 @@ class HTTPRequest
 				std::string	_useragent;
 				std::string	_accept;
 			public:
-				typedef void (HTTPRequest::HTTPHeader::*ptr)(std::string);
-				ptr			setFct[3];
 				HTTPHeader(): _host(NULL), _useragent(NULL), _accept(NULL), _active(0)
 				{ };
+				~HTTPHeader() {};
+				typedef void (HTTPRequest::HTTPHeader::*ptr)(std::string);
+				ptr			setFct[3];
 				void	getContext();
 				void	setHost(std::string value);
 				void	setUserA(std::string value);
 				void	setAccept(std::string value);
 		};
-		int		method(std::string buf, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code);
-//		int		method(std::string buf, HTTPResponse *deliver);
-		int		header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPResponse *deliver, HTTPRequest::HTTPMethod *m, HTTPResponse::STATUS *code);
+		int		method(std::string buf, HTTPResponse *deliver, HTTPMethod *m, HTTPResponse::STATUS *code);
+		int		header(std::string buf, HTTPHeader *h, HTTPResponse *deliver, HTTPMethod *m, HTTPResponse::STATUS *code);
 };
 #endif

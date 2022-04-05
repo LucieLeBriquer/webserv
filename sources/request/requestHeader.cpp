@@ -34,7 +34,7 @@ int HTTPRequest::header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPRespons
 	}
 	if (i == 3)
 	{
-		deliver->response(code->status(4, 4), m->getProtocol(), code, m);
+		deliver->response(code->status(4, 0), m->getProtocol(), code, m);
 		return (-1);
 	}
 	j = header[i].length();
@@ -51,7 +51,5 @@ int HTTPRequest::header(std::string buf, HTTPRequest::HTTPHeader *h, HTTPRespons
 	h->_active = 1;
 	std::string value(tmp);
 	(h->*(h->setFct[i]))(value);
-	if ()
-		deliver->response(code->status(4, 0sss), m->getProtocol(), code, m);
 	return (1);
 }
