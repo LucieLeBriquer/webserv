@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request_reponse.cpp                                :+:      :+:    :+:   */
+/*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/05 10:45:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/05 11:02:40 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	GetRightFile(std::string *file, int *tot_size)
 	char		buf[B_SIZE + 1];
 
 	// open le bon file en fonction de la requete
-	fd = open("index.html", O_RDWR);
+	fd = open("/html/index.html", O_RDWR);
 	// remplir le header reponse
 	(*file) += "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
 	// garder la size a jour pour send()
