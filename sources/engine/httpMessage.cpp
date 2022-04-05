@@ -12,11 +12,50 @@
 
 #include "engine.hpp"
 
-int		sendReponse(int fde, std::string header)
-{
-	//std::string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!\n";
+#define B_SIZE 2
 
-	if (send(fde, header.c_str(), header.size(), 0) < 0)
+void	GetRightFile(HTTPResponse *deliver, int *tot_size, std::string *file)
+{
+	std::string 		body;
+	std::stringstream	ss;
+	int			fd;
+	int			ret;
+	char		buf[B_SIZE + 1];
+
+	// open le bon file en fonction de la requete
+	fd = open("html/index.html", O_RDWR);
+	// remplir le header reponse
+//	(*file) += "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
+	// garder la size a jour pour send()
+	// lire notre file open
+	while ((ret = read(fd, buf, B_SIZE)) > 0)
+	{
+		body += buf;
+		(*tot_size) += ret;
+	}
+	// recup le content length
+	std::cout << "laa" << *tot_size << std::endl;
+	deliver->setContentLen(*tot_size);
+	deliver->rendering();
+	*file = deliver->getHeader();
+	(*tot_size) += (*file).length();
+
+	(*file) += ss.str();
+	// set les 2 \n avant le body
+	(*file) += "\n\n";
+	// taille du content length et les 2 \n
+	(*tot_size) += (ss.str()).length() + 2;
+	// response entiere
+	(*file) += body;
+}
+
+int		sendReponse(int fde, HTTPResponse *deliver)
+{
+	std::string	file;
+	int			tot_size = 0;
+
+	GetRightFile(deliver, &tot_size, &file);
+	if (send(fde, file.c_str(), file.size(), 0) < 0)
 	{
 		perror("send()");
 		return -1;
@@ -78,9 +117,7 @@ int		requestReponse(int epollfd, int fde)
 		string += buf;
 	}
 //	std::cout << "final string = " << string << std::endl;
-	std::cout << "header = " << deliver.getHeader() << std::endl;
-	deliver.rendering();
-	if (sendReponse(fde, deliver.getHeader()) < 0)
+	if (sendReponse(fde, &deliver) < 0)
 		return -1;
 	return 1;
 }

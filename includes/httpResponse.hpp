@@ -7,6 +7,7 @@ class STATUS;
 class HTTPResponse
 {
 	protected:
+		std::string _contentLen;
 		std::string _protocol;
 		std::string	_statusCode;
 		std::string	_header;
@@ -15,6 +16,7 @@ class HTTPResponse
 		~HTTPResponse() {};
 		std::string	getHeader( void );
 		void		rendering( void );
+		void		setContentLen( int len );
 		void		statusCode(std::string status, std::string prot);
 	//	void		body(int code, STATUS *sc, HTTPMethod *m);
 };
