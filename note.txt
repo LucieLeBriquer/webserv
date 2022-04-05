@@ -59,3 +59,13 @@ content-length: 19
 cookie: PHPSESSID=grl31sfko3omqcmkq5q0i0pq5g
 
 {"search":"london"}
+
+/*********TO-DO list**********/
+
+- cgi script, php-cgi : quand l'executer precisement, pour quel fichiers
+
+- POST request : traitee le body de la requete post, voir ou on decode le body
+(decoder dans le script cgi ou dans la partie traitement de POST)
+
+- redirections : si une page rechercher n'existe pas, 
+comment afficher une page d'erreur
