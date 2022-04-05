@@ -60,6 +60,13 @@ cookie: PHPSESSID=grl31sfko3omqcmkq5q0i0pq5g
 
 {"search":"london"}
 
+POST /php-example.php HTTP/1.1
+Host: localhost:8080
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 13
+
+say=ok&to=lou
+
 /*********TO-DO list**********/
 
 - cgi script, php-cgi : quand l'executer precisement, pour quel fichiers
@@ -68,4 +75,4 @@ cookie: PHPSESSID=grl31sfko3omqcmkq5q0i0pq5g
 (decoder dans le script cgi ou dans la partie traitement de POST)
 
 - redirections : si une page rechercher n'existe pas, 
-comment afficher une page d'erreur
+comment afficher une page d'erreur  

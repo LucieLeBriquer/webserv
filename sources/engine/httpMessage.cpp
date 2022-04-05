@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/05 11:02:40 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/05 15:17:53 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,23 @@
 #include <sstream>
 #define B_SIZE 2
 
-void	GetRightFile(std::string *file, int *tot_size)
+void	GetRightFile(std::string *file, int *tot_size, int flag)
 {
-	std::string 		body;
+	std::string 		body, head;
 	std::stringstream	ss;
-	int			fd;
-	int			ret;
-	char		buf[B_SIZE + 1];
+	int					fd;
+	int					ret, head_size, body_size;
+	char				buf[B_SIZE + 1];
 
+	(void)flag;
 	// open le bon file en fonction de la requete
-	fd = open("/html/index.html", O_RDWR);
+	fd = open("./html/index.html", O_RDWR);
+	// fd = open("./html/form.html", O_RDWR);
+	// fd = open("./html/info.php", O_RDWR);
 	// remplir le header reponse
-	(*file) += "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
+	head = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
 	// garder la size a jour pour send()
-	(*tot_size) += (*file).length();
+	head_size = head.length();
 	// lire notre file open
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
@@ -36,21 +39,22 @@ void	GetRightFile(std::string *file, int *tot_size)
 	}
 	// recup le content length
 	ss << (*tot_size);
-	(*file) += ss.str();
+	head += ss.str();
 	// set les 2 \n avant le body
-	(*file) += "\n\n";
+	head += "\n\n";
 	// taille du content length et les 2 \n
-	(*tot_size) += (ss.str()).length() + 2;
+	head_size += (ss.str()).length() + 2;
 	// response entiere
-	(*file) += body;
+	(*file) = head + body;
+	(*tot_size) += head_size;
 }
 
-int		sendReponse(int fde)
+int		sendReponse(int fde, int flag)
 {
 	std::string	file;
 	int			tot_size = 0;
 	
-	GetRightFile(&file, &tot_size);
+	GetRightFile(&file, &tot_size, flag);
 	if (send(fde, file.c_str(), tot_size, 0) < 0)
 	{
 		perror("send()");
@@ -67,6 +71,7 @@ int		requestReponse(int epollfd, int fde)
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
 	std::string	string;
+	int			flag = 0, body = 0;
 
 	while (1)
 	{
@@ -83,8 +88,24 @@ int		requestReponse(int epollfd, int fde)
 			if (badRequest(string))
 				break ; 
 			*/
-			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
+			/************************************************/
+			if (strncmp(string.c_str(), "GET", 3) == 0)
+				flag = 1;
+			else if (strncmp(string.c_str(), "POST", 4) == 0)
+				flag = 2;
+			else if (strncmp(string.c_str(), "HEAD", 4) == 0)
+				flag = 3;
+			// std::cout << "flag = " << flag << std::endl;
+			/*************************************************/
+			if (strcmp(&string[string.length() - 2], "\r\n") == 0 && body == 1 && strcmp(&string[string.length() - 4], "\r\n\r\n") != 0)
 				break ;
+			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
+			{
+				if (flag == 2)
+					body = 1;
+				else
+					break ;
+			}
 		}
 		else
 		{
@@ -94,7 +115,7 @@ int		requestReponse(int epollfd, int fde)
 		string += buf;
 	}
 	std::cout << "final string = " << string << std::endl;
-	if (sendReponse(fde) < 0)
+	if (sendReponse(fde, flag) < 0)
 		return -1;
 	return 1;
 }
