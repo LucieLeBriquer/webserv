@@ -115,9 +115,9 @@ void	Location::_setCgiPass(vecStr words)
 
 void	Location::_fillOneInfo(std::string str)
 {
-	int		keyword;
-	vecStr	words;
-	setFunc3	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
+	int			keyword;
+	vecStr		words;
+	setFuncLoc	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
 			&Location::_setMethods, &Location::_setErrorPages, &Location::_setAutoIndex,
 			&Location::_setRedirUrl, &Location::_setCgiPass};
 

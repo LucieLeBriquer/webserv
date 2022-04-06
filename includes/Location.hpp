@@ -47,6 +47,6 @@ class Location : public Block
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);
 
-typedef void (Location::*setFunc3)(vecStr words);
+typedef void (Location::*setFuncLoc)(vecStr words);
 
 #endif

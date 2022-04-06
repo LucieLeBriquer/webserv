@@ -57,6 +57,6 @@ class Server : public Block
 
 std::ostream	&operator<<(std::ostream &o, const Server &server);
 
-typedef void (Server::*setFunc2)(vecStr words);
+typedef void (Server::*setFuncServ)(vecStr words);
 
 #endif

@@ -134,9 +134,9 @@ int		Server::_keywordNumber(std::string str)
 
 void	Server::_fillOneInfo(std::string str)
 {
-	int		keyword;
-	vecStr	words;
-	setFunc2	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
+	int			keyword;
+	vecStr		words;
+	setFuncServ	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
 			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex,
 			&Server::_setRedirUrl};
