@@ -239,6 +239,13 @@ bool	checkHostFormat(std::string str)
 	return (true);
 }
 
+static bool	isSpecial(char c)
+{
+	std::string specialChar = "-._~:/?#[]@!$&'()*+,;=";
+
+	return (specialChar.find('c') != std::string::npos);
+}
+
 bool	checkWordFormat(std::string str)
 {
 	std::string validChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
@@ -246,6 +253,11 @@ bool	checkWordFormat(std::string str)
 	for (int i = 0; i < str.size(); i++)
 	{
 		if (validChar.find(str[i], 0) == std::string::npos)
+			return (false);
+	}
+	for (int i = 0; i + 1 < str.size(); i++)
+	{
+		if (isSpecial(str[i]) && isSpecial(str[i + 1]))
 			return (false);
 	}
 	return (true);

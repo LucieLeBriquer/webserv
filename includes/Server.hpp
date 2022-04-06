@@ -45,14 +45,18 @@ class Server : public Block
 		Server	&operator=(const Server &server);
 
 		// getters
-		vecLoc		getLocations(void) const;
-		std::string	getHost(void) const;
-		int			getPort(void) const;
-		vecStr		getServerNames(void) const;
+		const vecLoc		getLocations(void) const;
+		const std::string	getHost(void) const;
+		const int			getPort(void) const;
+		const vecStr		getServerNames(void) const;
+
+		// useful methods
+		int			configFromUrl(const std::string &str) const;
+		std::string	getRealUrl(const std::string &str) const;
 
 		// static
 		static const int	nbKeywords = 9;
-		static std::string	keywords[nbKeywords];
+		static const std::string	keywords[nbKeywords];
 };
 
 std::ostream	&operator<<(std::ostream &o, const Server &server);

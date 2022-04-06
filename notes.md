@@ -3,6 +3,31 @@
 - handling classic requests
 - handling php CGI's
 
+# Useful explanations (to delete after)
+
+Si on est dans la socket numéro `i` la config peut être obtenue en appelant `getConfig(i)`.
+
+```c++
+getConfig(i).configFromUrl("url/a/check")
+```
+renvoie le numéro du block location correspondant à l'url (si ca matche)
+
+Valeurs de retour :
+- `-1` : si l'url n'appartient à aucun block location, on utilisera donc la config `getConfig(i)` (de type `Server`) pour avoir toutes les infos
+- `j >= 0` : si l'url appartient au block location `j`, on utilisera alors la config `getConfig(i,j)` (de type `Location`)
+
+Il y a des opérateurs `<<` pour tout donc pour le débug ou juste afficher la config utilisée vous pouvez juste faire un petit :
+```c++
+    std::cout << getConfig(i) << std::endl; 
+ou  std::cout << getConfig(i ,j) << std::endl;
+```
+selon les cas.
+
+J'ai aussi rajouté une fonction `getRealUrl("url/to/check")` qui renvoie l'url rootée, par exemple :
+```
+           		getConfig(0).getRealUrl("/DIRECTORY1/files/test.html")
+    renvoie        "ROOT1/files/test.html"
+```
 
 # Webserv
 
@@ -42,6 +67,16 @@ uint16_t ntohs(uint16_t netshort);
 - a ready list which corresponds to the file descriptors ready for I/O
 
 By default, `epoll()` is looking only at level changes.
+
+epoll_ctl() : l'attribut "events" de la structure "epoll_event" (4eme arg) peut recevoir different "type"
+-> Ces "types" vont dicter le comportement du 3eme arg 
+-> exemple 1 : notre "sokcet de base" est disponible en lecture / en ecriture ...
+-> exemple 2 : EPOLLET est un flag de comportement, il passe en mode detection de changement de niveau (edge-triggered) ET
+
+epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
+epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
+epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
+epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
 
 #### epoll_create
 ```c++
@@ -288,3 +323,4 @@ Uploading files could be handled by CGI (for example python)
 - [Socket programming](https://www.geeksforgeeks.org/socket-programming-cc/)
 - [How to build a simple HTTP server from scratch](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
 - [File upload using Pyhon CGI](https://www.tutorialspoint.com/How-do-we-do-a-file-upload-using-Python-CGI-Programming)
+- [Python CGI programming](https://www.tutorialspoint.com/python/python_cgi_programming.htm)

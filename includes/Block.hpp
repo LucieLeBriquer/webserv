@@ -53,21 +53,29 @@ class Block
 		Block(const Block &block);
 		virtual ~Block();
 
-		Block	&operator=(const Block &block);
+		Block		&operator=(const Block &block);
 
 		// member functions
-		bool	wellFormatted(void) const;
+		bool		wellFormatted(void) const;
 		
 		// getters
-		vecStr		getServerNames(void) const;
-		std::string	getRoot(void) const;
-		vecStr		getIndex(void) const;
-		size_t		getMaxClientBody(void) const;
-		vecInt		getMethods(void) const;
-		mapErr		getErrorPages(void) const;
-		std::string	getRedirUrl(void) const;
-		bool		getAutoIndex(void) const;
-		std::string	getFormatErr(void) const;
+		const vecStr		getServerNames(void) const;
+		const std::string	getRoot(void) const;
+		const vecStr		getIndex(void) const;
+		const size_t		getMaxClientBody(void) const;
+		const vecInt		getMethods(void) const;
+		const mapErr		getErrorPages(void) const;
+		const std::string	getRedirUrl(void) const;
+		const bool			getAutoIndex(void) const;
+		const std::string	getFormatErr(void) const;
+
+		const bool	isRootSet(void) const;
+		const bool	isIndexSet(void) const;
+		const bool	isMaxClientBodySet(void) const;
+		const bool	isMethodsSet(void) const;
+		const bool	isErrorPagesSet(void) const;
+		const bool	isRedirUrlSet(void) const;
+		const bool	isAutoindexSet(void) const;
 };
 
 #endif
