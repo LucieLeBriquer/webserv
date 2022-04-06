@@ -230,7 +230,7 @@ bool	checkHostFormat(std::string str)
 	splitPattern(addr, str, ".");
 	if (addr.size() != 4)
 		return (false);
-	for (int i = 0; i < addr.size(); i++)
+	for (size_t i = 0; i < addr.size(); i++)
 	{
 		n = myAtoi(addr[i], success);
 		if (!success || n > 255)
@@ -243,7 +243,7 @@ bool	checkWordFormat(std::string str)
 {
 	std::string validChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=";
 
-	for (int i = 0; i < str.size(); i++)
+	for (size_t i = 0; i < str.size(); i++)
 	{
 		if (validChar.find(str[i], 0) == std::string::npos)
 			return (false);
@@ -296,7 +296,7 @@ std::string		getMethod(int methodNb)
 
 std::ostream	&showMethod(std::ostream &o, vecInt methods)
 {
-	for (int i = 0; i + 1 < methods.size(); i++)
+	for (size_t i = 0; i + 1 < methods.size(); i++)
 		o << getMethod(methods[i]) << " ";
 	if (methods.size() > 0)
 		o << getMethod(methods[methods.size() - 1]);

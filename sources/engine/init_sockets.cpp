@@ -36,7 +36,7 @@ int		initSockets(Socket *sock, const Config config)
 	int			yes = 1;
 	vecSrv		servers = config.getServers();
 
-	for (int i = 0; i < servers.size(); i++)
+	for (size_t i = 0; i < servers.size(); i++)
 	{
 		if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		{

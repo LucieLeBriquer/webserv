@@ -36,7 +36,7 @@ Location::Location(std::string str) : Block(), _path("/"), _cgiPass(""), _cgiPas
 		_setWrongFormat("wrong start of location block");
 		return ;
 	}
-	for (int i = 1; i + 1 < lines.size(); i++)
+	for (size_t i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
 		if (!_formatOk)

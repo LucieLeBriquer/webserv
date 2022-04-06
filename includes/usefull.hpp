@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 14:44:23 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/06 22:42:13 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,9 @@
 # define BOLD "\x1B[1m"
 # define GRAY "\x1B[90m"
 # define END "\x1B[0m"
+# define ERR -1
+# define OK 0
+# define LOG 0
 # include <iostream>
 # include <vector>
 # include <string>
@@ -59,7 +62,7 @@ std::ostream	&showMethod(std::ostream &o, vecInt methods);
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
-	for (int i = 0; i + 1 < vect.size(); i++)
+	for (size_t i = 0; i + 1 < vect.size(); i++)
 		o << vect[i] << " ";
 	if (vect.size() > 0)
 		o << vect[vect.size() - 1];

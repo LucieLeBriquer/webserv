@@ -83,7 +83,7 @@ int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, con
 		return -1;
 	}
 	
-	for (int i = 0; i < config.getServers().size(); i++)
+	for (size_t i = 0; i < config.getServers().size(); i++)
 	{
 		ev.events = EPOLLIN | EPOLLET;
 		ev.data.fd = sock->getSocket(i);

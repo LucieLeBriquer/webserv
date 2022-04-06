@@ -40,7 +40,7 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	}
 	_fillServerInfo(serverInfo);
 
-	for (int i = 0; i < locBlocks.size(); i++)
+	for (size_t i = 0; i < locBlocks.size(); i++)
 	{
 		Location	newLoc(locBlocks[i]);
 
@@ -86,8 +86,6 @@ Server	&Server::operator=(const Server &server)
 
 std::ostream	&operator<<(std::ostream &o, const Server &server)
 {
-	size_t	maxCl;
-	
 	o << BLUE << "Server" << END << std::endl;
 	o << "\thost        \t" << server.getHost() << std::endl;
 	o << "\tport        \t" << server.getPort() << std::endl;
@@ -159,7 +157,7 @@ void	Server::_fillServerInfo(std::string str)
 	splitPattern(lines, str, "\n");
 	if (!isBlockNameOk(lines[0], "server"))
 		return (_setWrongFormat("wrong start of server block"));
-	for (int i = 1; i + 1 < lines.size(); i++)
+	for (size_t i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
 		if (!_formatOk)
