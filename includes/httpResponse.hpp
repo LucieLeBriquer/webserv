@@ -1,7 +1,7 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
+# include "httpRequest.hpp"
 
-#include "httpRequest.hpp"
 class STATUS;
 
 class HTTPResponse
