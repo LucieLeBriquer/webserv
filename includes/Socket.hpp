@@ -24,8 +24,11 @@ class Socket
 {
 	public:
 		Socket();
+		Socket(const Socket &socket);
 		Socket(const Config &config);
 		~Socket();
+
+		Socket	&operator=(const Socket &socket);
 
 		const int &					getSocket(int nbr) const;
 		void						setSocket(int newSocket);
