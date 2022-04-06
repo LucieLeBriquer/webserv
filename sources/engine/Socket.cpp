@@ -96,16 +96,6 @@ Socket::~Socket()
 	std::cout << "socket destructor" << std::endl;
 }
 
-const Server				Socket::getConfig(int nbr) const
-{
-	return (_config[nbr]);
-}
-
-const Location				Socket::getConfig(int nbr, int loc) const
-{
-	return (_config[nbr].getLocations()[loc]);
-}
-
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 {
 	for (int i = 0; i < obj.getSocketNbr(); i++)

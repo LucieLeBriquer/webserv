@@ -96,8 +96,6 @@ bool	Location::_setPath(std::string str)
 		_path = words[1];
 	else
 		_path = words[1].substr(0, words[1].size() - 1);
-	if (_path[_path.size() - 1] == '/')
-		_path = _path.substr(0, _path.size() - 1);
 	if (!checkWordFormat(_path))
 		return (false);
 	return (true);
@@ -146,19 +144,14 @@ int		Location::_keywordNumber(std::string str)
 	return (-1);
 }
 
-const std::string	Location::getPath(void) const
+std::string	Location::getPath(void) const
 {
 	return (_path);
 }
 
-const std::string	Location::getCgiPass(void) const
+std::string	Location::getCgiPass(void) const
 {
 	return (_cgiPass);
 }
 
-const bool			Location::isCgiPassSet(void) const
-{
-	return (_cgiPassSet);
-}
-
-const std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};
+std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};
