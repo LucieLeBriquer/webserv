@@ -1,6 +1,11 @@
-#include "usefull.hpp"
+//#include "usefull.hpp"
+#include "engine.hpp"
 
-//#include "../../includes/usefull.hpp"
+std::string	HTTPRequest::getFirstLine( void )
+{
+	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
+	return this->_fLine;
+}
 
 std::string HTTPResponse::getHeader( void )
 {
@@ -12,27 +17,41 @@ int HTTPHeader::getContext( void )
 	return this->_active;
 }
 
+void HTTPResponse::setStatus(std::string code)
+{
+	std::stringstream ss;
+	std::map<int, std::string> getStatus;
+	int status;
+	
+	ss << code;
+	ss >> status;
+
+	getStatus[400] = "/400.html";
+	getStatus[404] = "/404.html";
+	getStatus[405] = "/405.html";
+	getStatus[505] = "/505.html";
+
+	this->_statusCode = code;
+	if (status > 299)
+		this->_url = getStatus[status];
+}
+
 std::string HTTPResponse::checkUrl()
 {
 	std::string filename("html");
-	std::stringstream ss;
-	int status;
+	int fd;
 
-	ss << this->_statusCode;
-	ss >> status;
-	if (status > 299 )
-	{
-		this->_url = "/404.html";
-	}
+	this->setStatus(this->_statusCode);
 	if (this->_url == "/")
 		this->_url = "/index.html";
-	return filename += this->_url;
+	else if ((fd = open(this->_url.c_str(), O_RDWR)) == -1)
+	{
+		this->setStatus("404");
+	}
+	filename += this->_url;
+	close(fd);
+	return filename;
 }
-
-// void HTTPResponse::body(int code, HTTPResponse::STATUS *sc, HTTPRequest::HTTPMethod *m)
-// {
-// 	//retour d'erreur
-// }
 
 void HTTPResponse::setContentLen(int len)
 {
@@ -49,7 +68,6 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
-//	this->body(, sc, m);
 }
 
 void HTTPResponse::rendering( void )

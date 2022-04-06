@@ -1,13 +1,6 @@
 #include "usefull.hpp"
 
-//#include "../../includes/usefull.hpp"
-
-std::string	HTTPMethod::getFirstLine( void )
-{
-	return this->_fLine;
-}
-
-int HTTPMethod::parseMethod(const std::string req, const std::string *methods)
+int HTTPRequest::parseMethod(const std::string req, const std::string *methods)
 {
 	int i;
 	for (i = 0; req[i]; i++)
@@ -23,7 +16,7 @@ int HTTPMethod::parseMethod(const std::string req, const std::string *methods)
 	return (-1);
 }
 
-int HTTPMethod::parsePath(const std::string url)
+int HTTPRequest::parsePath(const std::string url)
 {
 	if (url == "")
 		return 1;
@@ -34,9 +27,8 @@ int HTTPMethod::parsePath(const std::string url)
 	return 1;
 }
 
-int HTTPMethod::parseProtocol(const std::string protocol)
+int HTTPRequest::parseProtocol(const std::string protocol)
 {
-//	std::cout << "2) protocol = " << protocol << std::endl;
 	if (protocol == "")
 		return 1;
 	if (strncmp(protocol.c_str(), "HTTP/1.0", 8) && strncmp(protocol.c_str(), "HTTP/1.1", 8))

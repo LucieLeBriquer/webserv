@@ -19,6 +19,7 @@ class HTTPResponse
 		void		rendering( void );
 		void		setContentLen( int len );
 		std::string	checkUrl();
+		void		setStatus(std::string code);
 		void		statusCode(std::string status, std::string firstLine);
 	//	void		body(int code, STATUS *sc, HTTPMethod *m);
 };

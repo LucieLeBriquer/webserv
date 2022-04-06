@@ -1,5 +1,4 @@
 #include "usefull.hpp"
-//#include "../includes/usefull.hpp"
 
 std::string copystr(std::string str, int start)
 {

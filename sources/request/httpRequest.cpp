@@ -1,7 +1,5 @@
 #include "usefull.hpp"
 
-//#include "../../includes/usefull.hpp"
-
 void HTTPRequest::get(void ){
 	this->_method = "GET";
 }
@@ -14,11 +12,11 @@ void HTTPRequest::mdelete(void ){
 	this->_method  = "DELETE";
 }
 
-int HTTPRequest::method(std::string buf, HTTPMethod *m, STATUS *code)
+int HTTPRequest::method(std::string buf, STATUS *code, HTTPResponse *deliver)
 {
 	std::string methods[3] = {"GET", "POST", "DELETE"};
 	
-	int i, j, k;
+	int i;
 
 	getFct[0] = &HTTPRequest::get;
 	getFct[1] = &HTTPRequest::post;
@@ -32,32 +30,32 @@ int HTTPRequest::method(std::string buf, HTTPMethod *m, STATUS *code)
 		if (*it != "")
 			arg++;
 	}
-	std::cout << "arg = "<< arg << std::endl;
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
-	if ((i = m->parseMethod(request[0], methods)) == -1)
+	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
-		code->statusCode(code->status(4, 5), m->getFirstLine());
+		deliver->statusCode(code->status(4, 5), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	else
 		(this->*(getFct[i]))();
-	if (!(j = m->parsePath(request[1])))
+	if (!this->parsePath(request[1]))
 	{
-		code->statusCode(code->status(4, 4), m->getFirstLine());
+		deliver->statusCode(code->status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
-	if (!(k = m->parseProtocol(request[2])))
+	if (!this->parseProtocol(request[2]))
 	{
-		code->statusCode(code->status(4, 0), m->getFirstLine());
+		deliver->statusCode(code->status(4, 0), this->getFirstLine());
 		return -1;
 	}
+	std::cout << "what ["<< _url << "] and " << _httpv << std::endl;
+	deliver->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
-	code->statusCode(code->status(2, 0), m->getFirstLine());
 	return 1;
 }

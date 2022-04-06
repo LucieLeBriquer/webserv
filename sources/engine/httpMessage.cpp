@@ -14,48 +14,36 @@
 
 #define B_SIZE 2
 
-void	GetRightFile(HTTPResponse *deliver, int *tot_size, std::string *file)
+void	GetRightFile(HTTPResponse *deliver, std::string *file)
 {
 	std::string 		body;
 	std::string 		filename;
+	int			size;
 	int			fd;
 	int			ret;
 	char		buf[B_SIZE + 1];
 
+	size = 0;
 	filename = deliver->checkUrl();
-	// open le bon file en fonction de la requete
 	fd = open(filename.c_str(), O_RDWR);
-	// lire notre file open
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
 		body += buf;
-		(*tot_size) += ret;
+		size += ret;
 	}
-	// recup le content length
-	std::cout << "laa" << *tot_size << std::endl;
-	deliver->setContentLen(*tot_size);
-	// remplir le header reponse
+	deliver->setContentLen(size);
 	deliver->rendering();
 	*file += deliver->getHeader();
-	// garder la size a jour pour send()
-	(*tot_size) += (*file).length();
-	std::cout << "laa aussi " << *tot_size << std::endl;
-
-	// set les 2 \n avant le body
 	(*file) += "\n\n";
-	// taille du content length et les 2 \n
-	(*tot_size) += 2;
-	// response entiere
 	(*file) += body;
 }
 
 int		sendReponse(int fde, HTTPResponse *deliver)
 {
 	std::string	file;
-	int			tot_size = 0;
 
-	GetRightFile(deliver, &tot_size, &file);
-	if (send(fde, file.c_str(), tot_size, 0) < 0)
+	GetRightFile(deliver, &file);
+	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
 		perror("send()");
 		return -1;
@@ -63,7 +51,6 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	std::cout << "sending data to " << fde << std::endl;
 	/*si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd*/
 	close(fde);
-	std::cout << "mais donc " << std::endl;
 	return 1;
 }
 
@@ -75,9 +62,7 @@ int		requestReponse(int epollfd, int fde)
 	HTTPRequest		treat;
 	HTTPResponse	deliver;
 	HTTPHeader		head;
-	HTTPMethod		method;
 	STATUS			code;
-	int				i;
 	int				line;
 
 	line = 0;
@@ -92,22 +77,20 @@ int		requestReponse(int epollfd, int fde)
 		}
 		else if (byteCount < 0)
 		{
+			//req = string;
 			if (line == 0)
 			{
-				if ((treat.method(string, &method, &code)) == -1)
+				if (treat.method(string, &code, &deliver) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else
-			{
-				if (!treat.header(string, &head))
-					code.statusCode(code.status(4, 0), method.getFirstLine());
-			}
+			else if (!treat.header(string, &head))
+				code.statusCode(code.status(4, 0), treat.getFirstLine());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
-			string.clear();
+			//req.clear();
 			line++;
 		}
 		else
@@ -117,9 +100,7 @@ int		requestReponse(int epollfd, int fde)
 		}
 		string += buf;
 	}
-//	std::cout << "final string = " << string << std::endl;
 	if (sendReponse(fde, &deliver) < 0)
 		return -1;
-	std::cout << "mais donc la" << std::endl;
 	return 1;
 }

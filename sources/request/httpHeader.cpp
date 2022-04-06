@@ -1,7 +1,5 @@
 #include "usefull.hpp"
 
-//#include "../../includes/usefull.hpp"
-
 void HTTPHeader::setHost(std::string value)
 {
 	this->_host = value;

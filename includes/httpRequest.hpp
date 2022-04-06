@@ -20,30 +20,23 @@ class HTTPRequest
 		std::string	_httpv; // version 1.0 ou 1.1
 		std::string _url; // le chemin vers la page demandee
 		int			_active;
+		std::string _fLine;
 		typedef void (HTTPRequest::*ptr)();
 		ptr			getFct[4];
 		void		get( void );
 		void		post( void );
 		void		mdelete( void );
-	public:
-		int		method(std::string buf, HTTPMethod *m, STATUS *code);
-		int		header(std::string buf, HTTPHeader *h);
-};
 
-class HTTPMethod : public HTTPRequest
-{
-	protected:
-		std::string _fLine;
 	public:
-		friend class HTTPRequest;
-		HTTPMethod() {};
-		~HTTPMethod() {};
+		int		method(std::string buf, STATUS *code, HTTPResponse *deliver);
+		int		header(std::string buf, HTTPHeader *h);
+		std::string		getFirstLine( void );
+
 		int		parsePath(const std::string url);
 		int 	parseProtocol(const std::string prot);
 		int		parseMethod(const std::string cmd, const std::string *methods);
 		std::string		getMethod();
 		std::string		getUrl();
-		std::string		getFirstLine( void );
 };
 
 class HTTPHeader : protected HTTPRequest
