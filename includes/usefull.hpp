@@ -24,9 +24,17 @@
 # include <iostream>
 # include <vector>
 # include <string>
+# include <string.h>
+# include <stdio.h>
 # include <cstdlib>
 # include <map>
 # include <limits>
+# include <sstream>
+# include <arpa/inet.h>
+#include <time.h>
+
+#include "httpRequest.hpp"
+#include "httpResponse.hpp"
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;
@@ -62,7 +70,9 @@ std::ostream	&operator<<(std::ostream &o, mapErr map);
 
 static const int			nbMethods = 3;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
+std::string    fileName(int argc, char **argv);
 
-std::string	fileName(int argc, char **argv);
+std::string 				copystr(std::string str, int start);
+std::vector<std::string>	splitThis(std::string str);
 
 #endif
