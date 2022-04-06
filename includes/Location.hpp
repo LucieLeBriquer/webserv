@@ -37,16 +37,18 @@ class Location : public Block
 		Location	&operator=(const Location &location);
 
 		// getters
-		std::string	getPath(void) const;
-		std::string	getCgiPass(void) const;
+		const std::string	getPath(void) const;
+		const std::string	getCgiPass(void) const;
+		
+		bool				isCgiPassSet(void) const;
 
 		// static
 		static const int	nbKeywords = 8;
-		static std::string	keywords[nbKeywords];
+		static const std::string	keywords[nbKeywords];
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);
 
-typedef void (Location::*setFuncLoc)(vecStr words);
+typedef void (Location::*setFunc3)(vecStr words);
 
 #endif

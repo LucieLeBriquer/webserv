@@ -96,6 +96,8 @@ bool	Location::_setPath(std::string str)
 		_path = words[1];
 	else
 		_path = words[1].substr(0, words[1].size() - 1);
+	if (_path[_path.size() - 1] == '/')
+		_path = _path.substr(0, _path.size() - 1);
 	if (!checkWordFormat(_path))
 		return (false);
 	return (true);
@@ -115,9 +117,9 @@ void	Location::_setCgiPass(vecStr words)
 
 void	Location::_fillOneInfo(std::string str)
 {
-	int			keyword;
-	vecStr		words;
-	setFuncLoc	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
+	int		keyword;
+	vecStr	words;
+	setFunc3	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
 			&Location::_setMethods, &Location::_setErrorPages, &Location::_setAutoIndex,
 			&Location::_setRedirUrl, &Location::_setCgiPass};
 
@@ -144,14 +146,19 @@ int		Location::_keywordNumber(std::string str)
 	return (-1);
 }
 
-std::string	Location::getPath(void) const
+const std::string	Location::getPath(void) const
 {
 	return (_path);
 }
 
-std::string	Location::getCgiPass(void) const
+const std::string	Location::getCgiPass(void) const
 {
 	return (_cgiPass);
 }
 
-std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};
+bool				Location::isCgiPassSet(void) const
+{
+	return (_cgiPassSet);
+}
+
+const std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};

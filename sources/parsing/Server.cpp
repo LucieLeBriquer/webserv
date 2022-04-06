@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 15:17:54 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/06 09:10:43 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ Server	&Server::operator=(const Server &server)
 }
 
 std::ostream	&operator<<(std::ostream &o, const Server &server)
-{
+{	
 	o << BLUE << "Server" << END << std::endl;
 	o << "\thost        \t" << server.getHost() << std::endl;
 	o << "\tport        \t" << server.getPort() << std::endl;
@@ -134,7 +134,7 @@ void	Server::_fillOneInfo(std::string str)
 {
 	int			keyword;
 	vecStr		words;
-	setFuncServ	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
+	setFunc2	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
 			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex,
 			&Server::_setRedirUrl};
@@ -163,6 +163,55 @@ void	Server::_fillServerInfo(std::string str)
 		if (!_formatOk)
 			return ;
 	}
+}
+
+std::string	Server::getRealUrl(const std::string &url) const
+{
+	int			loc;
+	std::string	root;
+	std::string	path;
+
+	loc = configFromUrl(url);
+	if (loc < 0)
+		return (_root + "/" + url);
+	if (_locations[loc].getPath()[0] == '*')
+		return (_root + "/" + url);
+	if (_locations[loc].isRootSet())
+	{
+		root = _locations[loc].getRoot();
+		path = _locations[loc].getPath();
+		return (root + url.substr(path.size(), url.size() - path.size() + 1));
+	}
+	return (url);
+}
+
+int		Server::configFromUrl(const std::string &url) const
+{
+	size_t		maxSize = 0;
+	int			matchingLoc = -1;
+	std::string	path;
+	std::string	extension;
+	size_t		size;
+
+	for (size_t i = 0; i < _locations.size(); i++)
+	{
+		path = _locations[i].getPath();
+		size = path.size();
+		if (path[0] == '*')
+		{
+			extension = path.substr(1, path.size() - 2);
+			if (url.size() > extension.size()
+				&& url.substr(0, url.find('?')).substr(url.size() - extension.size() - 1, extension.size()) == extension)
+				return (i);
+		}
+		else if (url.substr(0, size) == path && ((url.size() > size && url[size] == '/') || url.size() == size)
+			&& (size > maxSize))
+		{
+			maxSize = size;
+			matchingLoc = i;
+		}
+	}
+	return (matchingLoc);
 }
 
 /*
@@ -216,25 +265,25 @@ void	Server::_setServerNames(vecStr words)
 **		GETTER FUNCTIONS
 */
 
-std::string	Server::getHost(void) const
+const std::string	Server::getHost(void) const
 {
 	return (_host);
 }
 
-int			Server::getPort(void) const
+int					Server::getPort(void) const
 {
 	return (_port);
 }
 
-vecStr		Server::getServerNames(void) const
+const vecStr		Server::getServerNames(void) const
 {
 	return (_serverNames);
 }
 
-vecLoc		Server::getLocations(void) const
+const vecLoc		Server::getLocations(void) const
 {
 	return (_locations);
 }
 
-std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
+const std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
 			"client_size", "methods", "error_page", "autoindex", "return"};

@@ -30,6 +30,9 @@ class Socket
 		const int &					getSocket(int nbr) const;
 		void						setSocket(int newSocket);
 
+		const Server				getConfig(int nbr) const;
+		const Location				getConfig(int nbr, int loc) const;
+
 		const int &					getConnSock(int nbr) const;
 		void						setConnSock(int newConnSock);
 		int &						modConnSock(int nbr);
