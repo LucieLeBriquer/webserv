@@ -12,50 +12,43 @@ void HTTPRequest::mdelete(void ){
 	this->_method  = "DELETE";
 }
 
-int HTTPRequest::method(std::string buf, STATUS *code, HTTPResponse *deliver)
+std::string	HTTPRequest::getFirstLine( void )
 {
-	std::string methods[3] = {"GET", "POST", "DELETE"};
+	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
+	return this->_fLine;
+}
+
+int HTTPRequest::header(std::string buf, HTTPHeader *h)
+{
+	std::string header[4] = {"host:", "content-length", "user-agent:", "accept:"};
 	
-	int i;
+	h->setFct[0] = &HTTPHeader::setHost;
+	h->setFct[1] = &HTTPHeader::setContentLen;
+	h->setFct[2] = &HTTPHeader::setUserA;
+	h->setFct[3] = &HTTPHeader::setAccept;
 
-	getFct[0] = &HTTPRequest::get;
-	getFct[1] = &HTTPRequest::post;
-	getFct[2] = &HTTPRequest::mdelete;
+	int i, j;
 
-	std::vector<std::string> request = splitThis(buf);
-	std::vector<std::string>::iterator it;
-	int arg = 0;
-	for (it = request.begin(); it != request.end(); it++)
+	for (i = 0; i < 3; i++)
 	{
-		if (*it != "")
-			arg++;
+		if (!strncasecmp(buf.c_str(), header[i].c_str(), header[i].length()))
+			break;
 	}
-	this->_httpv = "HTTP/1.0";
-	this->_url = "/";
-	if ((i = this->parseMethod(request[0], methods)) == -1)
-	{
-		deliver->statusCode(code->status(4, 5), this->getFirstLine());
-		if (arg != 3)
-			return -1;
-		return 1;
-	}
-	else
-		(this->*(getFct[i]))();
-	if (!this->parsePath(request[1]))
-	{
-		deliver->statusCode(code->status(4, 4), this->getFirstLine());
-		if (arg != 3)
-			return -1;
-		return 1;
-	}
-	if (!this->parseProtocol(request[2]))
-	{
-		deliver->statusCode(code->status(4, 0), this->getFirstLine());
-		return -1;
-	}
-	std::cout << "what ["<< _url << "] and " << _httpv << std::endl;
-	deliver->statusCode(code->status(2, 0), this->getFirstLine());
-	if (arg != 3)
-		return -1;
-	return 1;
+	if (i == 3)
+		return (0);
+	j = header[i].length();
+	if (buf[j] == ' ')
+		j++;
+	int pos = j;
+	while (buf[j] != '\n' && buf[j] != '\r' && buf[j] != ' ')
+	    j++;
+	int len = j - pos;
+	char tmp[len + 1];
+	buf.copy(tmp, len, pos);
+	tmp[len] = '\0';
+
+	h->_active = 1;
+	std::string value(tmp);
+	(h->*(h->setFct[i]))(value);
+	return (1);
 }

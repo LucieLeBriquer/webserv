@@ -1,20 +1,9 @@
 //#include "usefull.hpp"
 #include "engine.hpp"
 
-std::string	HTTPRequest::getFirstLine( void )
-{
-	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
-	return this->_fLine;
-}
-
 std::string HTTPResponse::getHeader( void )
 {
 	return this->_header;
-}
-
-int HTTPHeader::getContext( void )
-{
-	return this->_active;
 }
 
 void HTTPResponse::setStatus(std::string code)
@@ -39,12 +28,14 @@ void HTTPResponse::setStatus(std::string code)
 std::string HTTPResponse::checkUrl()
 {
 	std::string filename("html");
+	std::string tmpname("html");
 	int fd;
 
 	this->setStatus(this->_statusCode);
+	tmpname += this->_url;
 	if (this->_url == "/")
-		this->_url = "/index.html";
-	else if ((fd = open(this->_url.c_str(), O_RDWR)) == -1)
+		this->_url = "html/index.html";
+	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 	{
 		this->setStatus("404");
 	}

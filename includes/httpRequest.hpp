@@ -44,6 +44,7 @@ class HTTPHeader : protected HTTPRequest
 	friend class HTTPRequest;
 	protected:
 		std::string	_host;
+		std::string	_contentLen;
 		std::string	_useragent;
 		std::string	_accept;
 	public:
@@ -52,6 +53,7 @@ class HTTPHeader : protected HTTPRequest
 		typedef void (HTTPHeader::*ptr)(std::string);
 		ptr			setFct[3];
 		int		getContext();
+		void	setContentLen(std::string value);
 		void	setHost(std::string value);
 		void	setUserA(std::string value);
 		void	setAccept(std::string value);
