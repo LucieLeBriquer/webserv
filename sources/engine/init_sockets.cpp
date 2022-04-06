@@ -30,7 +30,7 @@ int		setsocknonblock(int sock)
 	return 1;
 }
 
-int		initSockets(Socket *sock, const Config config)
+int		initSockets(Socket *sock, const Config &config)
 {
 	int			listenSock;
 	int			yes = 1;

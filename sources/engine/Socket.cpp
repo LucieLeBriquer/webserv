@@ -17,7 +17,7 @@ Socket::Socket() : _check(0)
 	std::cout << "socket constructor" << std::endl;
 }
 
-Socket::Socket(const Config config) : _config(config.getServers()), _check(0)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(0)
 {
 	if (initSockets(this, config) < 0)
 		this->_check = -1;

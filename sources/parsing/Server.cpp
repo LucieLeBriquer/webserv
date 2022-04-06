@@ -182,7 +182,7 @@ std::string	Server::getRealUrl(const std::string &url) const
 		path = _locations[loc].getPath();
 		return (root + url.substr(path.size(), url.size() - path.size() + 1));
 	}
-	return (url);
+	return (_root + "/" + url);
 }
 
 int		Server::configFromUrl(const std::string &url) const

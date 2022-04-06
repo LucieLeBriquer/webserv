@@ -3,14 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:12 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/31 14:44:14 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/06 23:20:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+
+// just to test some URL
+
+static void	testUrl(const Socket &socket, std::string url)
+{
+	Server	config;
+	int		nbConfig;
+
+	for (int i = 0; i < socket.getSocketNbr(); i++)
+	{
+		config = socket.getConfig(i);
+		std::cout << socket.getConfig(i).getRoot()  << "  " << config.getRoot() << std::endl;
+		std::cout << url << " requested on socket " << i << std::endl;
+		nbConfig = config.configFromUrl(url);
+		if (nbConfig >= 0)
+			std::cout << socket.getConfig(i, nbConfig) << std::endl;
+		else
+			std::cout << "not in a location block, please use server's config" << std::endl;
+		std::cout << config.getRealUrl(url) << std::endl << std::endl;
+	}
+} 
 
 int	main(int argc, char **argv)
 {
@@ -19,7 +40,8 @@ int	main(int argc, char **argv)
 
 	if (!config.wellFormatted())
 		return (1);
-	//std::cout << config << std::endl;
+	testUrl(sock, "/DIRECTORY1/blbl.html");
+	testUrl(sock, "/DIRECTORY4/blbl.html");
 	
 	// if (!initSockets(&sock, config))
 		// exit(EXIT_FAILURE);
