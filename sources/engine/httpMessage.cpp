@@ -6,15 +6,13 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/05 15:17:53 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/06 15:15:14 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
-#include <sstream>
-#define B_SIZE 2
 
-void	GetRightFile(std::string *file, int *tot_size, int flag)
+void	GetRightFile(std::string *file, int *tot_size)
 {
 	std::string 		body, head;
 	std::stringstream	ss;
@@ -22,10 +20,9 @@ void	GetRightFile(std::string *file, int *tot_size, int flag)
 	int					ret, head_size, body_size;
 	char				buf[B_SIZE + 1];
 
-	(void)flag;
 	// open le bon file en fonction de la requete
-	fd = open("./html/index.html", O_RDWR);
-	// fd = open("./html/form.html", O_RDWR);
+	// fd = open("./html/index.html", O_RDWR);
+	fd = open("./html/form.html", O_RDWR);
 	// fd = open("./html/info.php", O_RDWR);
 	// remplir le header reponse
 	head = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
@@ -49,12 +46,15 @@ void	GetRightFile(std::string *file, int *tot_size, int flag)
 	(*tot_size) += head_size;
 }
 
-int		sendReponse(int fde, int flag)
+int		sendReponse(int fde, int flag, char **env)
 {
 	std::string	file;
 	int			tot_size = 0;
 	
-	GetRightFile(&file, &tot_size, flag);
+	if (flag == 4)
+		GetCGIfile(&file, &tot_size, env);
+	else
+		GetRightFile(&file, &tot_size);
 	if (send(fde, file.c_str(), tot_size, 0) < 0)
 	{
 		perror("send()");
@@ -66,7 +66,7 @@ int		sendReponse(int fde, int flag)
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde)
+int		requestReponse(int epollfd, int fde, char **env)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
@@ -84,10 +84,6 @@ int		requestReponse(int epollfd, int fde)
 		}
 		else if (byteCount < 0)
 		{
-			/*verifier chaque ligne si il s'agit d'une requete valide, si non, on break et bad request
-			if (badRequest(string))
-				break ; 
-			*/
 			/************************************************/
 			if (strncmp(string.c_str(), "GET", 3) == 0)
 				flag = 1;
@@ -95,17 +91,13 @@ int		requestReponse(int epollfd, int fde)
 				flag = 2;
 			else if (strncmp(string.c_str(), "HEAD", 4) == 0)
 				flag = 3;
-			// std::cout << "flag = " << flag << std::endl;
+			if (strncmp(&string[5], "/php-example.php", 16) == 0)
+				flag = 4;
 			/*************************************************/
-			if (strcmp(&string[string.length() - 2], "\r\n") == 0 && body == 1 && strcmp(&string[string.length() - 4], "\r\n\r\n") != 0)
+			if (flag == 4)
 				break ;
-			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
-			{
-				if (flag == 2)
-					body = 1;
-				else
-					break ;
-			}
+			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0 && flag != 4)
+				break ;
 		}
 		else
 		{
@@ -115,7 +107,7 @@ int		requestReponse(int epollfd, int fde)
 		string += buf;
 	}
 	std::cout << "final string = " << string << std::endl;
-	if (sendReponse(fde, flag) < 0)
+	if (sendReponse(fde, flag, env) < 0)
 		return -1;
 	return 1;
 }

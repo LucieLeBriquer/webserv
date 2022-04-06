@@ -6,32 +6,32 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 11:18:37 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/06 15:14:51 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-void	printStatus(int i, int nfds, Socket *sock, int fde)
+void printStatus(int i, int nfds, Socket *sock, int fde)
 {
 	switch (i)
 	{
-		case 1:
-		{
-			std::cout << std::endl;
-			std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
-			std::cout << std::endl;
-			break ;
-		}
-		case 2:
-		{
-			std::cout << "nfds = " << nfds << *sock << " events[n].data.fd = " << fde << std::endl;
-			break ;
-		}
+	case 1:
+	{
+		std::cout << std::endl;
+		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
+		std::cout << std::endl;
+		break;
+	}
+	case 2:
+	{
+		std::cout << "nfds = " << nfds << *sock << " events[n].data.fd = " << fde << std::endl;
+		break;
+	}
 	}
 }
 
-int		socketMatch(int fde, Socket *sock)
+int socketMatch(int fde, Socket *sock)
 {
 	for (int i = 0; i < sock->getSocketNbr(); i++)
 	{
@@ -41,19 +41,19 @@ int		socketMatch(int fde, Socket *sock)
 	return -1;
 }
 
-Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
+Socket *initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 {
 	while (1)
 	{
-		struct sockaddr	in_addr;
-		socklen_t		in_addr_len = sizeof(in_addr);
+		struct sockaddr in_addr;
+		socklen_t in_addr_len = sizeof(in_addr);
 
-		if ((sock->modConnSock(i) = accept(sock->getSocket(i), (struct sockaddr *) &in_addr, &in_addr_len)) < 0)
+		if ((sock->modConnSock(i) = accept(sock->getSocket(i), (struct sockaddr *)&in_addr, &in_addr_len)) < 0)
 		{
 			if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
 			{
 				std::cout << "we already processed all incoming connections" << std::endl;
-				break ;
+				break;
 			}
 			else
 			{
@@ -75,14 +75,14 @@ Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 	return sock;
 }
 
-int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, const Config config)
+int addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, const Config config)
 {
 	if ((*epollfd = epoll_create(MAX_EVENTS)) < 0)
 	{
 		perror("epoll_create()");
 		return -1;
 	}
-	
+
 	for (int i = 0; i < config.getServers().size(); i++)
 	{
 		ev.events = EPOLLIN | EPOLLET;
@@ -96,18 +96,18 @@ int		addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, con
 	return 1;
 }
 
-int		initEpoll(Socket *sock, const Config config)
+int initEpoll(Socket *sock, const Config config)
 {
-	struct epoll_event	ev, events[MAX_EVENTS];
-	int					nfds, epollfd, i;
-	
+	struct epoll_event ev, events[MAX_EVENTS];
+	int nfds, epollfd, i;
+
 	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
 		return -1;
 
 	while (1)
 	{
 		printStatus(1, nfds, sock, events[-1].data.fd);
-		
+
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
 			perror("epoll_wait()");
@@ -120,7 +120,7 @@ int		initEpoll(Socket *sock, const Config config)
 			{
 				std::cout << "Epoll error, events = " << events[n].events << std::endl;
 				close(events[n].data.fd);
-				continue ;
+				continue;
 			}
 			else if ((i = socketMatch(events[n].data.fd, sock)) >= 0)
 			{
@@ -129,7 +129,7 @@ int		initEpoll(Socket *sock, const Config config)
 			}
 			else
 			{
-				if (!requestReponse(epollfd, events[n].data.fd))
+				if (!requestReponse(epollfd, events[n].data.fd, sock->getEnv()))
 					return -1;
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 15:26:28 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/06 15:12:12 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,16 @@ int							Socket::getSocketNbr(void) const
 int							Socket::getCheck(void) const
 {
 	return this->_check;
+}
+
+char**						Socket::getEnv(void) const
+{
+	return this->_env;
+}
+
+void						Socket::setEnv(char** envp)
+{
+	this->_env = envp;
 }
 
 Socket::~Socket()
