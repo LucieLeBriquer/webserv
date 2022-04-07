@@ -2,9 +2,6 @@
 
 HTTPRequest::HTTPRequest()
 {
-	this->_httpv = "HTTP/1.0";
-	this->_url = "/";
-	this->_method = "NULL";
 };
 
 void HTTPRequest::get(void ){
@@ -22,5 +19,6 @@ void HTTPRequest::mdelete(void ){
 std::string	HTTPRequest::getFirstLine( void )
 {
 	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
+	std::cout << "fline = "<< _fLine << std::endl;
 	return this->_fLine;
 }

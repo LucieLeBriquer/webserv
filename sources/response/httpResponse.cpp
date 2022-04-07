@@ -34,10 +34,11 @@ std::string HTTPResponse::checkUrl()
 	this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
 	if (this->_url == "/")
-		this->_url = "index.html";
+		this->_url = "/index.html";
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
+	std::cout << "stat = "<< _statusCode << std::endl;
 	close(fd);
 	return filename;
 }
@@ -48,19 +49,23 @@ void HTTPResponse::setContentLen(int len)
 	s << len;
 	const std::string tot_len(s.str());
 	this->_contentLen = tot_len;
+	std::cout << "len = "<< len << "cont "<< _contentLen << std::endl;
 }
 
 void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
 	std::vector<std::string> line = splitThis(firstLine);
 
+
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
+//	std::cout << "stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 }
 
 void HTTPResponse::rendering( void )
 {
+//	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
 	time(&rawtime);
 	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 

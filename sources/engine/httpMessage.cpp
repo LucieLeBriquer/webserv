@@ -36,6 +36,7 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 	*file += deliver->getHeader();
 	(*file) += "\n\n";
 	(*file) += body;
+	std::cout << "body =\n" << body << std::endl;
 	std::cout << "file =\n" << *file << std::endl;
 }
 
@@ -88,7 +89,7 @@ int		requestReponse(int epollfd, int fde)
 				}
 			}
 			else if (!head.header(string))
-				code.statusCode(code.status(4, 0), treat.getFirstLine());
+				deliver.statusCode(code.status(4, 0), head.getFirstLine());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
 			//req.clear();

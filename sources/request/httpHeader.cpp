@@ -80,6 +80,9 @@ int HTTPHeader::method(std::string buf, STATUS *code, HTTPResponse *deliver)
 		if (*it != "")
 			arg++;
 	}
+	this->_httpv = "HTTP/1.0";
+	this->_url = "/";
+	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
