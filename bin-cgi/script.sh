@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [[ $REQUEST_METHOD != "POST" ]]; then
-	echo "No POST request" ; exit
-fi
+# if [[ $REQUEST_METHOD != "POST" ]]; then
+# 	echo "No POST request" ; exit
+# fi
 
-if [[ $CONTENT_TYPE != "application/x-www-form-urlencoded" ]]; then
-	echo "Wrong encoded type" ; exit
-fi
+# if [[ $CONTENT_TYPE != "application/x-www-form-urlencoded" ]]; then
+# 	echo "Wrong encoded type" ; exit
+# fi
 
 # recupFile empty and fill it line by line from stdin
 echo "" > recupFile
