@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/06 15:15:14 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 14:14:45 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,13 @@ void	GetRightFile(std::string *file, int *tot_size)
 	(*tot_size) += head_size;
 }
 
-int		sendReponse(int fde, int flag, char **env)
+int		sendReponse(int fde, int flag, Socket *sock, int sockNbr)
 {
 	std::string	file;
 	int			tot_size = 0;
 	
 	if (flag == 4)
-		GetCGIfile(&file, &tot_size, env);
+		GetCGIfile(&file, &tot_size, sock->getEnv());
 	else
 		GetRightFile(&file, &tot_size);
 	if (send(fde, file.c_str(), tot_size, 0) < 0)
@@ -66,7 +66,7 @@ int		sendReponse(int fde, int flag, char **env)
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde, char **env)
+int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
@@ -107,7 +107,7 @@ int		requestReponse(int epollfd, int fde, char **env)
 		string += buf;
 	}
 	std::cout << "final string = " << string << std::endl;
-	if (sendReponse(fde, flag, env) < 0)
+	if (sendReponse(fde, flag, sock, sockNbr) < 0)
 		return -1;
 	return 1;
 }
