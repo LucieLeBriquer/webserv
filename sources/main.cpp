@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:12 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/06 23:20:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:57:36 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-int	main(int argc, char **argv)
+int	main(int argc, char **argv, char **envp)
 {
 	Config		config(fileName(argc, argv));
 	Socket		sock;
@@ -24,6 +24,7 @@ int	main(int argc, char **argv)
 	if (sock.getCheck() < 0)
 		exit(EXIT_FAILURE);
 
+	sock.setEnv(envp);
 	if (!initEpoll(&sock, config))
 		exit(EXIT_FAILURE);
 	return (0);
