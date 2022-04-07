@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/06 09:10:43 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/07 13:58:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 
 Server::Server(void) : _host("localhost"), _port(8080), _hostSet(false), _serverNamesSet(false)
 {
-	return ;
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " default constructor" << std::endl;
 }
 
 Server::Server(const Server &server) : Block(server)
 {
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " copy constructor" << std::endl;
 	*this = server;
 }
 
@@ -31,6 +34,8 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	std::vector<std::string> 	locBlocks;
 	std::string					serverInfo;
 
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " string constructor" << std::endl;
 	serverInfo.clear();
 	if (!splitBlocks(locBlocks, str, "location", serverInfo))
 	{
@@ -56,6 +61,8 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 
 Server::~Server()
 {
+	if (LOG)
+		std::cout << RED << "[Server]" << END << " destructor" << std::endl;
 	_locations.clear();
 	_serverNames.clear();
 }
@@ -66,9 +73,32 @@ Server::~Server()
 
 Server	&Server::operator=(const Server &server)
 {
+	if (LOG)
+		std::cout << GREEN << "[Server]" END << " assignation operator" << std::endl;
 	if (this != &server)
 	{
-		(Block)(*this) = (Block)(server);
+		_index.clear();
+		_methods.clear();
+		_errorPages.clear();
+
+		_root = server._root;
+		_index = server._index;
+		_maxClientBodySize = server._maxClientBodySize;
+		_methods = server._methods;
+		_errorPages = server._errorPages;
+		_redirUrl = server._redirUrl;
+		_autoindex = server._autoindex;
+
+		_rootSet = server._rootSet;
+		_indexSet = server._indexSet;
+		_maxClientBodySizeSet = server._maxClientBodySizeSet;
+		_methodsSet = server._methodsSet;
+		_errorPagesSet = server._errorPagesSet;
+		_redirUrlSet = server._redirUrlSet;
+		_autoindexSet = server._autoindexSet;
+
+		_formatOk = server._formatOk;
+		_formatErr = server._formatErr;
 
 		_locations.clear();
 		_serverNames.clear();

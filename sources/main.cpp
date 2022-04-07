@@ -19,14 +19,11 @@ int	main(int argc, char **argv)
 
 	if (!config.wellFormatted())
 		return (1);
-	//testUrl(sock, "/DIRECTORY1/blbl.html");
-	
-	
-	// if (!initSockets(&sock, config))
-		// exit(EXIT_FAILURE);
+
 	sock = Socket(config);
 	if (sock.getCheck() < 0)
 		exit(EXIT_FAILURE);
+
 	if (!initEpoll(&sock, config))
 		exit(EXIT_FAILURE);
 	return (0);

@@ -48,5 +48,6 @@ std::string STATUS::status(int code, int type)
 
 	int x = status[code];
 	(this->*(getStatus[x]))(type);
+	std::cout <<"code "<< _code << std::endl;
 	return this->_code;
 }

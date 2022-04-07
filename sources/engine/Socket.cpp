@@ -14,7 +14,7 @@
 
 Socket::Socket() : _check(0)
 {
-	std::cout << "socket constructor" << std::endl;
+	return ;
 }
 
 Socket::Socket(const Socket &socket)
