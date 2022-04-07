@@ -57,7 +57,28 @@ Location	&Location::operator=(const Location &location)
 {
 	if (this != &location)
 	{
-		(Block)(*this) = (Block)(location);
+		_index.clear();
+		_methods.clear();
+		_errorPages.clear();
+
+		_root = location._root;
+		_index = location._index;
+		_maxClientBodySize = location._maxClientBodySize;
+		_methods = location._methods;
+		_errorPages = location._errorPages;
+		_redirUrl = location._redirUrl;
+		_autoindex = location._autoindex;
+
+		_rootSet = location._rootSet;
+		_indexSet = location._indexSet;
+		_maxClientBodySizeSet = location._maxClientBodySizeSet;
+		_methodsSet = location._methodsSet;
+		_errorPagesSet = location._errorPagesSet;
+		_redirUrlSet = location._redirUrlSet;
+		_autoindexSet = location._autoindexSet;
+
+		_formatOk = location._formatOk;
+		_formatErr = location._formatErr;
 		
 		_path = location._path;
 		_cgiPass = location._cgiPass;

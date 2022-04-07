@@ -59,6 +59,6 @@ class Socket
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
-int		initSockets(Socket *sock, const Config &config);
+int				initSockets(Socket *sock, const Config &config);
 
 #endif
