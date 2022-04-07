@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request_reponse.cpp                                :+:      :+:    :+:   */
+/*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/01 10:29:48 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:50:54 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde)
+int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
@@ -64,6 +64,8 @@ int		requestReponse(int epollfd, int fde)
 	HTTPHeader		head;
 	STATUS			code;
 	int				line;
+	(void)sock;
+	(void)sockNbr;
 
 	line = 0;
 	while (1)
