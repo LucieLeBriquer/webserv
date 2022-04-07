@@ -24,11 +24,17 @@ class Socket
 {
 	public:
 		Socket();
-		Socket(const Config config);
+		Socket(const Socket &socket);
+		Socket(const Config &config);
 		~Socket();
+
+		Socket	&operator=(const Socket &socket);
 
 		const int &					getSocket(int nbr) const;
 		void						setSocket(int newSocket);
+
+		const Server				getConfig(int nbr) const;
+		const Location				getConfig(int nbr, int loc) const;
 
 		const int &					getConnSock(int nbr) const;
 		void						setConnSock(int newConnSock);
@@ -53,6 +59,6 @@ class Socket
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
-int		initSockets(Socket *sock, const Config config);
+int		initSockets(Socket *sock, const Config &config);
 
 #endif

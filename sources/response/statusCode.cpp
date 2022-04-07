@@ -1,5 +1,11 @@
 #include "usefull.hpp"
 
+STATUS::STATUS() {
+	getStatus[0] = &STATUS::err4xx;
+	getStatus[1] = &STATUS::status2xx;
+	getStatus[2] = &STATUS::err5xx;
+};
+
 void STATUS::err4xx(int type)
 {
 	std::ostringstream s;
@@ -42,12 +48,8 @@ std::string STATUS::status(int code, int type)
 	status[4] = 0;
 	status[2] = 1;
 	status[5] = 2;
-	getStatus[0] = &STATUS::err4xx;
-	getStatus[1] = &STATUS::status2xx;
-	getStatus[2] = &STATUS::err5xx;
 
 	int x = status[code];
 	(this->*(getStatus[x]))(type);
-	std::cout <<"code "<< _code << std::endl;
 	return this->_code;
 }

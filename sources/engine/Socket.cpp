@@ -17,10 +17,35 @@ Socket::Socket() : _check(0)
 	std::cout << "socket constructor" << std::endl;
 }
 
-Socket::Socket(const Config config) : _config(config.getServers()), _check(0)
+Socket::Socket(const Socket &socket)
+{
+	*this = socket;
+}
+
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(0)
 {
 	if (initSockets(this, config) < 0)
 		this->_check = -1;
+}
+
+Socket	&Socket::operator=(const Socket &socket)
+{
+	if (this != &socket)
+	{
+		_config.clear();
+		_socket.clear();
+		_connSock.clear();
+		_Address.clear();
+		_addrLen.clear();
+
+		_config = socket._config;
+		_socket = socket._socket;
+		_connSock = socket._connSock;
+		_Address = socket._Address;
+		_addrLen = socket._addrLen;
+		_check = socket._check;
+	}
+	return (*this);
 }
 
 const int &					Socket::getSocket(int nbr) const
@@ -93,7 +118,17 @@ int							Socket::getCheck(void) const
 
 Socket::~Socket()
 {
-	std::cout << "socket destructor" << std::endl;
+	return ;
+}
+
+const Server				Socket::getConfig(int nbr) const
+{
+	return (_config[nbr]);
+}
+
+const Location				Socket::getConfig(int nbr, int loc) const
+{
+	return (_config[nbr].getLocations()[loc]);
 }
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)

@@ -36,6 +36,7 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 	*file += deliver->getHeader();
 	(*file) += "\n\n";
 	(*file) += body;
+	std::cout << "file =\n" << *file << std::endl;
 }
 
 int		sendReponse(int fde, HTTPResponse *deliver)
@@ -60,9 +61,9 @@ int		requestReponse(int epollfd, int fde)
 	int			byteCount, recv_len = 0;
 	std::string		string;
 	HTTPRequest		treat;
-	HTTPResponse	deliver;
 	HTTPHeader		head;
 	STATUS			code;
+	HTTPResponse	deliver;
 	int				line;
 
 	line = 0;
@@ -80,13 +81,13 @@ int		requestReponse(int epollfd, int fde)
 			//req = string;
 			if (line == 0)
 			{
-				if (treat.method(string, &code, &deliver) == -1)
+				if (head.method(string, &code, &deliver) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else if (!treat.header(string, &head))
+			else if (!head.header(string))
 				code.statusCode(code.status(4, 0), treat.getFirstLine());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;

@@ -1,7 +1,7 @@
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
+# include "httpRequest.hpp"
 
-#include "httpRequest.hpp"
 class STATUS;
 
 class HTTPResponse
@@ -13,15 +13,14 @@ class HTTPResponse
 		std::string	_url;
 		std::string	_header;
 	public:
-		HTTPResponse() {};
-		~HTTPResponse() {};
+		HTTPResponse(){};
+		~HTTPResponse(){};
 		std::string	getHeader( void );
 		void		rendering( void );
 		void		setContentLen( int len );
 		std::string	checkUrl();
-		void		setStatus(std::string code);
+		void		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
-	//	void		body(int code, STATUS *sc, HTTPMethod *m);
 };
 
 class STATUS: public HTTPResponse
@@ -32,6 +31,8 @@ class STATUS: public HTTPResponse
 		typedef void (STATUS::*ptr)(int);
 		ptr			getStatus[3];
 	public:
+		STATUS();
+		 ~STATUS(){};
 		std::string status(int code, int type);
 		void        err4xx(int type);
 		void        status2xx(int type);

@@ -1,3 +1,37 @@
+# ToDo
+- parsing of requests
+- handling classic requests
+- handling php CGI's
+
+# Questions
+- est-ce que toutes les classes doivent être sous forme canonique ? C'est pas précisé dans le sujet mais j'ai peur que ça soit checké dans la correction
+
+# Useful explanations (to delete after)
+
+Si on est dans la socket numéro `i` la config peut être obtenue en appelant `getConfig(i)`.
+
+```c++
+getConfig(i).configFromUrl("url/a/check")
+```
+renvoie le numéro du block location correspondant à l'url (si ca matche)
+
+Valeurs de retour :
+- `-1` : si l'url n'appartient à aucun block location, on utilisera donc la config `getConfig(i)` (de type `Server`) pour avoir toutes les infos
+- `j >= 0` : si l'url appartient au block location `j`, on utilisera alors la config `getConfig(i,j)` (de type `Location`)
+
+Il y a des opérateurs `<<` pour tout donc pour le débug ou juste afficher la config utilisée vous pouvez juste faire un petit :
+```c++
+    std::cout << getConfig(i) << std::endl; 
+ou  std::cout << getConfig(i ,j) << std::endl;
+```
+selon les cas.
+
+J'ai aussi rajouté une fonction `getRealUrl("url/to/check")` qui renvoie l'url rootée, par exemple :
+```
+           		getConfig(0).getRealUrl("/DIRECTORY1/files/test.html")
+    renvoie        "ROOT1/files/test.html"
+```
+
 # Webserv
 
 ## HTTP server
@@ -29,25 +63,55 @@ uint16_t ntohs(uint16_t netshort);
 - `htons()` : converts a short integer (e.g. address) to a network representation 
 - etc.
 
-### select, poll, epoll -- synchronous I/O multiplexing
+### epoll -- synchronous I/O multiplexing
+
+`epoll()` is a method used to monitor several sockets. It waits for changing state or changing level for each socket monitored. `epoll()` can handle a lot of sockets descriptors. It contains a internal structure containing two lists :
+- an interest list : which corresponds to all the file descriptors monitored
+- a ready list which corresponds to the file descriptors ready for I/O
+
+By default, `epoll()` is looking only at level changes.
+
+epoll_ctl() : l'attribut "events" de la structure "epoll_event" (4eme arg) peut recevoir different "type"
+-> Ces "types" vont dicter le comportement du 3eme arg 
+-> exemple 1 : notre "sokcet de base" est disponible en lecture / en ecriture ...
+-> exemple 2 : EPOLLET est un flag de comportement, il passe en mode detection de changement de niveau (edge-triggered) ET
+
+epoll_wait(1 arg, 2 arg, 3 arg, 4 arg)
+epoll_wait() attend un EVENT I/O depuis le fd de notre instance Epoll()
+epoll_wait() renvoi un nombre max d'EVENT, le nombre de fd "ready"
+epoll_wait() : 4eme arg egal a -1 va bloquer indefiniment
+
+#### epoll_create
 ```c++
-int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
+int epoll_create(int nb);
 ```
+creates a new `epoll` instance and returns a descriptor.
 
-Some macro available to deal with `fd_set` :
+#### epoll_ctl
 ```c++
-void FD_CLR(int fd, fd_set *set)        # remove fd from set
-void FD_ZERO(fd_set *set)               # clear set
-void FD_SET(int fd, fd_set *set)        # add fd in set
-int  FD_ISSET(int fd, fd_set *set)      # check if fd is in set
+int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
 ```
+changes the behavior of our `epoll` instance.
 
-`select()` waits until one of `readfds` is ready for reading, or until one of `writefds` is ready for writing, or until one of `exceptfds` has encoutered an exception (cf. test.cpp) or until `timeout` is reached.
+- `epfd` is the descriptor of the `epoll` instance created
+- `op` is the operation wanted on the epoll structure (for example add an new fd in the interest list, modify it or delete it)
+- `fd` is the concerned descriptor
+- `event` should be filled with the concerned `fd` and `flags` we want to apply on this `fd`
 
-### kqueue, kevent -- kernel event notification mechanism
-The `kqueue()` system call creates a new kernel event queue and returns a descriptor.
+####  epoll_wait
+```c++
+int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
+```
+waits for an event on any descriptor in the interest list.
 
-The `EV_SET()` macro is provided for ease of initializing a `kevent` structure.
+- `epfd` is the descriptor of the `epoll` instance created
+- `maxevents` is the maximum of events returned
+- `events` is used to return information from the ready list
+
+This function will block until :
+- a file descriptor delivers an event
+- the call is interrupted by a signal handler
+- the timeout expires
 
 ### socket -- create a socket
 ```c++
@@ -62,32 +126,32 @@ int socket(int domain, int type, int protocol);
 
 ### accept -- accept a connection on a socket
 ```c++
-int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen)
+int accept(int sockfd, struct sockaddr *restrict addr, socklen_t *restrict addrlen);
 ```
 `accept` grabs the first connection request and create a new socket for communication (the listening socket should be used only for listening purpose). `addr` and `addrlen` are filled by the function.
 
 ### listen -- listen for connections on a socket
 ```c++
-int listen(int sockfd, int backlog)
+int listen(int sockfd, int backlog);
 ```
 marks the socket `sockfd` as a listening socket. The `backlog` argument defines the maximum lenght of the queue of pending connection requests.
 
 ### send -- send a message on a socket
 ```c++
-ssize_t send(int sockfd, const void *buf, size_t len, int flags)
+ssize_t send(int sockfd, const void *buf, size_t len, int flags);
 ```
 The only difference between `write()` and `send()` is the presence of flags.
 
 ### recv -- receive a message from a socket
 ```c++
-ssize_t recv(int sockfd, void *buf, size_t len, int flags)
+ssize_t recv(int sockfd, void *buf, size_t len, int flags);
 ```
 The only difference between `read()` and `recv()` is the presence of flags.
 
 ### bind -- identify a socket
 Almost like assigning an address to a mailbox
 ```c++
-int bind(int sockfd, const struct sockaddr *address, socklen_t address_len)
+int bind(int sockfd, const struct sockaddr *address, socklen_t address_len);
 
 struct sockaddr_in 
 { 
@@ -104,19 +168,23 @@ with :
 - `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`)
 
 ### connect
+TO FILL
 
 ### inet_addr
+TO FILL
 
 ### setsockopt
+TO FILL
 
 ### getsockname
+TO FILL
 
 ### fcnt
+TO FILL
 
 -----------------
-## HTTP requests
+## HTTP requests methods
 
-### **Methods**
 HTTP defines a set of request methods(or *verbs*) to indicate the desired action to be performed for a given resource.
 
 The HTTP/1.0 specification defined the GET, HEAD, and POST methods, and the HTTP/1.1 specification added five new methods: PUT, DELETE, CONNECT, OPTIONS, and TRACE.
@@ -130,12 +198,6 @@ The HTTP/1.0 specification defined the GET, HEAD, and POST methods, and the HTTP
 - `OPTIONS` =  requests that the target resource transfer the HTTP methods that it supports. This can be used to check the functionality of a web server by requesting '*' instead of a specific resource.
 - `TRACE` =  requests that the target resource transfer the received request in the response body. That way a client can see what (if any) changes or additions have been made by intermediaries.
 - `PATCH` = applies partial modifications to a resource.
-
-### **Header**
-
-A request header is an HTTP header that can be used in an HTTP request to provide information about the request context.
-
-### Exemple of a full http request
 ```
 GET / HTTP/1.1
 Host: www.example.com
@@ -168,13 +230,6 @@ Connection: close
 </body>
 </html>
 ```
-
-###  `General, entity and representation header`
-
-Current versions of the HTTP/1.1 specification do not specifically categorize headers as "**general headers**" or "**entity headers**". These are now simply referred to as response or request headers depending on context.
-
-**Representation header** describes the particular representation of the resource sent in an HTTP message body. Representation headers include: **Content-Type**, **Content-Encoding** , **Content-Language**, and **Content-Location**. 
-
 ---------------
 
 ## Configuration file
@@ -222,18 +277,53 @@ server {
 	}
 }
 ```
-no regexp for location routes
 
-# To Do List
-- parsing of configuration file
-- server part, with one socket per server block in conf file
-- parsing of requests
-- handling easy requests
-- handling php CGIss
+---
+## CGI
+CIG (Common Gateway Interface) enables web servers to execute an external program, for example to process user request.
 
-# Ressources
+Those programs requires additionnal informations (passed as environnement variables) to be executed. In return they provide all the informations needed by the server to respond to the client.
+
+Our server should be able to specify which URLs should be handled by a specific CGI (cf `location *.php { cgi_pass CGI_PATH }` blocks).
+
+As mentionned in the subject, we can fork to execute the CGI.
+```
+execve(CGI_PATH, args, env);
+```
+where `env` is filled as above.
+
+Server specific variables :
+- `SERVER_SOFTWARE` : name/version of HTTP server.
+- `SERVER_NAME` : host name of the server, may be dot-decimal IP address.
+- `GATEWAY_INTERFACE` : CGI/version.
+
+Request specific variables :
+- `SERVER_PROTOCOL` : HTTP/version.
+- `SERVER_PORT` : TCP port (decimal).
+- `REQUEST_METHOD` : name of HTTP method (see above)
+- `PATH_INFO` : path suffix, if appended to URL after program name and a slash
+- `PATH_TRANSLATED` : corresponding full path as supposed by server, if `PATH_INFO` is present.
+- `SCRIPT_NAME` : relative path to the program, like `/cgi-bin/script.cgi`.
+- `QUERY_STRING` : the part of URL after `?` character
+- `REMOTE_HOST` : host name of the client, unset if server did not perform such lookup
+- `REMOTE_ADDR` : IP address of the client (dot-decimal)
+- `AUTH_TYPE` : identification type, if applicable
+- `REMOTE_USER` : used for certain AUTH_TYPEs
+- `REMOTE_IDENT` : see ident, only if server performed such lookup.
+- `CONTENT_TYPE` : Internet media type of input data if `PUT` or `POST` method are used, as provided via HTTP header
+- `CONTENT_LENGTH` : similarly, size of input data (decimal, in octets) if provided via HTTP header
+- Variables passed by user agent (HTTP_ACCEPT, HTTP_ACCEPT_LANGUAGE, HTTP_USER_AGENT, HTTP_COOKIE and possibly others) contain values of corresponding HTTP headers and therefore have the same sense.
+
+Convention : we should have a `cgi-bin` directory in our root
+
+Uploading files could be handled by CGI (for example python) 
+
+---
+## Ressources
 
 - [Basic explanations on how a web server works](https://developer.mozilla.org/fr/docs/Learn/Common_questions/What_is_a_web_server)
 - [RFC documentation](https://datatracker.ietf.org/doc/html/rfc2616)
 - [Socket programming](https://www.geeksforgeeks.org/socket-programming-cc/)
 - [How to build a simple HTTP server from scratch](https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa)
+- [File upload using Pyhon CGI](https://www.tutorialspoint.com/How-do-we-do-a-file-upload-using-Python-CGI-Programming)
+- [Python CGI programming](https://www.tutorialspoint.com/python/python_cgi_programming.htm)

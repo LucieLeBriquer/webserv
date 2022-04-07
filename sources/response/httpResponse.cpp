@@ -6,7 +6,7 @@ std::string HTTPResponse::getHeader( void )
 	return this->_header;
 }
 
-void HTTPResponse::setStatus(std::string code)
+void HTTPResponse::setStatus(std::string code, std::string str)
 {
 	std::stringstream ss;
 	std::map<int, std::string> getStatus;
@@ -20,7 +20,7 @@ void HTTPResponse::setStatus(std::string code)
 	getStatus[405] = "/405.html";
 	getStatus[505] = "/505.html";
 
-	this->_statusCode = code;
+	this->_statusCode = code + str;
 	if (status > 299)
 		this->_url = getStatus[status];
 }
@@ -31,14 +31,12 @@ std::string HTTPResponse::checkUrl()
 	std::string tmpname("html");
 	int fd;
 
-	this->setStatus(this->_statusCode);
+	this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
 	if (this->_url == "/")
-		this->_url = "html/index.html";
+		this->_url = "index.html";
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
-	{
-		this->setStatus("404");
-	}
+		this->setStatus("404", " Not Found");
 	filename += this->_url;
 	close(fd);
 	return filename;
