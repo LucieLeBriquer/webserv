@@ -34,7 +34,7 @@ std::string HTTPResponse::checkUrl()
 	this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
 	if (this->_url == "/")
-		this->_url = "html/index.html";
+		this->_url = "/index.html";
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
