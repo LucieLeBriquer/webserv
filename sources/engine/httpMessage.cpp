@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 16:50:54 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 17:11:15 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 {
 	std::string	file;
 
+	//check methode et file pour cgi ou non
 	GetRightFile(deliver, &file);
 	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
