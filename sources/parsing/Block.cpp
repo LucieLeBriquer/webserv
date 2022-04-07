@@ -100,6 +100,8 @@ void	Block::_setRoot(vecStr words)
 	if (!checkWordFormat(words[1]))
 		return (_setWrongFormat("unvalid PATH for root"));
 	_root = words[1];
+	if (_root[_root.size() - 1] == '/')
+		_root = _root.substr(0, _root.size() - 1);
 	_rootSet = true;
 }
 
@@ -195,42 +197,77 @@ void	Block::_setRedirUrl(vecStr words)
 **		GETTER FUNCTIONS
 */
 
-std::string	Block::getRoot(void) const
+const std::string	Block::getRoot(void) const
 {
 	return (_root);
 }
 
-vecStr		Block::getIndex(void) const
+const vecStr		Block::getIndex(void) const
 {
 	return (_index);
 }
 
-size_t		Block::getMaxClientBody(void) const
+size_t				Block::getMaxClientBody(void) const
 {
 	return (_maxClientBodySize);
 }
 
-vecInt		Block::getMethods(void) const
+const vecInt		Block::getMethods(void) const
 {
 	return (_methods);
 }
 
-mapErr		Block::getErrorPages(void) const
+const mapErr		Block::getErrorPages(void) const
 {
 	return (_errorPages);
 }
 
-std::string	Block::getRedirUrl(void) const
+const std::string	Block::getRedirUrl(void) const
 {
 	return (_redirUrl);
 }
 
-bool		Block::getAutoIndex(void) const
+bool				Block::getAutoIndex(void) const
 {
 	return (_autoindex);
 }
 
-std::string	Block::getFormatErr(void) const
+const std::string	Block::getFormatErr(void) const
 {
 	return (_formatErr);
+}
+
+bool	Block::isRootSet(void) const
+{
+	return (_rootSet);
+}
+
+bool	Block::isIndexSet(void) const
+{
+	return (_indexSet);
+}
+
+bool	Block::isMaxClientBodySet(void) const
+{
+	return (_maxClientBodySizeSet);
+}
+
+bool	Block::isMethodsSet(void) const
+{
+	return (_methodsSet);
+}
+
+bool	Block::isErrorPagesSet(void) const
+{
+	return (_errorPagesSet);
+}
+
+bool	Block::isRedirUrlSet(void) const
+{
+	return (_redirUrlSet);
+}
+
+bool	Block::isAutoindexSet(void) const
+{
+	return (_autoindexSet);
 }

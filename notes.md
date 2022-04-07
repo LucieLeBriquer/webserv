@@ -3,6 +3,9 @@
 - handling classic requests
 - handling php CGI's
 
+# Questions
+- est-ce que toutes les classes doivent être sous forme canonique ? C'est pas précisé dans le sujet mais j'ai peur que ça soit checké dans la correction
+
 # Useful explanations (to delete after)
 
 Si on est dans la socket numéro `i` la config peut être obtenue en appelant `getConfig(i)`.

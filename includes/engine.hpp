@@ -30,7 +30,7 @@
 # define BUFFER_SIZE 1024
 
 int		setsocknonblock(int sock);
-int		initSockets(Socket *sock, const Config config);
+int		initSockets(Socket *sock, const Config &config);
 int		initEpoll(Socket *sock, const Config config);
 int		socketMatch(int fde, Socket *sock);
 Socket	*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);

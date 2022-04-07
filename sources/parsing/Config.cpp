@@ -100,7 +100,7 @@ Config::Config(const std::string file) : _formatOk(true)
 			return ;
 		}
 		
-		for (int i = 0; i < serverBlocks.size(); i++)
+		for (size_t i = 0; i < serverBlocks.size(); i++)
 		{
 			Server	newServ(serverBlocks[i]);
 
@@ -146,7 +146,7 @@ std::ostream	&operator<<(std::ostream &o, const Config &config)
 	vecSrv	servers = config.getServers();
 	
 	o << std::endl << ORANGE << "Configuration" << END << std::endl << std::endl;
-	for (int i = 0; i < servers.size(); i++)
+	for (size_t i = 0; i < servers.size(); i++)
 		o << servers[i] << std::endl;
 	return (o);
 };

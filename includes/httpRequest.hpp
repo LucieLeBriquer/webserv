@@ -1,7 +1,7 @@
 #ifndef REQUEST_HPP
 # define REQUEST_HPP
+# include "httpResponse.hpp"
 
-#include "httpResponse.hpp"
 class HTTPMethod;
 class HTTPHeader;
 
