@@ -203,16 +203,16 @@ std::string	Server::getRealUrl(const std::string &url) const
 
 	loc = configFromUrl(url);
 	if (loc < 0)
-		return (_root + "/" + url);
+		return (_root + url);
 	if (_locations[loc].getPath()[0] == '*')
-		return (_root + "/" + url);
+		return (_root + url);
 	if (_locations[loc].isRootSet())
 	{
 		root = _locations[loc].getRoot();
 		path = _locations[loc].getPath();
 		return (root + url.substr(path.size(), url.size() - path.size() + 1));
 	}
-	return (_root + "/" + url);
+	return (_root + url);
 }
 
 int		Server::configFromUrl(const std::string &url) const
