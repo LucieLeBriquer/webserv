@@ -3,124 +3,26 @@
 <html>
   <head>
     <title>Webserv</title>
-    <link rel="shortcut icon" href="/home/lucie/Code/site/images/favicon.png"/>
-    <meta charset="utf-8" />
-	<style>
-		:root {
-			--main-red: #bf4f6d;
-			--main-blue: #78dce8;
-			--main-yellow: #f3ce62;
-			--main-green: #99c66c;
-			--main-orange: #f39363;
-			--main-bg-darker: #121213;
-			--main-bg-dark: #19181a;
-			--main-bg-normal: #221f22;
-			--main-bg-light: #2d2a2e;
-			--main-bg-lighter: #403e41;
-			--main-txt-white: #f9f9f7;
-			--main-txt-light: #a9a9a9;
-			--main-txt-gray: #7e7c7e;
-			--main-txt-darker: #575757;
-			--main-active-contrast: #c1c0c0;
-
-			--main-color: var(--main-yellow);
-		}
-
-		html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, nav, section, select {
-			font-family: Helvetica, sans-serif;
-			font-size: 1.05em;
-			text-align: justify;
-			vertical-align: center;
-			color: var(--main-txt-white);
-			background-color: var(--main-bg-normal);
-		}
-
-		h1, h2, h3, h4, h5, h6 {
-			font-family: "Montserrat", sans-serif;
-		}
-
-		.vertical {
-			margin-top: 50vh;
-			transform: translateY(-50%);
-		}
-
-		a:hover {
-			color: var(--main-txt-white);
-		}
-
-		body {
-			margin-left: 10%;
-			margin-right: 10%;
-			line-height: 1.6em;
-			text-align: justify;
-		}
-
-		footer li a {
-			display: block;
-			padding-left: 1em;
-			padding-right: 1em;
-			text-decoration: none;
-			text-align: center;
-			font-size: 1.1em;
-			width: 8em;
-			margin: 0;
-			font-variant: small-caps;
-			background: var(--main-bg-dark);
-		}
-
-		footer ul {
-			list-style-type: none;
-			margin: 0;
-			padding: 0;
-			background: var(--main-bg-dark);
-		}
-
-		.footer a {
-			border-bottom: none;
-		}
-
-		footer, footer ul {
-			display: flex;
-			line-height: 2em;
-		}
-
-		.footer {
-			position: fixed;
-			left: 0;
-			bottom: 0;
-			flex-direction: row;
-			justify-content: space-around;
-			align-items: center;
-			width: 100%;
-			text-align: center;
-			margin-right: 1em;
-			background: var(--main-bg-dark);
-			box-shadow: 0px -2px 2px var(--main-bg-darker);
-		}
-
-		.title404_1 {
-			margin-left: auto;
-			margin-right: auto;
-			font-weight: 500;
-			font-size: 8em;
-		}
-
-		.title404_2 {
-			margin-left: auto;
-			margin-right: auto;
-			font-weight: 400;
-			font-size: 4em;
-		}
-
-		h6 {
-			display: inline;
-			font-weight: 400;
-			line-height: 1em;
-		}
-	</style>
-    <link rel="stylesheet" href="css/main.css"/>
+    <link rel="shortcut icon" href="images/favicon.png"/>
+    <meta charset="utf-8"/>
+	<link rel="stylesheet" href="css/main.css"/>
     <script src="https://kit.fontawesome.com/58cd01063a.js" crossorigin="anonymous"></script>
  </head>
+<header>
+	<div class="logo">
+		<div class="title">42</div>
+		<div class="titlename">Webserv</div>
+	</div>
+	<span class="buttonTab">
+        <a href="index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>
+    </span>
+	<span class="buttonTab">
+        <a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>
+    </span>
+	<span class="buttonTab">
+        <a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>
+    </span>
+</header>
 
 <body>
 <div class="vertical">
@@ -133,12 +35,12 @@
 </body>
 
 <footer>
-<ul class="footer">
-	<li></li>
-	<li></li>
-	<li><a href="https://github.com/LucieLeBriquer/webserv.git" target="_blank"><i class="fab fa-github"></i></a></li>
-	<li></li>
-	<li></li>
-</ul>
+	<ul class="footer">
+		<li></li>
+		<li><a href="https://github.com/MassiliaB" target="_blank"><i class="fab fa-github"></i> masboula</a></li>
+		<li><a href="https://github.com/loupascreau" target="_blank"><i class="fab fa-github"></i> lpascreau</a></li>
+		<li><a href="https://github.com/LucieLeBriquer" target="_blank"><i class="fab fa-github"></i> lle-briq</a></li>
+		<li></li>
+	</ul>
 </footer>
 </html>

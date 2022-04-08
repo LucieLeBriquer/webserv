@@ -11,8 +11,21 @@
 /* ************************************************************************** */
 
 #include "engine.hpp"
-
 #define B_SIZE 2
+
+static bool	isPngFile(std::string name)
+{
+	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
+		return (true);
+	return (false);	
+}
+
+static bool	isCssFile(std::string name)
+{
+	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
+		return (true);
+	return (false);	
+}
 
 void	GetRightFile(HTTPResponse *deliver, std::string *file)
 {
@@ -32,7 +45,14 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 		size += ret;
 	}
 	deliver->setContentLen(size);
-	deliver->rendering();
+
+	// added css
+	if (isCssFile(filename))
+		deliver->rendering("text/css");
+	else if (isPngFile(filename))
+		deliver->rendering("image/png"); // not sufficient
+	else
+		deliver->rendering();
 	*file += deliver->getHeader();
 	(*file) += "\n\n";
 	(*file) += body;
