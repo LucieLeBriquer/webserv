@@ -6,23 +6,23 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 16:56:17 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/08 14:46:03 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/Socket.hpp"
 
-Socket::Socket() : _check(0)
+Socket::Socket() : _check(0), _methode(0)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket)
+Socket::Socket(const Socket &socket) : _check(0), _methode(0)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(0)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(0), _methode(0)
 {
 	if (initSockets(this, config) < 0)
 		this->_check = -1;
@@ -139,6 +139,16 @@ char**						Socket::getEnv(void) const
 void						Socket::setEnv(char** envp)
 {
 	this->_env = envp;
+}
+
+int							Socket::getMethode(void) const
+{
+	return this->_methode;
+}
+
+void						Socket::setMethode(int methode)
+{
+	this->_methode = methode;
 }
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)
