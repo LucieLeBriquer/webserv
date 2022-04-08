@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   httpResponse.hpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
+/*   Updated: 2022/04/08 11:46:03 by masboula         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
 # include "httpRequest.hpp"
@@ -20,7 +32,7 @@ class HTTPResponse
 		std::string	getmethod( void );
 		std::string	getHeader( void );
 		void		rendering( void );
-		void		rendering( std::string typeContent );
+		void		rendering( const std::string typeContent );
 		void		setContentLen( int len );
 		std::string	checkUrl();
 		void		setStatus(std::string code, std::string str);
@@ -36,7 +48,7 @@ class STATUS: public HTTPResponse
 		ptr			getStatus[3];
 	public:
 		STATUS();
-		 ~STATUS(){};
+		~STATUS(){};
 		std::string status(int code, int type);
 		void        err4xx(int type);
 		void        status2xx(int type);
