@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:27:43 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/06 15:03:43 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/03/31 14:33:40 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,13 @@ int		setsocknonblock(int sock)
 	return 1;
 }
 
-int		initSockets(Socket *sock, const Config config)
+int		initSockets(Socket *sock, const Config &config)
 {
 	int			listenSock;
 	int			yes = 1;
 	vecSrv		servers = config.getServers();
-	int			sockfd;
 
-	for (int i = 0; i < servers.size(); i++)
+	for (size_t i = 0; i < servers.size(); i++)
 	{
 		if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		{

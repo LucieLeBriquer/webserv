@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 14:44:23 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/06 22:42:13 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,23 @@
 # define BOLD "\x1B[1m"
 # define GRAY "\x1B[90m"
 # define END "\x1B[0m"
+# define ERR -1
+# define OK 0
+# define LOG 0
 # include <iostream>
 # include <vector>
 # include <string>
+# include <string.h>
+# include <stdio.h>
 # include <cstdlib>
 # include <map>
 # include <limits>
+# include <sstream>
+# include <arpa/inet.h>
+#include <time.h>
+
+#include "httpRequest.hpp"
+#include "httpResponse.hpp"
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;
@@ -51,7 +62,7 @@ std::ostream	&showMethod(std::ostream &o, vecInt methods);
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
-	for (int i = 0; i + 1 < vect.size(); i++)
+	for (size_t i = 0; i + 1 < vect.size(); i++)
 		o << vect[i] << " ";
 	if (vect.size() > 0)
 		o << vect[vect.size() - 1];
@@ -62,7 +73,9 @@ std::ostream	&operator<<(std::ostream &o, mapErr map);
 
 static const int			nbMethods = 3;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
+std::string    fileName(int argc, char **argv);
 
-std::string	fileName(int argc, char **argv);
+std::string 				copystr(std::string str, int start);
+std::vector<std::string>	splitThis(std::string str);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 14:14:59 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:49:53 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, cons
 		return -1;
 	}
 
-	for (int i = 0; i < config.getServers().size(); i++)
+	for (int i = 0; i < (int)config.getServers().size(); i++)
 	{
 		ev.events = EPOLLIN | EPOLLET;
 		ev.data.fd = sock->getSocket(i);

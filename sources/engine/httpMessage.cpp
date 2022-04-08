@@ -6,56 +6,45 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 14:14:45 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 17:11:15 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-void	GetRightFile(std::string *file, int *tot_size)
-{
-	std::string 		body, head;
-	std::stringstream	ss;
-	int					fd;
-	int					ret, head_size, body_size;
-	char				buf[B_SIZE + 1];
+#define B_SIZE 2
 
-	// open le bon file en fonction de la requete
-	// fd = open("./html/index.html", O_RDWR);
-	fd = open("./html/form.html", O_RDWR);
-	// fd = open("./html/info.php", O_RDWR);
-	// remplir le header reponse
-	head = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length: ";
-	// garder la size a jour pour send()
-	head_size = head.length();
-	// lire notre file open
+void	GetRightFile(HTTPResponse *deliver, std::string *file)
+{
+	std::string 		body;
+	std::string 		filename;
+	int			size;
+	int			fd;
+	int			ret;
+	char		buf[B_SIZE + 1];
+
+	size = 0;
+	filename = deliver->checkUrl();
+	fd = open(filename.c_str(), O_RDWR);
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
 		body += buf;
-		(*tot_size) += ret;
+		size += ret;
 	}
-	// recup le content length
-	ss << (*tot_size);
-	head += ss.str();
-	// set les 2 \n avant le body
-	head += "\n\n";
-	// taille du content length et les 2 \n
-	head_size += (ss.str()).length() + 2;
-	// response entiere
-	(*file) = head + body;
-	(*tot_size) += head_size;
+	deliver->setContentLen(size);
+	deliver->rendering();
+	*file += deliver->getHeader();
+	(*file) += "\n\n";
+	(*file) += body;
 }
 
-int		sendReponse(int fde, int flag, Socket *sock, int sockNbr)
+int		sendReponse(int fde, HTTPResponse *deliver)
 {
 	std::string	file;
-	int			tot_size = 0;
-	
-	if (flag == 4)
-		GetCGIfile(&file, &tot_size, sock->getEnv());
-	else
-		GetRightFile(&file, &tot_size);
-	if (send(fde, file.c_str(), tot_size, 0) < 0)
+
+	//check methode et file pour cgi ou non
+	GetRightFile(deliver, &file);
+	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
 		perror("send()");
 		return -1;
@@ -70,9 +59,16 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
-	std::string	string;
-	int			flag = 0, body = 0;
+	std::string		string;
+	HTTPRequest		treat;
+	HTTPResponse	deliver;
+	HTTPHeader		head;
+	STATUS			code;
+	int				line;
+	(void)sock;
+	(void)sockNbr;
 
+	line = 0;
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -84,20 +80,21 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else if (byteCount < 0)
 		{
-			/************************************************/
-			if (strncmp(string.c_str(), "GET", 3) == 0)
-				flag = 1;
-			else if (strncmp(string.c_str(), "POST", 4) == 0)
-				flag = 2;
-			else if (strncmp(string.c_str(), "HEAD", 4) == 0)
-				flag = 3;
-			if (strncmp(&string[5], "/php-example.php", 16) == 0)
-				flag = 4;
-			/*************************************************/
-			if (flag == 4)
+			//req = string;
+			if (line == 0)
+			{
+				if (treat.method(string, &code, &deliver) == -1)
+				{
+					std::cout << "Connection closed by foreign host." << std::endl;
+					break ;
+				}
+			}
+			else if (!treat.header(string, &head))
+				code.statusCode(code.status(4, 0), treat.getFirstLine());
+			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
-			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0 && flag != 4)
-				break ;
+			//req.clear();
+			line++;
 		}
 		else
 		{
@@ -106,8 +103,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	std::cout << "final string = " << string << std::endl;
-	if (sendReponse(fde, flag, sock, sockNbr) < 0)
+	if (sendReponse(fde, &deliver) < 0)
 		return -1;
 	return 1;
 }

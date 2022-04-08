@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 15:17:54 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/07 13:58:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,14 @@
 
 Server::Server(void) : _host("localhost"), _port(8080), _hostSet(false), _serverNamesSet(false)
 {
-	return ;
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " default constructor" << std::endl;
 }
 
 Server::Server(const Server &server) : Block(server)
 {
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " copy constructor" << std::endl;
 	*this = server;
 }
 
@@ -31,6 +34,8 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	std::vector<std::string> 	locBlocks;
 	std::string					serverInfo;
 
+	if (LOG)
+		std::cout << YELLOW << "[Server]" << END << " string constructor" << std::endl;
 	serverInfo.clear();
 	if (!splitBlocks(locBlocks, str, "location", serverInfo))
 	{
@@ -40,7 +45,7 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 	}
 	_fillServerInfo(serverInfo);
 
-	for (int i = 0; i < locBlocks.size(); i++)
+	for (size_t i = 0; i < locBlocks.size(); i++)
 	{
 		Location	newLoc(locBlocks[i]);
 
@@ -56,6 +61,8 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 
 Server::~Server()
 {
+	if (LOG)
+		std::cout << RED << "[Server]" << END << " destructor" << std::endl;
 	_locations.clear();
 	_serverNames.clear();
 }
@@ -66,9 +73,32 @@ Server::~Server()
 
 Server	&Server::operator=(const Server &server)
 {
+	if (LOG)
+		std::cout << GREEN << "[Server]" END << " assignation operator" << std::endl;
 	if (this != &server)
 	{
-		(Block)(*this) = (Block)(server);
+		_index.clear();
+		_methods.clear();
+		_errorPages.clear();
+
+		_root = server._root;
+		_index = server._index;
+		_maxClientBodySize = server._maxClientBodySize;
+		_methods = server._methods;
+		_errorPages = server._errorPages;
+		_redirUrl = server._redirUrl;
+		_autoindex = server._autoindex;
+
+		_rootSet = server._rootSet;
+		_indexSet = server._indexSet;
+		_maxClientBodySizeSet = server._maxClientBodySizeSet;
+		_methodsSet = server._methodsSet;
+		_errorPagesSet = server._errorPagesSet;
+		_redirUrlSet = server._redirUrlSet;
+		_autoindexSet = server._autoindexSet;
+
+		_formatOk = server._formatOk;
+		_formatErr = server._formatErr;
 
 		_locations.clear();
 		_serverNames.clear();
@@ -85,9 +115,7 @@ Server	&Server::operator=(const Server &server)
 }
 
 std::ostream	&operator<<(std::ostream &o, const Server &server)
-{
-	size_t	maxCl;
-	
+{	
 	o << BLUE << "Server" << END << std::endl;
 	o << "\thost        \t" << server.getHost() << std::endl;
 	o << "\tport        \t" << server.getPort() << std::endl;
@@ -134,8 +162,8 @@ int		Server::_keywordNumber(std::string str)
 
 void	Server::_fillOneInfo(std::string str)
 {
-	int		keyword;
-	vecStr	words;
+	int			keyword;
+	vecStr		words;
 	setFunc2	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
 			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex,
@@ -159,12 +187,61 @@ void	Server::_fillServerInfo(std::string str)
 	splitPattern(lines, str, "\n");
 	if (!isBlockNameOk(lines[0], "server"))
 		return (_setWrongFormat("wrong start of server block"));
-	for (int i = 1; i + 1 < lines.size(); i++)
+	for (size_t i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
 		if (!_formatOk)
 			return ;
 	}
+}
+
+std::string	Server::getRealUrl(const std::string &url) const
+{
+	int			loc;
+	std::string	root;
+	std::string	path;
+
+	loc = configFromUrl(url);
+	if (loc < 0)
+		return (_root + "/" + url);
+	if (_locations[loc].getPath()[0] == '*')
+		return (_root + "/" + url);
+	if (_locations[loc].isRootSet())
+	{
+		root = _locations[loc].getRoot();
+		path = _locations[loc].getPath();
+		return (root + url.substr(path.size(), url.size() - path.size() + 1));
+	}
+	return (_root + "/" + url);
+}
+
+int		Server::configFromUrl(const std::string &url) const
+{
+	size_t		maxSize = 0;
+	int			matchingLoc = -1;
+	std::string	path;
+	std::string	extension;
+	size_t		size;
+
+	for (size_t i = 0; i < _locations.size(); i++)
+	{
+		path = _locations[i].getPath();
+		size = path.size();
+		if (path[0] == '*')
+		{
+			extension = path.substr(1, path.size() - 2);
+			if (url.size() > extension.size()
+				&& url.substr(0, url.find('?')).substr(url.size() - extension.size() - 1, extension.size()) == extension)
+				return (i);
+		}
+		else if (url.substr(0, size) == path && ((url.size() > size && url[size] == '/') || url.size() == size)
+			&& (size > maxSize))
+		{
+			maxSize = size;
+			matchingLoc = i;
+		}
+	}
+	return (matchingLoc);
 }
 
 /*
@@ -218,25 +295,25 @@ void	Server::_setServerNames(vecStr words)
 **		GETTER FUNCTIONS
 */
 
-std::string	Server::getHost(void) const
+const std::string	Server::getHost(void) const
 {
 	return (_host);
 }
 
-int			Server::getPort(void) const
+int					Server::getPort(void) const
 {
 	return (_port);
 }
 
-vecStr		Server::getServerNames(void) const
+const vecStr		Server::getServerNames(void) const
 {
 	return (_serverNames);
 }
 
-vecLoc		Server::getLocations(void) const
+const vecLoc		Server::getLocations(void) const
 {
 	return (_locations);
 }
 
-std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
+const std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
 			"client_size", "methods", "error_page", "autoindex", "return"};

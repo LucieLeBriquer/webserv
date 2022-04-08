@@ -36,7 +36,7 @@ Location::Location(std::string str) : Block(), _path("/"), _cgiPass(""), _cgiPas
 		_setWrongFormat("wrong start of location block");
 		return ;
 	}
-	for (int i = 1; i + 1 < lines.size(); i++)
+	for (size_t i = 1; i + 1 < lines.size(); i++)
 	{
 		_fillOneInfo(lines[i]);
 		if (!_formatOk)
@@ -57,7 +57,28 @@ Location	&Location::operator=(const Location &location)
 {
 	if (this != &location)
 	{
-		(Block)(*this) = (Block)(location);
+		_index.clear();
+		_methods.clear();
+		_errorPages.clear();
+
+		_root = location._root;
+		_index = location._index;
+		_maxClientBodySize = location._maxClientBodySize;
+		_methods = location._methods;
+		_errorPages = location._errorPages;
+		_redirUrl = location._redirUrl;
+		_autoindex = location._autoindex;
+
+		_rootSet = location._rootSet;
+		_indexSet = location._indexSet;
+		_maxClientBodySizeSet = location._maxClientBodySizeSet;
+		_methodsSet = location._methodsSet;
+		_errorPagesSet = location._errorPagesSet;
+		_redirUrlSet = location._redirUrlSet;
+		_autoindexSet = location._autoindexSet;
+
+		_formatOk = location._formatOk;
+		_formatErr = location._formatErr;
 		
 		_path = location._path;
 		_cgiPass = location._cgiPass;
@@ -96,6 +117,8 @@ bool	Location::_setPath(std::string str)
 		_path = words[1];
 	else
 		_path = words[1].substr(0, words[1].size() - 1);
+	if (_path[_path.size() - 1] == '/')
+		_path = _path.substr(0, _path.size() - 1);
 	if (!checkWordFormat(_path))
 		return (false);
 	return (true);
@@ -144,14 +167,19 @@ int		Location::_keywordNumber(std::string str)
 	return (-1);
 }
 
-std::string	Location::getPath(void) const
+const std::string	Location::getPath(void) const
 {
 	return (_path);
 }
 
-std::string	Location::getCgiPass(void) const
+const std::string	Location::getCgiPass(void) const
 {
 	return (_cgiPass);
 }
 
-std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};
+bool				Location::isCgiPassSet(void) const
+{
+	return (_cgiPassSet);
+}
+
+const std::string Location::keywords[nbKeywords] = {"root", "index", "client_size", "methods", "error_page", "autoindex", "return", "cgi_pass"};

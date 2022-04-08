@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/06 15:12:12 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:56:17 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,38 @@
 
 Socket::Socket() : _check(0)
 {
-	std::cout << "socket constructor" << std::endl;
+	return ;
 }
 
-Socket::Socket(const Config config) : _config(config.getServers()), _check(0)
+Socket::Socket(const Socket &socket)
+{
+	*this = socket;
+}
+
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(0)
 {
 	if (initSockets(this, config) < 0)
 		this->_check = -1;
+}
+
+Socket	&Socket::operator=(const Socket &socket)
+{
+	if (this != &socket)
+	{
+		_config.clear();
+		_socket.clear();
+		_connSock.clear();
+		_Address.clear();
+		_addrLen.clear();
+
+		_config = socket._config;
+		_socket = socket._socket;
+		_connSock = socket._connSock;
+		_Address = socket._Address;
+		_addrLen = socket._addrLen;
+		_check = socket._check;
+	}
+	return (*this);
 }
 
 const int &					Socket::getSocket(int nbr) const
@@ -91,6 +116,21 @@ int							Socket::getCheck(void) const
 	return this->_check;
 }
 
+Socket::~Socket()
+{
+	return ;
+}
+
+const Server				Socket::getConfig(int nbr) const
+{
+	return (_config[nbr]);
+}
+
+const Location				Socket::getConfig(int nbr, int loc) const
+{
+	return (_config[nbr].getLocations()[loc]);
+}
+
 char**						Socket::getEnv(void) const
 {
 	return this->_env;
@@ -99,11 +139,6 @@ char**						Socket::getEnv(void) const
 void						Socket::setEnv(char** envp)
 {
 	this->_env = envp;
-}
-
-Socket::~Socket()
-{
-	std::cout << "socket destructor" << std::endl;
 }
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)
