@@ -6,12 +6,21 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 11:41:57 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 12:52:49 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-//#include "usefull.hpp"
 #include "engine.hpp"
+
+std::string HTTPResponse::getMethod( void )
+{
+	return this->_method;
+}
+
+std::string HTTPResponse::getUrl( void )
+{
+	return this->_url;
+}
 
 std::string HTTPResponse::getHeader( void )
 {
@@ -91,3 +100,4 @@ void HTTPResponse::rendering(const std::string typeContent)
 	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
 	std::cout << this->_header << std::endl;
 }
+//sock->getconfg()

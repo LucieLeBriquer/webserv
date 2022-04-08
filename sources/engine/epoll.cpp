@@ -107,6 +107,7 @@ int initEpoll(Socket *sock, const Config config)
 	while (1)
 	{
 		printStatus(1, nfds, sock, events[-1].data.fd);
+
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
 			perror("epoll_wait()");

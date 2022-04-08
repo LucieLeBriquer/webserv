@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 11:40:22 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 12:51:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 				}
 			}
 			else if (!head.header(string))
-				deliver.statusCode(code.status(4, 0), head.getFirstLine());
+				code.statusCode(code.status(4, 0), head.getFirstLine());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
 			//req.clear();

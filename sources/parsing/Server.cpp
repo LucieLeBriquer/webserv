@@ -50,7 +50,6 @@ Server::Server(std::string str) :  _host("localhost"), _port(8080), _hostSet(fal
 		Location	newLoc(locBlocks[i]);
 
 		if (!newLoc.wellFormatted())
-		void		rendering( void );
 		{
 			_formatOk = false;
 			_formatErr = newLoc.getFormatErr();
