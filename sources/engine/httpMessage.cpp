@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 14:45:01 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:32:22 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-void	GetRightFile(HTTPResponse *deliver, std::string *file, Socket *sock, int sockNbr)
+void	GetRightFile(HTTPResponse *deliver, std::string *file)
 {
 	std::string 		body;
 	std::string 		filename;
@@ -37,7 +37,8 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file, Socket *sock, int so
 	char		buf[B_SIZE + 1];
 
 	size = 0;
-	filename = deliver->checkUrl(sock, sockNbr);
+	filename = deliver->checkUrl();
+//	filename = deliver->checkUrl(sock, sockNbr);
 	fd = open(filename.c_str(), O_RDWR);
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
@@ -58,12 +59,12 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file, Socket *sock, int so
 	(*file) += body;
 }
 
-int		sendReponse(int fde, HTTPResponse *deliver,Socket *sock, int sockNbr)
+int		sendReponse(int fde, HTTPResponse *deliver)
 {
 	std::string	file;
 
 	//check methode et file pour cgi ou non
-	GetRightFile(deliver, &file, sock, sockNbr);
+	GetRightFile(deliver, &file);
 	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
 		perror("send()");
@@ -123,7 +124,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, &deliver, sock, sockNbr) < 0)
+	if (sendReponse(fde, &deliver) < 0)
 		return -1;
 	return 1;
 }
