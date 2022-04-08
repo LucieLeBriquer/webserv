@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 15:33:14 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:42:34 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ int		endRequest(std::string string, Socket *sock)
 	if (sock->getMethode() == BAD_METHODE)
 		return 1;
 	std::cout << "methode = " << sock->getMethode() << std::endl;
-	for (int i = 0; i < string.length(); i++)
+	for (size_t i = 0; i < string.length(); i++)
 	{
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
 			if (sock->getMethode() == GET)
 				return 1;
-			for (int j = i + 4; j < string.length() && sock->getMethode() == POST; j++)
+			for (size_t j = i + 4; j < string.length() && sock->getMethode() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
 					return 1;
