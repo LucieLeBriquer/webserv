@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:50:10 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:03:27 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,6 @@ int HTTPHeader::header(std::string buf)
 	this->setFct[3] = &HTTPHeader::setAccept;
 
 	int i, j;
-
 	for (i = 0; i < 3; i++)
 	{
 		if (!strncasecmp(buf.c_str(), header[i].c_str(), header[i].length()))
@@ -156,3 +155,6 @@ int HTTPHeader::header(std::string buf)
 	(this->*(this->setFct[i]))(value);
 	return (1);
 }
+// pour toute requete nginx verifie l'en-tete host de la requete qui contient le domaine ou l'adress
+// ip que le client tente reeelemment d'atteindre (si plusieurs serveur listen sur le meme truc mais different serveur_name)
+//https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms-fr

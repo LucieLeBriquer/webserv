@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:52:27 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:24:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define RESPONSE_HPP
 # include "httpRequest.hpp"
 
+class Socket;
 class STATUS;
 
 class HTTPResponse
@@ -34,7 +35,8 @@ class HTTPResponse
 		void		rendering( void );
 		void		rendering( const std::string typeContent );
 		void		setContentLen( int len );
-		std::string	checkUrl();
+		std::string	checkUrl(Socket *sock, int sockNbr);
+		void 		redirect(Socket *sock, int sockNbr);
 		void		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
 };

@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:52:49 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:25:28 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,17 @@ void HTTPResponse::setStatus(std::string code, std::string str)
 		this->_url = getStatus[status];
 }
 
-std::string HTTPResponse::checkUrl()
+void HTTPResponse::redirect(Socket *sock, int sockNbr)
+{
+//Verifier si la listen directive ne passe pas une requete à un autre serveur
+//
+
+//	sock->getConfig(sockNbr).getHost
+
+	this->_location = "index";
+}
+
+std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
 {
 	std::string filename("html");
 	std::string tmpname("html");
@@ -59,7 +69,8 @@ std::string HTTPResponse::checkUrl()
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
-	std::cout << "stat = "<< _statusCode << std::endl;
+	this->redirect(sock, sockNbr);
+//	std::cout << "stat = "<< _statusCode << std::endl;
 	close(fd);
 	return filename;
 }
@@ -101,3 +112,4 @@ void HTTPResponse::rendering(const std::string typeContent)
 	std::cout << this->_header << std::endl;
 }
 //sock->getconfg()
+// 
