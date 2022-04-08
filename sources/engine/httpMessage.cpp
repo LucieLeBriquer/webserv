@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 12:51:06 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:21:04 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
-#define B_SIZE 2
 
 static bool	isPngFile(std::string name)
 {
@@ -63,6 +62,7 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	std::string	file;
 
 	//check methode et file pour cgi ou non
+	std::cout << "url = " << deliver->getUrl() << std::endl;
 	GetRightFile(deliver, &file);
 	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
@@ -100,20 +100,18 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else if (byteCount < 0)
 		{
-			//req = string;
 			if (line == 0)
 			{
-				if (head.method(string, &code, &deliver) == -1)
+				if (treat.method(string, &code, &deliver) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else if (!head.header(string))
-				code.statusCode(code.status(4, 0), head.getFirstLine());
-			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
+			else if (!treat.header(string, &head))
+				code.statusCode(code.status(4, 0), treat.getFirstLine());
+			if (endRequest(string, sock))
 				break ;
-			//req.clear();
 			line++;
 		}
 		else
