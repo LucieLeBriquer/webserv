@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 17:10:16 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/08 11:38:37 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ void	GetCGIfile(std::string *file, int *tot_size, char **env)
 	char	*arg[2];
 	
 	// arg[0] = "/home/user42/Documents/42/webserv/bin-cgi/script.sh";
+	arg[0] = "/home/user42/Documents/42/webserv/bin-cgi/perl.pl";
 	arg[1] = NULL;
 
 	std::cout << "here we are" << std::endl;

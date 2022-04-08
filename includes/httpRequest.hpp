@@ -35,7 +35,10 @@ class HTTPRequest
 		int		parsePath(const std::string url);
 		int 	parseProtocol(const std::string prot);
 		int		parseMethod(const std::string cmd, const std::string *methods);
-		std::string		getMethod();
+		std::string		getMethod()
+		{
+			return this->_method;
+		}
 		std::string		getUrl();
 };
 

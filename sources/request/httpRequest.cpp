@@ -20,7 +20,7 @@ std::string	HTTPRequest::getFirstLine( void )
 
 int HTTPRequest::header(std::string buf, HTTPHeader *h)
 {
-	std::string header[4] = {"host:", "content-length", "user-agent:", "accept:"};
+	std::string header[4] = {"host:", "content-length:", "user-agent:", "accept:"};
 	
 	h->setFct[0] = &HTTPHeader::setHost;
 	h->setFct[1] = &HTTPHeader::setContentLen;
@@ -31,6 +31,7 @@ int HTTPRequest::header(std::string buf, HTTPHeader *h)
 
 	for (i = 0; i < 3; i++)
 	{
+		std::cout << "--> buf = |" << buf.c_str() << "| ------ header[" << i << "] = |" << header[i].c_str() << "| ------ header[" << i << "].length() = " << header[i].length() << "<--" << std::endl;
 		if (!strncasecmp(buf.c_str(), header[i].c_str(), header[i].length()))
 			break;
 	}
@@ -50,5 +51,6 @@ int HTTPRequest::header(std::string buf, HTTPHeader *h)
 	h->_active = 1;
 	std::string value(tmp);
 	(h->*(h->setFct[i]))(value);
+	std::cout << "REEEETTTTUUURRRNNNNN" << std::endl;
 	return (1);
 }

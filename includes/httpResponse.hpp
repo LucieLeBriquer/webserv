@@ -25,6 +25,11 @@ class HTTPResponse
 		void		setStatus(std::string code);
 		void		statusCode(std::string status, std::string firstLine);
 	//	void		body(int code, STATUS *sc, HTTPMethod *m);
+
+		std::string	getUrl(void) const
+		{
+			return this->_url;
+		}
 };
 
 class STATUS: public HTTPResponse
