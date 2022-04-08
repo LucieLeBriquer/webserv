@@ -1,18 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   request_reponse.cpp                                :+:      :+:    :+:   */
+/*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/01 10:29:48 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 17:11:15 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
-
 #define B_SIZE 2
+
+static bool	isPngFile(std::string name)
+{
+	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
+		return (true);
+	return (false);	
+}
+
+static bool	isCssFile(std::string name)
+{
+	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
+		return (true);
+	return (false);	
+}
 
 void	GetRightFile(HTTPResponse *deliver, std::string *file)
 {
@@ -32,18 +45,24 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 		size += ret;
 	}
 	deliver->setContentLen(size);
-	deliver->rendering();
+
+	// added css
+	if (isCssFile(filename))
+		deliver->rendering("text/css");
+	else if (isPngFile(filename))
+		deliver->rendering("image/png"); // not sufficient
+	else
+		deliver->rendering();
 	*file += deliver->getHeader();
 	(*file) += "\n\n";
 	(*file) += body;
-	std::cout << "body =\n" << body << std::endl;
-	std::cout << "file =\n" << *file << std::endl;
 }
 
 int		sendReponse(int fde, HTTPResponse *deliver)
 {
 	std::string	file;
 
+	//check methode et file pour cgi ou non
 	GetRightFile(deliver, &file);
 	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
@@ -56,16 +75,18 @@ int		sendReponse(int fde, HTTPResponse *deliver)
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde)
+int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 {
 	char		buf[BUFFER_SIZE] = {0};
 	int			byteCount, recv_len = 0;
 	std::string		string;
 	HTTPRequest		treat;
+	HTTPResponse	deliver;
 	HTTPHeader		head;
 	STATUS			code;
-	HTTPResponse	deliver;
 	int				line;
+	(void)sock;
+	(void)sockNbr;
 
 	line = 0;
 	while (1)

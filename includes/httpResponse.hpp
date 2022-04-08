@@ -20,6 +20,7 @@ class HTTPResponse
 		std::string	getmethod( void );
 		std::string	getHeader( void );
 		void		rendering( void );
+		void		rendering( std::string typeContent );
 		void		setContentLen( int len );
 		std::string	checkUrl();
 		void		setStatus(std::string code, std::string str);

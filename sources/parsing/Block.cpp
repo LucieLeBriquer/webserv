@@ -18,16 +18,21 @@ Block::Block(void) : _root("/"), _maxClientBodySize(1), _redirUrl(""), _autoinde
 					_errorPagesSet(false), _redirUrlSet(false), _autoindexSet(false), 
 					_formatOk(true), _formatErr("")
 {
-	return ;
+	if (LOG)
+		std::cout << YELLOW << "[Block]" << END << " default constructor" << std::endl;
 }
 
 Block::Block(const Block &block)
 {
+	if (LOG)
+		std::cout << YELLOW << "[Block]" << END << " copy constructor" << std::endl;
 	*this = block;
 }
 
 Block::~Block()
 {
+	if (LOG)
+		std::cout << RED << "[Block]" << END << " destructor" << std::endl;
 	_index.clear();
 	_methods.clear();
 	_errorPages.clear();
@@ -39,6 +44,8 @@ Block::~Block()
 
 Block	&Block::operator=(const Block &block)
 {
+	if (LOG)
+		std::cout << GREEN << "[Block]" END << " assignation operator" << std::endl;
 	if (this != &block)
 	{
 		_index.clear();

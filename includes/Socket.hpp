@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 14:44:33 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:57:04 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,9 @@ class Socket
 
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
+
+		char**						getEnv(void) const;
+		void						setEnv(char** envp);
 	
 	private:
 		std::vector<Server>				_config;
@@ -55,10 +58,11 @@ class Socket
 		std::vector<struct sockaddr_in>	_Address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
+		char**							_env;
 	
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
-int		initSockets(Socket *sock, const Config &config);
+int				initSockets(Socket *sock, const Config &config);
 
 #endif

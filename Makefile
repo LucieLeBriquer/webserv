@@ -1,4 +1,4 @@
-CC			= c++ -std=c++98 #-Wall -Wextra -Werror -std=c++98
+CC			= c++ -Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 NAME		= ./webserv
 NAME_SHORT	= webserv
@@ -27,6 +27,7 @@ $(OBJS_DIR)%.o	: $(SRCS_DIR)%.cpp
 			@$(CC) $(MAIN_INC) -c $< -o $@
 			@echo "$(_CLEAR)"
 
+		void		rendering( void );
 all			: $(NAME)
 
 $(NAME)		: $(OBJS) $(INCS)

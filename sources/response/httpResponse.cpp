@@ -49,7 +49,6 @@ void HTTPResponse::setContentLen(int len)
 	s << len;
 	const std::string tot_len(s.str());
 	this->_contentLen = tot_len;
-	std::cout << "len = "<< len << "cont "<< _contentLen << std::endl;
 }
 
 void HTTPResponse::statusCode(std::string status, std::string firstLine)
@@ -69,5 +68,14 @@ void HTTPResponse::rendering( void )
 	time_t rawtime;
 	time(&rawtime);
 	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	std::cout << this->_header << std::endl;
+}
+
+// added for CSS
+void HTTPResponse::rendering(const std::string typeContent)
+{
+	time_t rawtime;
+	time(&rawtime);
+	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
 	std::cout << this->_header << std::endl;
 }

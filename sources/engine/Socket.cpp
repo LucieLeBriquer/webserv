@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/03/31 15:28:58 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:56:17 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 Socket::Socket() : _check(0)
 {
-	std::cout << "socket constructor" << std::endl;
+	return ;
 }
 
 Socket::Socket(const Socket &socket)
@@ -129,6 +129,16 @@ const Server				Socket::getConfig(int nbr) const
 const Location				Socket::getConfig(int nbr, int loc) const
 {
 	return (_config[nbr].getLocations()[loc]);
+}
+
+char**						Socket::getEnv(void) const
+{
+	return this->_env;
+}
+
+void						Socket::setEnv(char** envp)
+{
+	this->_env = envp;
 }
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)

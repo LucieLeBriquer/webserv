@@ -1,42 +1,54 @@
 <!DOCTYPE html>
+
 <html>
   <head>
-    <meta charset="utf-8">
-    <title>PHP form submission example</title>
-    <style>
-      form {
-        width: 420px;
-      }
+    <title>Webserv</title>
+    <link rel="shortcut icon" href="images/favicon.png"/>
+    <meta charset="utf-8"/>
+	<link rel="stylesheet" href="css/main.css"/>
+    <script src="https://kit.fontawesome.com/58cd01063a.js" crossorigin="anonymous"></script>
+ </head>
+<header>
+	<div class="logo">
+		<div class="title">42</div>
+		<div class="titlename">Webserv</div>
+	</div>
+	<span class="buttonTab">
+        <a href="index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>
+    </span>
+	<span class="buttonTab active">
+        <a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>
+    </span>
+	<span class="buttonTab">
+        <a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>
+    </span>
+</header>
 
-      div {
-        margin-bottom: 20px;
-      }
+<body class="main">
+	<div class="vertical">
+		<form method="post" action="php-example.php">
+			<div class="flex">
+				<label for="say">What greeting do you want to say ?</label>
+				<input name="say" id="say" value="Hi">
+			</div>
+			<div class="flex">
+				<label for="to">Who do you want to say it to ?</label>
+				<input name="to" value="Mom">
+			</div>
+			<div>
+				<button>Send my greetings</button>
+			</div>
+		</form>
+	</div>
+</body>
 
-      label {
-        display: inline-block;
-        width: 240px;
-        text-align: right;
-        padding-right: 10px;
-      }
-
-      button, input {
-        float: right;
-      }
-    </style>
-  </head>
-  <body>
-    <form method="post" action="php-example.php">
-      <div>
-        <label for="say">What greeting do you want to say?</label>
-        <input name="say" id="say" value="Hi">
-      </div>
-      <div>
-        <label for="to">Who do you want to say it to?</label>
-        <input name="to" value="Mom">
-      </div>
-      <div>
-        <button>Send my greetings</button>
-      </div>
-    </form>
-  </body>
+<footer>
+	<ul class="footer">
+		<li></li>
+		<li><a href="https://github.com/MassiliaB" target="_blank"><i class="fab fa-github"></i> masboula</a></li>
+		<li><a href="https://github.com/loupascreau" target="_blank"><i class="fab fa-github"></i> lpascreau</a></li>
+		<li><a href="https://github.com/LucieLeBriquer" target="_blank"><i class="fab fa-github"></i> lle-briq</a></li>
+		<li></li>
+	</ul>
+</footer>
 </html>
