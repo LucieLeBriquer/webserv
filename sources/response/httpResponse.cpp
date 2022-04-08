@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 15:25:28 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:04:33 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ std::string HTTPResponse::getHeader( void )
 	return this->_header;
 }
 
-void HTTPResponse::setStatus(std::string code, std::string str)
+int HTTPResponse::setStatus(std::string code, std::string str)
 {
 	std::stringstream ss;
 	std::map<int, std::string> getStatus;
@@ -44,6 +44,7 @@ void HTTPResponse::setStatus(std::string code, std::string str)
 	this->_statusCode = code + str;
 	if (status > 299)
 		this->_url = getStatus[status];
+	return status;
 }
 
 void HTTPResponse::redirect(Socket *sock, int sockNbr)
@@ -52,8 +53,9 @@ void HTTPResponse::redirect(Socket *sock, int sockNbr)
 //
 
 //	sock->getConfig(sockNbr).getHost
-
-	this->_location = "index";
+(void)sock;
+(void)sockNbr;
+	this->_location = "index.html";
 }
 
 std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
@@ -62,14 +64,16 @@ std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
 	std::string tmpname("html");
 	int fd;
 
-	this->setStatus(this->_statusCode, "");
+	this->_location = "";
+	int status = this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
 	if (this->_url == "/")
 		this->_url = "/index.html";
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
-	this->redirect(sock, sockNbr);
+	if (status == 200)
+		this->redirect(sock, sockNbr);
 //	std::cout << "stat = "<< _statusCode << std::endl;
 	close(fd);
 	return filename;
@@ -99,7 +103,10 @@ void HTTPResponse::rendering( void )
 //	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
 	time(&rawtime);
-	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	if (this->_location != "")
+		this->_header = "\n"+ this->_protocol + ' ' + "301" + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nLocation: "+ this->_location +"\nDate: " + ctime(&rawtime); 
+	else
+		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode +  "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
 	std::cout << this->_header << std::endl;
 }
 
@@ -108,7 +115,10 @@ void HTTPResponse::rendering(const std::string typeContent)
 {
 	time_t rawtime;
 	time(&rawtime);
-	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	if (this->_location != "")
+		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nLocation: "+ this->_location +"\nDate: " + ctime(&rawtime); 
+	else
+		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
 	std::cout << this->_header << std::endl;
 }
 //sock->getconfg()

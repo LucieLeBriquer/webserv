@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 15:24:06 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:22:14 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ class HTTPResponse
 		std::string _protocol;
 		std::string	_statusCode;
 		std::string	_url;
+		std::string	_location;
 		std::string	_header;
 		std::string	_method;
 	public:
@@ -37,7 +38,7 @@ class HTTPResponse
 		void		setContentLen( int len );
 		std::string	checkUrl(Socket *sock, int sockNbr);
 		void 		redirect(Socket *sock, int sockNbr);
-		void		setStatus(std::string code, std::string str);
+		int		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
 };
 
