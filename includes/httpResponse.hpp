@@ -12,9 +12,12 @@ class HTTPResponse
 		std::string	_statusCode;
 		std::string	_url;
 		std::string	_header;
+		std::string	_METHOD;
 	public:
 		HTTPResponse(){};
 		~HTTPResponse(){};
+		std::string	getUrl(void );
+		std::string	getmethod( void );
 		std::string	getHeader( void );
 		void		rendering( void );
 		void		setContentLen( int len );
