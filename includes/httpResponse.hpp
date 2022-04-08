@@ -15,8 +15,11 @@ class HTTPResponse
 	public:
 		HTTPResponse() {};
 		~HTTPResponse() {};
-		std::string	getHeader( void );
-		void		rendering( void );
+		std::string	getHeader(void);
+
+		void		rendering(void);
+		void		rendering(const std::string typeContent);
+
 		void		setContentLen( int len );
 		std::string	checkUrl();
 		void		setStatus(std::string code);
