@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 17:11:15 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/08 12:51:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,14 +103,14 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			//req = string;
 			if (line == 0)
 			{
-				if (treat.method(string, &code, &deliver) == -1)
+				if (head.method(string, &code, &deliver) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else if (!treat.header(string, &head))
-				code.statusCode(code.status(4, 0), treat.getFirstLine());
+			else if (!head.header(string))
+				code.statusCode(code.status(4, 0), head.getFirstLine());
 			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
 			//req.clear();

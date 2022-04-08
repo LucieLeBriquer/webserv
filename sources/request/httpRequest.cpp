@@ -1,4 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   httpRequest.cpp                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/08 11:42:38 by masboula          #+#    #+#             */
+/*   Updated: 2022/04/08 12:08:37 by masboula         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "usefull.hpp"
+
+HTTPRequest::HTTPRequest()
+{
+};
 
 void HTTPRequest::get(void ){
 	this->_method = "GET";
@@ -15,40 +31,6 @@ void HTTPRequest::mdelete(void ){
 std::string	HTTPRequest::getFirstLine( void )
 {
 	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
+	std::cout << "fline = "<< _fLine << std::endl;
 	return this->_fLine;
-}
-
-int HTTPRequest::header(std::string buf, HTTPHeader *h)
-{
-	std::string header[4] = {"host:", "content-length", "user-agent:", "accept:"};
-	
-	h->setFct[0] = &HTTPHeader::setHost;
-	h->setFct[1] = &HTTPHeader::setContentLen;
-	h->setFct[2] = &HTTPHeader::setUserA;
-	h->setFct[3] = &HTTPHeader::setAccept;
-
-	int i, j;
-
-	for (i = 0; i < 3; i++)
-	{
-		if (!strncasecmp(buf.c_str(), header[i].c_str(), header[i].length()))
-			break;
-	}
-	if (i == 3)
-		return (0);
-	j = header[i].length();
-	if (buf[j] == ' ')
-		j++;
-	int pos = j;
-	while (buf[j] != '\n' && buf[j] != '\r' && buf[j] != ' ')
-	    j++;
-	int len = j - pos;
-	char tmp[len + 1];
-	buf.copy(tmp, len, pos);
-	tmp[len] = '\0';
-
-	h->_active = 1;
-	std::string value(tmp);
-	(h->*(h->setFct[i]))(value);
-	return (1);
 }
