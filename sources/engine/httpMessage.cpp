@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 15:21:04 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/08 14:45:01 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#define B_SIZE 2
 
 static bool	isPngFile(std::string name)
 {
@@ -26,7 +27,7 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-void	GetRightFile(HTTPResponse *deliver, std::string *file)
+void	GetRightFile(HTTPResponse *deliver, std::string *file, Socket *sock, int sockNbr)
 {
 	std::string 		body;
 	std::string 		filename;
@@ -36,7 +37,7 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 	char		buf[B_SIZE + 1];
 
 	size = 0;
-	filename = deliver->checkUrl();
+	filename = deliver->checkUrl(sock, sockNbr);
 	fd = open(filename.c_str(), O_RDWR);
 	while ((ret = read(fd, buf, B_SIZE)) > 0)
 	{
@@ -57,13 +58,12 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 	(*file) += body;
 }
 
-int		sendReponse(int fde, HTTPResponse *deliver)
+int		sendReponse(int fde, HTTPResponse *deliver,Socket *sock, int sockNbr)
 {
 	std::string	file;
 
 	//check methode et file pour cgi ou non
-	std::cout << "url = " << deliver->getUrl() << std::endl;
-	GetRightFile(deliver, &file);
+	GetRightFile(deliver, &file, sock, sockNbr);
 	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
 		perror("send()");
@@ -100,18 +100,20 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else if (byteCount < 0)
 		{
+			//req = string;
 			if (line == 0)
 			{
-				if (treat.method(string, &code, &deliver) == -1)
+				if (head.method(string, &code, &deliver) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else if (!treat.header(string, &head))
-				code.statusCode(code.status(4, 0), treat.getFirstLine());
-			if (endRequest(string, sock))
+			else if (!head.header(string))
+				code.statusCode(code.status(4, 0), head.getFirstLine());
+			if (strcmp(&string[string.length() - 4], "\r\n\r\n") == 0)
 				break ;
+			//req.clear();
 			line++;
 		}
 		else
@@ -121,7 +123,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, &deliver) < 0)
+	if (sendReponse(fde, &deliver, sock, sockNbr) < 0)
 		return -1;
 	return 1;
 }
