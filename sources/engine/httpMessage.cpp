@@ -49,11 +49,11 @@ void	GetRightFile(HTTPResponse *deliver, std::string *file)
 	if (isCssFile(filename))
 		deliver->rendering("text/css");
 	else if (isPngFile(filename))
-		deliver->rendering("image/png"); // not sufficient
+		deliver->rendering("image/png", true); // not sufficient
 	else
 		deliver->rendering();
 	*file += deliver->getHeader();
-	(*file) += "\n\n";
+	(*file) += "\r\n\r\n";
 	(*file) += body;
 }
 
