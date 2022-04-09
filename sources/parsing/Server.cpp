@@ -315,5 +315,15 @@ const vecLoc		Server::getLocations(void) const
 	return (_locations);
 }
 
+bool				Server::isServerNamesSet(void) const
+{
+	return (_serverNamesSet);
+}
+
+bool				Server::isHostSet(void) const
+{
+	return (_hostSet);
+}
+
 const std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
 			"client_size", "methods", "error_page", "autoindex", "return"};
