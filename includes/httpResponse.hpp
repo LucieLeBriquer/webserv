@@ -33,6 +33,7 @@ class HTTPResponse
 		std::string	getHeader( void );
 		void		rendering( void );
 		void		rendering( const std::string typeContent );
+		void		rendering( const std::string typeContent, bool b);
 		void		setContentLen( int len );
 		std::string	checkUrl();
 		void		setStatus(std::string code, std::string str);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:52:49 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/08 22:21:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,13 @@ void HTTPResponse::rendering( void )
 //	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
 	time(&rawtime);
-	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: text/html; charset=UTF-8\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
+	this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Date: " + timeStr; 
 	std::cout << this->_header << std::endl;
 }
 
@@ -97,7 +103,35 @@ void HTTPResponse::rendering(const std::string typeContent)
 {
 	time_t rawtime;
 	time(&rawtime);
-	this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Content-Type: " + typeContent + "\r\n";
+	this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Date: " + timeStr;
+	std::cout << this->_header << std::endl;
+}
+
+
+void HTTPResponse::rendering(const std::string typeContent, bool b)
+{
+	time_t rawtime;
+	time(&rawtime);
+	(void)b;
+
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header.clear();
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Server: webserv\r\n";
+	this->_header += "Date: " + timeStr + "\r\n";
+	this->_header += "Content-Type: " + typeContent + "\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Last-Modified: Fri, 08 Apr 2022 12:32:36 GMT\r\n";
+	this->_header += "Connection: keep-alive\r\n";
+	this->_header += "ETag: \"62502b64-2c2b\"\r\n";
+	this->_header += "Accept-Ranges: bytes";
 	std::cout << this->_header << std::endl;
 }
 //sock->getconfg()
