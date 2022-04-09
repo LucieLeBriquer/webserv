@@ -33,6 +33,9 @@ class Socket
 		const int &					getSocket(int nbr) const;
 		void						setSocket(int newSocket);
 
+		const Server				getConfig(int nbr) const;
+		const Location				getConfig(int nbr, int loc) const;
+
 		const int &					getConnSock(int nbr) const;
 		void						setConnSock(int newConnSock);
 		int &						modConnSock(int nbr);
@@ -50,16 +53,6 @@ class Socket
 	
 		int							getMethode(void) const;
 		void						setMethode(int methode);
-
-		// config getter
-		const Server	getConfig(int nbr) const;
-		const Location	getConfig(int nbr, int loc) const;
-		int				getConfigFromUrl(int nbr, const std::string url) const;
-		std::string		getRealUrl(int nbr, const std::string url) const;
-		std::string		errorPage(int nbr, const std::string url, int err) const;
-		std::string		getRoot(int nbr, const std::string url) const;
-		std::string		getServerName(int nbr) const;
-		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
 		
 	private:
 		std::vector<Server>				_config;
