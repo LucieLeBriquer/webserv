@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpMessage.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/09 18:00:36 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:39:52 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,74 +26,66 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-void	GetRightFile(HTTPResponse &deliver)
+void	GetRightFile(HTTPResponse *deliver, std::string *file)
 {
+	std::string 		body;
 	std::string 		filename;
-	size_t				size;
+	int			size;
+	int			fd;
+	int			ret;
+	char		buf[B_SIZE + 1];
 
 	size = 0;
-	filename = deliver.checkUrl();
-	deliver.setFileName(filename);
+	filename = deliver->checkUrl();
+	fd = open(filename.c_str(), O_RDWR);
+	while ((ret = read(fd, buf, B_SIZE)) > 0)
+	{
+		body += buf;
+		size += ret;
+	}
+	deliver->setContentLen(size);
 
-	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
-
-	fileStream.seekg(0, std::ios::end);
-	size = fileStream.tellg();
-	fileStream.close();
-
-	deliver.setContentLen(size);
+	// added css
 	if (isCssFile(filename))
-		deliver.rendering("text/css");
+		deliver->rendering("text/css");
 	else if (isPngFile(filename))
-		deliver.rendering("image/png");
+		deliver->rendering("image/png", true); // not sufficient
 	else
-		deliver.rendering();
+		deliver->rendering();
+	*file += deliver->getHeader();
+	(*file) += "\r\n\r\n";
+	(*file) += body;
 }
 
-int		sendReponse(int fde, HTTPResponse &deliver)
+int		sendReponse(int fde, HTTPResponse *deliver)
 {
-	std::string	header = deliver.getHeader() + "\r\n\r\n";
+	std::string	file;
 
-	GetRightFile(deliver);
-
-	// deliver header
-	std::cout << "url = " << deliver.getUrl() << std::endl;
-	if (send(fde, header.c_str(), header.size(), 0) < 0)
+	//check methode et file pour cgi ou non
+	std::cout << "url = " << deliver->getUrl() << std::endl;
+	GetRightFile(deliver, &file);
+	if (send(fde, file.c_str(), file.length(), 0) < 0)
 	{
 		perror("send()");
 		return -1;
 	}
-
-	std::cout << "fileName = " << deliver.getFileName() << std::endl;
-	// deliver data
 	std::cout << "sending data to " << fde << std::endl;
-	std::ifstream	fileStream(deliver.getFileName().c_str(), std::ios::in | std::ios::binary);
-	char			c;
-	
-	while (fileStream.get(c))
-	{
-		if (send(fde, &c, 1, 0) < 0)
-		{
-			perror("send()");
-			fileStream.close();
-			return -1;
-		}
-	}
-	fileStream.close();
+	/*si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd*/
 	close(fde);
 	return 1;
 }
 
 int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 {
-	char			buf[BUFFER_SIZE] = {0};
-	int				byteCount, recv_len = 0;
+	char		buf[BUFFER_SIZE] = {0};
+	int			byteCount, recv_len = 0;
 	std::string		string;
 	HTTPRequest		treat;
 	HTTPResponse	deliver;
 	HTTPHeader		head;
 	STATUS			code;
 	int				line;
+	(void)sock;
 	(void)sockNbr;
 
 	line = 0;
@@ -102,7 +94,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		memset(buf, 0, BUFFER_SIZE);
 		byteCount = recv(fde, buf, BUFFER_SIZE, 0);
 		if (byteCount == 0)
-		{;
+		{
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
 			break ;
 		}
@@ -129,7 +121,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, deliver) < 0)
+	if (sendReponse(fde, &deliver) < 0)
 		return -1;
 	return 1;
 }

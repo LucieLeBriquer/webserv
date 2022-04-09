@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/09 17:49:03 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/08 12:52:27 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,21 +19,15 @@ class STATUS;
 class HTTPResponse
 {
 	protected:
-		std::string 	_contentLen;
-		std::string 	_protocol;
-		std::string		_statusCode;
-		std::string		_url;
-		std::string		_header;
-		std::string		_method;
-		std::string		_fileName;
-
+		std::string _contentLen;
+		std::string _protocol;
+		std::string	_statusCode;
+		std::string	_url;
+		std::string	_header;
+		std::string	_method;
 	public:
-		HTTPResponse(void);
-		HTTPResponse(const HTTPResponse &response);
-		~HTTPResponse();
-
-		HTTPResponse	&operator=(const HTTPResponse &response);
-
+		HTTPResponse(){};
+		~HTTPResponse(){};
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
@@ -44,8 +38,6 @@ class HTTPResponse
 		std::string	checkUrl();
 		void		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
-		void		setFileName(const std::string &file);
-		std::string	getFileName(void) const;
 };
 
 class STATUS: public HTTPResponse
