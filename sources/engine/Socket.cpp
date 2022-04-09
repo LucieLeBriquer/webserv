@@ -158,3 +158,73 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 
 	return o;
 }
+
+
+/*
+**		URL GETTER FUNCTIONS
+*/
+
+int		Socket::getConfigFromUrl(int nbr, const std::string url) const
+{
+	return (getConfig(nbr).configFromUrl(url));
+}
+
+std::string	Socket::errorPage(int nbr, const std::string url, int err) const
+{
+	mapErr				pages;
+	mapErr::iterator	it;
+	int					nbConfig;
+	
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0)
+		pages = getConfig(nbr).getErrorPages();
+	else
+		pages = getConfig(nbr, nbConfig).getErrorPages();
+	it = pages.find(err);
+	if (it == pages.end())
+		return ("/404.html");
+	return (getRoot(nbr, url) + "/" + it->second);
+}
+
+std::string Socket::getRoot(int nbr, const std::string url) const
+{
+	std::string	root;
+	int			nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	root = getConfig(nbr).getRoot();
+	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
+		root = getConfig(nbr, nbConfig).getRoot();
+	return (root);
+}
+
+std::string Socket::getRealUrl(int nbr, const std::string url) const
+{
+	return (getConfig(nbr).getRealUrl(url));
+}
+
+std::string Socket::getServerName(int nbr) const
+{
+	if (getConfig(nbr).isServerNamesSet())
+		return (getConfig(nbr).getServerNames()[0]);
+	return ("webserv");
+}
+
+bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
+{
+	int			nbConfig;
+	vecInt		methods;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
+	{
+		if (!getConfig(nbr).isMethodsSet())
+			return (true);
+		methods = getConfig(nbr).getMethods();
+	}
+	else
+		methods = getConfig(nbr, nbConfig).getMethods();
+	if (find(methods.begin(), methods.end(), method) != methods.end())
+		return (true);
+	return (false);
+}
