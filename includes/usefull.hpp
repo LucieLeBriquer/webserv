@@ -26,6 +26,7 @@
 # define LOG 0
 # include <iostream>
 # include <vector>
+# include <algorithm>
 # include <string>
 # include <string.h>
 # include <stdio.h>
@@ -34,7 +35,8 @@
 # include <limits>
 # include <sstream>
 # include <arpa/inet.h>
-#include <time.h>
+# include <fstream>
+# include <time.h>
 
 #include "httpRequest.hpp"
 #include "httpResponse.hpp"
