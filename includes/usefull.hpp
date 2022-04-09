@@ -35,7 +35,8 @@
 # include <limits>
 # include <sstream>
 # include <arpa/inet.h>
-#include <time.h>
+# include <fstream>
+# include <time.h>
 
 #include "httpRequest.hpp"
 #include "httpResponse.hpp"
