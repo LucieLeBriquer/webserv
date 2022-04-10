@@ -26,7 +26,7 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-void	GetRightFile(HTTPResponse &deliver)
+static void	getRightFile(HTTPResponse &deliver)
 {
 	std::string 		filename;
 	size_t				size;
@@ -50,12 +50,12 @@ void	GetRightFile(HTTPResponse &deliver)
 		deliver.rendering();
 }	
 
-int		sendReponse(int fde, HTTPResponse &deliver)
+int		sendReponse(int fde, HTTPResponse &deliver) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
 	// fill header
-	GetRightFile(deliver);
+	getRightFile(deliver);
 	std::string	header = deliver.getHeader() + "\r\n\r\n";
 
 	// deliver header

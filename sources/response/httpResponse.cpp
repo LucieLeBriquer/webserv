@@ -11,26 +11,25 @@
 /* ************************************************************************** */
 
 #include "engine.hpp"
-#define LOG2 1
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName("")
 {
-	if (LOG2)
+	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
 
 }
 
 HTTPResponse::HTTPResponse(const HTTPResponse &response)
 {
-	if (LOG2)
+	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " copy constructor" << std::endl;
 	*this = response;
 }
 
 HTTPResponse::~HTTPResponse()
 {
-	if (LOG2)
+	if (LOG)
 		std::cout << RED << "[HTTPResponse]" << END << " destructor" << std::endl;
 }
 

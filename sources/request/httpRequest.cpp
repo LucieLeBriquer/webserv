@@ -16,15 +16,15 @@ HTTPRequest::HTTPRequest()
 {
 };
 
-void HTTPRequest::get(void ){
+void HTTPRequest::get(void){
 	this->_method = "GET";
 }
 
-void HTTPRequest::post(void ){
+void HTTPRequest::post(void){
 	this->_method  = "POST";
 }
 
-void HTTPRequest::mdelete(void ){
+void HTTPRequest::mdelete(void){
 	this->_method  = "DELETE";
 }
 

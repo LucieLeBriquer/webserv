@@ -48,8 +48,8 @@ class Socket
 		char**						getEnv(void) const;
 		void						setEnv(char** envp);
 	
-		int							getMethode(void) const;
-		void						setMethode(int methode);
+		int							getMethod(void) const;
+		void						setMethod(int method);
 
 		// config getter
 		const Server	getConfig(int nbr) const;
@@ -65,11 +65,11 @@ class Socket
 		std::vector<Server>				_config;
 		std::vector<int>				_socket;
 		std::vector<int>				_connSock;
-		std::vector<struct sockaddr_in>	_Address;
+		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
 		char**							_env;
-		int								_methode;
+		int								_method;
 	
 };
 

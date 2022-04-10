@@ -12,20 +12,20 @@
 
 #include "../../includes/Socket.hpp"
 
-Socket::Socket() : _check(0), _methode(0)
+Socket::Socket() : _check(OK), _method(0)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(0), _methode(0)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(0), _methode(0)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0)
 {
-	if (initSockets(this, config) < 0)
-		this->_check = -1;
+	if (initSockets(this, config))
+		this->_check = ERR;
 }
 
 Socket	&Socket::operator=(const Socket &socket)
@@ -35,15 +35,17 @@ Socket	&Socket::operator=(const Socket &socket)
 		_config.clear();
 		_socket.clear();
 		_connSock.clear();
-		_Address.clear();
+		_address.clear();
 		_addrLen.clear();
 
 		_config = socket._config;
 		_socket = socket._socket;
 		_connSock = socket._connSock;
-		_Address = socket._Address;
+		_address = socket._address;
 		_addrLen = socket._addrLen;
 		_check = socket._check;
+		_env = socket._env;
+		_method = socket._method;
 	}
 	return (*this);
 }
@@ -81,7 +83,7 @@ int &						Socket::modConnSock(int nbr)
 
 const struct sockaddr_in &	Socket::getAddress(int nbr) const
 {
-	std::vector<struct sockaddr_in>::const_iterator	it = this->_Address.begin() + nbr;
+	std::vector<struct sockaddr_in>::const_iterator	it = this->_address.begin() + nbr;
 
 	return *it;
 }
@@ -95,7 +97,7 @@ void						Socket::setAddress(int port, const char *ip)
 	address.sin_port = htons(port);
 	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 	
-	this->_Address.push_back(address);
+	this->_address.push_back(address);
 	this->_addrLen.push_back(sizeof(address));
 }
 
@@ -141,14 +143,14 @@ void						Socket::setEnv(char** envp)
 	this->_env = envp;
 }
 
-int							Socket::getMethode(void) const
+int							Socket::getMethod(void) const
 {
-	return this->_methode;
+	return this->_method;
 }
 
-void						Socket::setMethode(int methode)
+void						Socket::setMethod(int method)
 {
-	this->_methode = methode;
+	this->_method = method;
 }
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj)
