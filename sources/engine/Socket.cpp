@@ -12,6 +12,10 @@
 
 #include "../../includes/Socket.hpp"
 
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
+
 Socket::Socket() : _check(OK), _method(0)
 {
 	return ;
@@ -27,6 +31,15 @@ Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK),
 	if (initSockets(this, config))
 		this->_check = ERR;
 }
+
+Socket::~Socket()
+{
+	return ;
+}
+
+/*
+**		OVERLOAD OPERATORS
+*/
 
 Socket	&Socket::operator=(const Socket &socket)
 {
@@ -50,45 +63,35 @@ Socket	&Socket::operator=(const Socket &socket)
 	return (*this);
 }
 
-const int &					Socket::getSocket(int nbr) const
+std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 {
-	std::vector<int>::const_iterator	it = this->_socket.begin() + nbr;
+	for (int i = 0; i < obj.getSocketNbr(); i++)
+		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
 
-	return *it;
+	return o;
 }
 
-void						Socket::setSocket(int newSocket)
+/*
+**		MEMBER FUNCTIONS AND SETTERS
+*/
+
+
+int 		&Socket::modConnSock(int nbr)
 {
-	this->_socket.push_back(newSocket);
+	return (_connSock[nbr]);
 }
 
-const int &					Socket::getConnSock(int nbr) const
+void		Socket::setSocket(int newSocket)
 {
-	std::vector<int>::const_iterator	it = this->_connSock.begin() + nbr;
-
-	return *it;
+	_socket.push_back(newSocket);
 }
 
-void						Socket::setConnSock(int newConnSock)
+void		Socket::setConnSock(int newConnSock)
 {
-	this->_connSock.push_back(newConnSock);
+	_connSock.push_back(newConnSock);
 }
 
-int &						Socket::modConnSock(int nbr)
-{
-	std::vector<int>::iterator	it = this->_connSock.begin() + nbr;
-
-	return *it;
-}
-
-const struct sockaddr_in &	Socket::getAddress(int nbr) const
-{
-	std::vector<struct sockaddr_in>::const_iterator	it = this->_address.begin() + nbr;
-
-	return *it;
-}
-
-void						Socket::setAddress(int port, const char *ip)
+void		Socket::setAddress(int port, const char *ip)
 {
 	struct sockaddr_in	address;
 	
@@ -101,26 +104,27 @@ void						Socket::setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-const socklen_t &			Socket::getAddrLen(int nbr) const
+void		Socket::setEnv(char** envp)
 {
-	std::vector<socklen_t>::const_iterator	it = this->_addrLen.begin() + nbr;
-
-	return *it;
+	this->_env = envp;
+}
+void		Socket::setMethod(int method)
+{
+	this->_method = method;
 }
 
-int							Socket::getSocketNbr(void) const
+/*
+**		GETTER FUNCTIONS
+*/
+
+const int &					Socket::getSocket(int nbr) const
 {
-	return this->_socket.size();
+	return (_socket[nbr]);
 }
 
-int							Socket::getCheck(void) const
+int							Socket::getMethod(void) const
 {
-	return this->_check;
-}
-
-Socket::~Socket()
-{
-	return ;
+	return this->_method;
 }
 
 const Server				Socket::getConfig(int nbr) const
@@ -138,35 +142,36 @@ char**						Socket::getEnv(void) const
 	return this->_env;
 }
 
-void						Socket::setEnv(char** envp)
+const socklen_t &			Socket::getAddrLen(int nbr) const
 {
-	this->_env = envp;
+	return (_addrLen[nbr]);
 }
 
-int							Socket::getMethod(void) const
+int							Socket::getSocketNbr(void) const
 {
-	return this->_method;
+	return this->_socket.size();
 }
 
-void						Socket::setMethod(int method)
+int							Socket::getCheck(void) const
 {
-	this->_method = method;
+	return this->_check;
 }
 
-std::ostream &	operator<<(std::ostream &o, Socket const &obj)
+const struct sockaddr_in &	Socket::getAddress(int nbr) const
 {
-	for (int i = 0; i < obj.getSocketNbr(); i++)
-		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
-
-	return o;
+	return (_address[nbr]);
 }
 
+const int &					Socket::getConnSock(int nbr) const
+{
+	return (_connSock[nbr]);
+}
 
 /*
 **		URL GETTER FUNCTIONS
 */
 
-int		Socket::getConfigFromUrl(int nbr, const std::string url) const
+int			Socket::getConfigFromUrl(int nbr, const std::string url) const
 {
 	return (getConfig(nbr).configFromUrl(url));
 }

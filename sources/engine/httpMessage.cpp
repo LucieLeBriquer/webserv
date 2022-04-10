@@ -48,7 +48,52 @@ static void	getRightFile(HTTPResponse &deliver)
 		deliver.rendering("image/png");
 	else
 		deliver.rendering();
-}	
+}
+
+static int	sendHeader(int fde, HTTPResponse &deliver)
+{
+	std::string	header = deliver.getHeader() + "\r\n\r\n";
+
+	if (send(fde, header.c_str(), header.size(), 0) < 0)
+	{
+		perror("send()");
+		return (ERR);
+	}
+	return (OK);
+}
+
+static int	sendData(int fde, HTTPResponse &deliver)
+{
+	std::ifstream	fileStream(deliver.getFileName().c_str(), std::ios::in | std::ios::binary);
+	char			buf[BUFFER_SIZE];
+	int				i;
+	char			c;
+	
+	while (fileStream.get(c))
+	{
+		memset(buf, 0, BUFFER_SIZE);
+		buf[0] = c;
+		i = 1;
+		while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
+		{
+			buf[i] = c;
+			i++;
+		}
+		if (i + 1 == BUFFER_SIZE)
+		{
+			buf[i] = c;
+			i++;
+		}
+		if (send(fde, buf, i, 0) < 0)
+		{
+			perror("send()");
+			fileStream.close();
+			return (ERR);
+		}
+	}
+	fileStream.close();
+	return (OK);
+}
 
 int		sendReponse(int fde, HTTPResponse &deliver) // give sock and sockNbr to treat files
 {
@@ -56,31 +101,18 @@ int		sendReponse(int fde, HTTPResponse &deliver) // give sock and sockNbr to tre
 
 	// fill header
 	getRightFile(deliver);
-	std::string	header = deliver.getHeader() + "\r\n\r\n";
+
+	std::cout << "url = " << deliver.getUrl() << std::endl;
+	std::cout << "sending data to " << fde << std::endl;
 
 	// deliver header
-	std::cout << "url = " << deliver.getUrl() << std::endl;
-	if (send(fde, header.c_str(), header.size(), 0) < 0)
-	{
-		perror("send()");
-		return -1;
-	}
+	if (sendHeader(fde, deliver))
+		return (ERR);
 
 	// deliver data
-	std::cout << "sending data to " << fde << std::endl;
-	std::ifstream	fileStream(deliver.getFileName().c_str(), std::ios::in | std::ios::binary);
-	char			c;
+	if (sendData(fde, deliver))
+		return (ERR);
 	
-	while (fileStream.get(c))
-	{
-		if (send(fde, &c, 1, 0) < 0)
-		{
-			perror("send()");
-			fileStream.close();
-			return -1;
-		}
-	}
-	fileStream.close();
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	close(fde);
 	return 1;

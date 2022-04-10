@@ -12,6 +12,9 @@
 
 #include "Block.hpp"
 
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
 
 Block::Block(void) : _root("/"), _maxClientBodySize(1), _redirUrl(""), _autoindex(false),
 					_rootSet(false), _indexSet(false), _maxClientBodySizeSet(false), _methodsSet(false), 
