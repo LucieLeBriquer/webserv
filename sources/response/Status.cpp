@@ -1,24 +1,58 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   statusCode.cpp                                     :+:      :+:    :+:   */
+/*   Status.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:55 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 11:45:01 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 10:04:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "usefull.hpp"
+#include "Status.hpp"
 
-STATUS::STATUS() {
-	getStatus[0] = &STATUS::err4xx;
-	getStatus[1] = &STATUS::status2xx;
-	getStatus[2] = &STATUS::err5xx;
-};
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
 
-void STATUS::err4xx(int type)
+Status::Status() : _code("")
+{
+	getStatus[0] = &Status::err4xx;
+	getStatus[1] = &Status::status2xx;
+	getStatus[2] = &Status::err5xx;
+}
+
+Status::Status(const Status &status) : HTTPResponse(status)
+{
+	*this = status;
+}
+
+Status::~Status()
+{
+	return ;
+}
+
+/*
+**		OVERLOAD OPERATOR
+*/
+
+Status	&Status::operator=(const Status &status)
+{
+	if (this != &status)
+	{
+		_code = status._code;
+		for (int i = 0; i < 3; i++)
+			getStatus[i] = status.getStatus[i];
+	}
+	return (*this);
+}
+
+/*
+**		MEMBER FUNCTIONS
+*/
+
+void Status::err4xx(int type)
 {
 	std::ostringstream s;
 	s << type;
@@ -33,7 +67,7 @@ void STATUS::err4xx(int type)
 		this->_code += " Method Not Allowed";
 }
 
-void STATUS::status2xx(int type)
+void Status::status2xx(int type)
 {
 	std::ostringstream s;
 	s << type;
@@ -43,7 +77,7 @@ void STATUS::status2xx(int type)
 		this->_code += " OK";
 }
 
-void STATUS::err5xx(int type)
+void Status::err5xx(int type)
 {
 	std::ostringstream s;
 	s << type;
@@ -53,7 +87,7 @@ void STATUS::err5xx(int type)
 		this->_code += " Bad Request";
 }
 
-std::string STATUS::status(int code, int type)
+std::string Status::status(int code, int type)
 {
 	std::map<int, int> status;
 

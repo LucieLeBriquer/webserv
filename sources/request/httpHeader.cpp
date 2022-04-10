@@ -3,14 +3,63 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:50:10 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 09:53:40 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "usefull.hpp"
+#include "httpHeader.hpp"
+
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
+
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _useragent(""), _accept("")
+{
+	return ;
+}
+
+HTTPHeader::HTTPHeader(const HTTPHeader &header) : HTTPRequest(header)
+{
+	*this = header;
+}
+
+HTTPHeader::~HTTPHeader()
+{
+	return ;
+}
+
+
+/*
+**		OVERLOAD OPERATORS
+*/
+
+HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
+{
+	if (this != &header)
+	{
+		_host = header._host;
+		_contentLen = header._contentLen;
+		_useragent = header._useragent;
+		_accept = header._accept;
+		
+		// http request parameters
+		_META = header._META;
+		_OPTION = header._OPTION;
+		_method = header._method;
+		_httpv = header._httpv;
+		_url = header._url;
+		_active = header._active;
+		_fLine = header._fLine;
+	}
+	return (*this);
+}
+
+/*
+**		SETTERS
+*/
 
 void HTTPHeader::setContentLen(std::string value)
 {
@@ -32,10 +81,38 @@ void HTTPHeader::setAccept(std::string value)
 	this->_accept = value;
 }
 
+/*
+**		GETTERS
+*/
+
 int HTTPHeader::getContext( void )
 {
 	return this->_active;
 }
+
+std::string	HTTPHeader::getHost(void) const
+{
+	return (_host);
+}
+
+std::string	HTTPHeader::getContentLen(void) const
+{
+	return (_contentLen);
+}
+
+std::string	HTTPHeader::getUserAgent(void) const
+{
+	return (_useragent);
+}
+
+std::string	HTTPHeader::getAcceptFile(void) const
+{
+	return (_accept);
+}
+
+/*
+**		MEMBER FUNCTIONS
+*/
 
 int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 {
@@ -74,7 +151,7 @@ int HTTPHeader::parseProtocol(const std::string protocol)
 	return 1;
 }
 
-int HTTPHeader::method(std::string buf, STATUS *code, HTTPResponse *deliver)
+int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 {
 	std::string methods[3] = {"GET", "POST", "DELETE"};
 	
@@ -154,5 +231,6 @@ int HTTPHeader::header(std::string buf)
 	this->_active = 1;
 	std::string value(tmp);
 	(this->*(this->setFct[i]))(value);
+	std::cout << "WIIIIIIIIIIIIIIIIIIIIIIIIII" << value << std::endl;
 	return (1);
 }

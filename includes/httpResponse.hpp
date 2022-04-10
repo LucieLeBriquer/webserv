@@ -3,18 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:52:27 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 09:49:38 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
-# include "httpRequest.hpp"
-
-class STATUS;
+# include "usefull.hpp"
 
 class HTTPResponse
 {
@@ -46,22 +44,6 @@ class HTTPResponse
 		void		statusCode(std::string status, std::string firstLine);
 		void		setFileName(const std::string &file);
 		std::string	getFileName(void) const;
-};
-
-class STATUS: public HTTPResponse
-{
-	friend class HTTPResponse;
-	protected:
-		std::string	_code;
-		typedef void (STATUS::*ptr)(int);
-		ptr			getStatus[3];
-	public:
-		STATUS();
-		~STATUS(){};
-		std::string status(int code, int type);
-		void        err4xx(int type);
-		void        status2xx(int type);
-		void        err5xx( int type);
 };
 
 #endif

@@ -24,22 +24,36 @@
 # define ERR -1
 # define OK 0
 # define LOG 0
+
+// librairies
 # include <iostream>
+# include <sstream>
+# include <fstream>
+
 # include <vector>
-# include <algorithm>
+# include <map>
 # include <string>
+# include <algorithm>
+
+# include <limits>
+# include <utility>
+
 # include <string.h>
 # include <stdio.h>
-# include <cstdlib>
-# include <map>
-# include <limits>
-# include <sstream>
-# include <arpa/inet.h>
-# include <fstream>
+# include <unistd.h>
 # include <time.h>
+# include <fcntl.h>
+# include <errno.h>
 
-#include "httpRequest.hpp"
-#include "httpResponse.hpp"
+# include <cstdlib>
+# include <cstdio>
+
+
+# include <arpa/inet.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <sys/epoll.h>
+# include <sys/types.h>
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;

@@ -3,18 +3,56 @@
 /*                                                        :::      ::::::::   */
 /*   httpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:38 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 12:08:37 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 10:14:34 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "usefull.hpp"
+#include "httpRequest.hpp"
 
-HTTPRequest::HTTPRequest()
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
+
+HTTPRequest::HTTPRequest() : _META(""), _OPTION(""), _method(""), _httpv(""), _url(""), _active(0), _fLine("")
 {
-};
+	return ;
+}
+
+HTTPRequest::HTTPRequest(const HTTPRequest &request)
+{
+	*this = request;
+}
+
+HTTPRequest::~HTTPRequest()
+{
+	return ;
+}
+
+/*
+**		OVERLOAD OPERATORS
+*/
+
+HTTPRequest	&HTTPRequest::operator=(const HTTPRequest &request)
+{
+	if (this != &request)
+	{
+		_META = request._META;
+		_OPTION = request._OPTION;
+		_method = request._method;
+		_httpv = request._httpv;
+		_url = request._url;
+		_active = request._active;
+		_fLine = request._fLine;
+	}
+	return (*this);
+}
+
+/*
+**		MEMBER FUNCTIONS
+*/
 
 void HTTPRequest::get(void){
 	this->_method = "GET";

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   httpMessage.cpp                                    :+:      :+:    :+:   */
+/*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 15:39:52 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/10 10:31:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,14 +26,14 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &deliver)
+static void	getRightFile(HTTPResponse &response)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	filename = deliver.checkUrl();
-	deliver.setFileName(filename);
+	filename = response.checkUrl();
+	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
 
@@ -41,18 +41,18 @@ static void	getRightFile(HTTPResponse &deliver)
 	size = fileStream.tellg();
 	fileStream.close();
 
-	deliver.setContentLen(size);
+	response.setContentLen(size);
 	if (isCssFile(filename))
-		deliver.rendering("text/css");
+		response.rendering("text/css");
 	else if (isPngFile(filename))
-		deliver.rendering("image/png");
+		response.rendering("image/avif");
 	else
-		deliver.rendering();
+		response.rendering();
 }
 
-static int	sendHeader(int fde, HTTPResponse &deliver)
+static int	sendHeader(int fde, HTTPResponse &response)
 {
-	std::string	header = deliver.getHeader() + "\r\n\r\n";
+	std::string	header = response.getHeader() + "\r\n\r\n";
 
 	if (send(fde, header.c_str(), header.size(), 0) < 0)
 	{
@@ -62,9 +62,9 @@ static int	sendHeader(int fde, HTTPResponse &deliver)
 	return (OK);
 }
 
-static int	sendData(int fde, HTTPResponse &deliver)
+static int	sendData(int fde, HTTPResponse &response)
 {
-	std::ifstream	fileStream(deliver.getFileName().c_str(), std::ios::in | std::ios::binary);
+	std::ifstream	fileStream(response.getFileName().c_str(), std::ios::in | std::ios::binary);
 	char			buf[BUFFER_SIZE];
 	int				i;
 	char			c;
@@ -95,22 +95,24 @@ static int	sendData(int fde, HTTPResponse &deliver)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &deliver) // give sock and sockNbr to treat files
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(deliver);
+	getRightFile(response);
+	(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
+					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
-	std::cout << "url = " << deliver.getUrl() << std::endl;
+	std::cout << "url = " << response.getUrl() << std::endl;
 	std::cout << "sending data to " << fde << std::endl;
 
 	// deliver header
-	if (sendHeader(fde, deliver))
+	if (sendHeader(fde, response))
 		return (ERR);
 
 	// deliver data
-	if (sendData(fde, deliver))
+	if (sendData(fde, response))
 		return (ERR);
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
@@ -123,10 +125,10 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	char			buf[BUFFER_SIZE] = {0};
 	int				byteCount, recv_len = 0;
 	std::string		string;
-	HTTPRequest		treat;
-	HTTPResponse	deliver;
-	HTTPHeader		head;
-	STATUS			code;
+	HTTPRequest		request;
+	HTTPResponse	response;
+	HTTPHeader		header;
+	Status			status;
 	int				line;
 	(void)sockNbr;
 
@@ -144,14 +146,14 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		{
 			if (line == 0)
 			{
-				if (head.method(string, &code, &deliver) == -1)
+				if (header.method(string, &status, &response) == -1)
 				{
 					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
 				}
 			}
-			else if (!head.header(string))
-				code.statusCode(code.status(4, 0), head.getFirstLine());
+			else if (!header.header(string))
+				status.statusCode(status.status(4, 0), header.getFirstLine());
 			if (endRequest(string, sock))
 				break ;
 			line++;
@@ -163,7 +165,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, deliver) < 0)
+	if (sendReponse(fde, response, header) < 0)
 		return -1;
 	return 1;
 }

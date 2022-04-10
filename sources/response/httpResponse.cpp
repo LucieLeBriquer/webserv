@@ -6,11 +6,11 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 08:52:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/10 11:07:03 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.hpp"
+#include "httpResponse.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName("")
@@ -45,7 +45,6 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 		_method = response._method;
 		_fileName = response._fileName;
 	}
-	std::cout << "[" << _fileName << "] [" << response._fileName << "]" << std::endl;
 	return (*this);
 }
 
@@ -112,7 +111,7 @@ std::string HTTPResponse::checkUrl()
 	return filename;
 }
 
-void HTTPResponse::setContentLen(int len)
+void	HTTPResponse::setContentLen(int len)
 {
 	std::ostringstream s;
 	s << len;
