@@ -117,7 +117,7 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header) // give so
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	close(fde);
-	return 1;
+	return (OK);
 }
 
 int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
@@ -165,7 +165,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, response, header) < 0)
-		return -1;
-	return 1;
+	if (sendReponse(fde, response, header))
+		return (ERR);
+	return (OK);
 }

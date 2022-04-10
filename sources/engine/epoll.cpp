@@ -102,7 +102,7 @@ int initEpoll(Socket *sock, const Config config)
 	int nfds, epollfd, i, j;
 
 	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
-		return -1;
+		return (ERR);
 
 	while (1)
 	{
@@ -111,7 +111,7 @@ int initEpoll(Socket *sock, const Config config)
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
 			perror("epoll_wait()");
-			return -1;
+			return (ERR);
 		}
 		for (int n = 0; n < nfds; n++)
 		{
@@ -125,7 +125,7 @@ int initEpoll(Socket *sock, const Config config)
 			else if ((i = socketMatch(events[n].data.fd, sock)) >= 0)
 			{
 				if ((sock = initConnection(sock, ev, epollfd, i)) == NULL)
-					return -1;
+					return (ERR);
 			}
 			else
 			{
@@ -136,12 +136,13 @@ int initEpoll(Socket *sock, const Config config)
 						break ;
 					j++;
 				}
-				if (!requestReponse(epollfd, events[n].data.fd, sock, j))
-					return -1;
+				if (requestReponse(epollfd, events[n].data.fd, sock, j))
+					return (ERR);
 			}
 		}
 	}
 	close(epollfd);
 	for (int i = 0; i < sock->getSocketNbr(); i++)
 		close(sock->getSocket(i));
+	return (OK);
 }
