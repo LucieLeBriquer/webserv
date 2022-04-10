@@ -6,11 +6,48 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 17:04:33 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 23:27:50 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "engine.hpp"
+#include "httpResponse.hpp"
+
+HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+									_header(""), _method(""), _fileName("")
+{
+	if (LOG)
+		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
+
+}
+
+HTTPResponse::HTTPResponse(const HTTPResponse &response)
+{
+	if (LOG)
+		std::cout << YELLOW << "[HTTPResponse]" << END << " copy constructor" << std::endl;
+	*this = response;
+}
+
+HTTPResponse::~HTTPResponse()
+{
+	if (LOG)
+		std::cout << RED << "[HTTPResponse]" << END << " destructor" << std::endl;
+}
+
+HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
+{
+	if (this != &response)
+	{
+		_contentLen = response._contentLen;
+		_protocol = response._protocol;
+		_statusCode = response._statusCode;
+		_url = response._url;
+		_header = response._header;
+		_method = response._method;
+		_fileName = response._fileName;
+	}
+	return (*this);
+}
+
 
 std::string HTTPResponse::getMethod( void )
 {
@@ -25,6 +62,11 @@ std::string HTTPResponse::getUrl( void )
 std::string HTTPResponse::getHeader( void )
 {
 	return this->_header;
+}
+
+std::string	HTTPResponse::getFileName(void) const
+{
+	return (_fileName);
 }
 
 int HTTPResponse::setStatus(std::string code, std::string str)
@@ -45,6 +87,11 @@ int HTTPResponse::setStatus(std::string code, std::string str)
 	if (status > 299)
 		this->_url = getStatus[status];
 	return status;
+}
+
+void		HTTPResponse::setFileName(const std::string &file)
+{
+	_fileName = file;
 }
 
 void HTTPResponse::redirect(Socket *sock, int sockNbr)
@@ -79,7 +126,7 @@ std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
 	return filename;
 }
 
-void HTTPResponse::setContentLen(int len)
+void	HTTPResponse::setContentLen(int len)
 {
 	std::ostringstream s;
 	s << len;
@@ -103,23 +150,44 @@ void HTTPResponse::rendering( void )
 //	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
 	time(&rawtime);
-	if (this->_location != "")
-		this->_header = "\n"+ this->_protocol + ' ' + "301" + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nLocation: "+ this->_location +"\nDate: " + ctime(&rawtime); 
-	else
-		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode +  "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
+	this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Date: " + timeStr; 
 	std::cout << this->_header << std::endl;
 }
 
-// added for CSS
 void HTTPResponse::rendering(const std::string typeContent)
 {
 	time_t rawtime;
 	time(&rawtime);
-	if (this->_location != "")
-		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nLocation: "+ this->_location +"\nDate: " + ctime(&rawtime); 
-	else
-		this->_header = "\n"+ this->_protocol + ' ' + this->_statusCode + "\nContent-Type: " + typeContent + "\nReferrer-Policy: no-referrer\nContent-Length: " + this->_contentLen + "\nDate: " + ctime(&rawtime); 
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Content-Type: " + typeContent + "\r\n";
+	this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Date: " + timeStr;
 	std::cout << this->_header << std::endl;
 }
-//sock->getconfg()
-// 
+
+void HTTPResponse::rendering(const std::string typeContent, bool b)
+{
+	time_t rawtime;
+	time(&rawtime);
+	(void)b;
+
+	std::string	timeStr = ctime(&rawtime);
+	timeStr = timeStr.substr(0, timeStr.size() - 1);
+	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
+	this->_header += "Date: " + timeStr + "\r\n";
+	this->_header += "Content-Type: " + typeContent + "\r\n";
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	this->_header += "Accept-Ranges: bytes";
+	std::cout << this->_header << std::endl;
+}
+

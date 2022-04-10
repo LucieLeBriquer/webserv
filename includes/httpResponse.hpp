@@ -6,56 +6,44 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 16:22:14 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/10 23:27:51 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
-# include "httpRequest.hpp"
-
-class Socket;
-class STATUS;
+# include "usefull.hpp"
 
 class HTTPResponse
 {
 	protected:
-		std::string _contentLen;
-		std::string _protocol;
-		std::string	_statusCode;
-		std::string	_url;
-		std::string	_location;
-		std::string	_header;
-		std::string	_method;
+		std::string 	_contentLen;
+		std::string 	_protocol;
+		std::string		_statusCode;
+		std::string		_url;
+		std::string		_header;
+		std::string		_method;
+		std::string		_fileName;
+
 	public:
-		HTTPResponse(){};
-		~HTTPResponse(){};
+		HTTPResponse(void);
+		HTTPResponse(const HTTPResponse &response);
+		~HTTPResponse();
+
+		HTTPResponse	&operator=(const HTTPResponse &response);
+
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
 		void		rendering( void );
 		void		rendering( const std::string typeContent );
+		void		rendering( const std::string typeContent, bool b);
 		void		setContentLen( int len );
-		std::string	checkUrl(Socket *sock, int sockNbr);
-		void 		redirect(Socket *sock, int sockNbr);
-		int		setStatus(std::string code, std::string str);
+		std::string	checkUrl();
+		int HTTPResponse::setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
-};
-
-class STATUS: public HTTPResponse
-{
-	friend class HTTPResponse;
-	protected:
-		std::string	_code;
-		typedef void (STATUS::*ptr)(int);
-		ptr			getStatus[3];
-	public:
-		STATUS();
-		~STATUS(){};
-		std::string status(int code, int type);
-		void        err4xx(int type);
-		void        status2xx(int type);
-		void        err5xx( int type);
+		void		setFileName(const std::string &file);
+		std::string	getFileName(void) const;
 };
 
 #endif

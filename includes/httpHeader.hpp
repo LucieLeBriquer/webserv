@@ -1,0 +1,57 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   HTTPHeader.hpp                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
+/*   Updated: 2022/04/10 09:54:51 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#ifndef HTTPHEADER_HPP
+# define HTTPHEADER_HPP
+# include "httpRequest.hpp"
+# include "Status.hpp"
+
+class HTTPHeader : public HTTPRequest
+{
+	friend class HTTPRequest;
+
+	protected:
+		std::string	_host;
+		std::string	_contentLen;
+		std::string	_useragent;
+		std::string	_accept;
+
+		typedef void (HTTPHeader::*ptr)(std::string);
+		ptr			setFct[3];
+		
+	public:
+		HTTPHeader();
+		HTTPHeader(const HTTPHeader &header);
+		~HTTPHeader();
+
+		HTTPHeader	&operator=(const HTTPHeader &header);
+
+		int		method(std::string buf, Status *code, HTTPResponse *deliver);
+		int		parsePath(const std::string url);
+		int 	parseProtocol(const std::string prot);
+		int		parseMethod(const std::string cmd, const std::string *methods);
+
+		int		header(std::string buf);
+		int		getContext();
+		void	setContentLen(std::string value);
+		void	setHost(std::string value);
+		void	setUserA(std::string value);
+		void	setAccept(std::string value);
+		void	checkContext();
+
+		std::string	getHost(void) const;
+		std::string	getContentLen(void) const;
+		std::string	getUserAgent(void) const;
+		std::string	getAcceptFile(void) const;
+};
+
+#endif
+

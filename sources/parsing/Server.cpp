@@ -203,16 +203,16 @@ std::string	Server::getRealUrl(const std::string &url) const
 
 	loc = configFromUrl(url);
 	if (loc < 0)
-		return (_root + "/" + url);
+		return (_root + url);
 	if (_locations[loc].getPath()[0] == '*')
-		return (_root + "/" + url);
+		return (_root + url);
 	if (_locations[loc].isRootSet())
 	{
 		root = _locations[loc].getRoot();
 		path = _locations[loc].getPath();
 		return (root + url.substr(path.size(), url.size() - path.size() + 1));
 	}
-	return (_root + "/" + url);
+	return (_root + url);
 }
 
 int		Server::configFromUrl(const std::string &url) const
@@ -313,6 +313,16 @@ const vecStr		Server::getServerNames(void) const
 const vecLoc		Server::getLocations(void) const
 {
 	return (_locations);
+}
+
+bool				Server::isServerNamesSet(void) const
+{
+	return (_serverNamesSet);
+}
+
+bool				Server::isHostSet(void) const
+{
+	return (_hostSet);
 }
 
 const std::string Server::keywords[nbKeywords] = { "listen", "server_name", "root", "index", 
