@@ -6,11 +6,50 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/08 22:21:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/10 08:52:22 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#define LOG2 1
+
+HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+									_header(""), _method(""), _fileName("")
+{
+	if (LOG2)
+		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
+
+}
+
+HTTPResponse::HTTPResponse(const HTTPResponse &response)
+{
+	if (LOG2)
+		std::cout << YELLOW << "[HTTPResponse]" << END << " copy constructor" << std::endl;
+	*this = response;
+}
+
+HTTPResponse::~HTTPResponse()
+{
+	if (LOG2)
+		std::cout << RED << "[HTTPResponse]" << END << " destructor" << std::endl;
+}
+
+HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
+{
+	if (this != &response)
+	{
+		_contentLen = response._contentLen;
+		_protocol = response._protocol;
+		_statusCode = response._statusCode;
+		_url = response._url;
+		_header = response._header;
+		_method = response._method;
+		_fileName = response._fileName;
+	}
+	std::cout << "[" << _fileName << "] [" << response._fileName << "]" << std::endl;
+	return (*this);
+}
+
 
 std::string HTTPResponse::getMethod( void )
 {
@@ -25,6 +64,11 @@ std::string HTTPResponse::getUrl( void )
 std::string HTTPResponse::getHeader( void )
 {
 	return this->_header;
+}
+
+std::string	HTTPResponse::getFileName(void) const
+{
+	return (_fileName);
 }
 
 void HTTPResponse::setStatus(std::string code, std::string str)
@@ -44,6 +88,11 @@ void HTTPResponse::setStatus(std::string code, std::string str)
 	this->_statusCode = code + str;
 	if (status > 299)
 		this->_url = getStatus[status];
+}
+
+void		HTTPResponse::setFileName(const std::string &file)
+{
+	_fileName = file;
 }
 
 std::string HTTPResponse::checkUrl()
@@ -98,7 +147,6 @@ void HTTPResponse::rendering( void )
 	std::cout << this->_header << std::endl;
 }
 
-// added for CSS
 void HTTPResponse::rendering(const std::string typeContent)
 {
 	time_t rawtime;
@@ -113,7 +161,6 @@ void HTTPResponse::rendering(const std::string typeContent)
 	std::cout << this->_header << std::endl;
 }
 
-
 void HTTPResponse::rendering(const std::string typeContent, bool b)
 {
 	time_t rawtime;
@@ -122,16 +169,11 @@ void HTTPResponse::rendering(const std::string typeContent, bool b)
 
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-	this->_header.clear();
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	this->_header += "Server: webserv\r\n";
+	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
 	this->_header += "Date: " + timeStr + "\r\n";
 	this->_header += "Content-Type: " + typeContent + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-	this->_header += "Last-Modified: Fri, 08 Apr 2022 12:32:36 GMT\r\n";
-	this->_header += "Connection: keep-alive\r\n";
-	this->_header += "ETag: \"62502b64-2c2b\"\r\n";
 	this->_header += "Accept-Ranges: bytes";
 	std::cout << this->_header << std::endl;
 }
-//sock->getconfg()

@@ -19,15 +19,21 @@ class STATUS;
 class HTTPResponse
 {
 	protected:
-		std::string _contentLen;
-		std::string _protocol;
-		std::string	_statusCode;
-		std::string	_url;
-		std::string	_header;
-		std::string	_method;
+		std::string 	_contentLen;
+		std::string 	_protocol;
+		std::string		_statusCode;
+		std::string		_url;
+		std::string		_header;
+		std::string		_method;
+		std::string		_fileName;
+
 	public:
-		HTTPResponse(){};
-		~HTTPResponse(){};
+		HTTPResponse(void);
+		HTTPResponse(const HTTPResponse &response);
+		~HTTPResponse();
+
+		HTTPResponse	&operator=(const HTTPResponse &response);
+
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
@@ -38,6 +44,8 @@ class HTTPResponse
 		std::string	checkUrl();
 		void		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
+		void		setFileName(const std::string &file);
+		std::string	getFileName(void) const;
 };
 
 class STATUS: public HTTPResponse
