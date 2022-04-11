@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 14:46:03 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/11 16:58:00 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,13 +104,18 @@ void		Socket::setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-void		Socket::setEnv(char** envp)
+void		Socket::setEnv(std::string envp)
 {
-	this->_env = envp;
+	this->_env.push_back(envp);
 }
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
+}
+
+void		Socket::setBody(char* newBody)
+{
+	this->_body = newBody;
 }
 
 /*
@@ -137,9 +142,16 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-char**						Socket::getEnv(void) const
+std::string	const			Socket::getEnv(int nbr) const
 {
-	return this->_env;
+	std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
+	
+	return *it;
+}
+
+size_t						Socket::getEnvSize(void) const
+{
+	return this->_env.size();
 }
 
 const socklen_t &			Socket::getAddrLen(int nbr) const
@@ -165,6 +177,11 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 const int &					Socket::getConnSock(int nbr) const
 {
 	return (_connSock[nbr]);
+}
+
+char*						Socket::getBody(void) const
+{
+	return this->_body;
 }
 
 /*

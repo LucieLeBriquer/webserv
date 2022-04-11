@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 11:07:03 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/11 15:28:40 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ std::string HTTPResponse::checkUrl()
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
-	std::cout << "stat = "<< _statusCode << std::endl;
+	// std::cout << "stat = "<< _statusCode << std::endl;
 	close(fd);
 	return filename;
 }
@@ -127,7 +127,7 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
-//	std::cout << "stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
+	// std::cout << "stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 }
 
 void HTTPResponse::rendering( void )

@@ -76,3 +76,9 @@ say=ok&to=lou
 
 - redirections : si une page rechercher n'existe pas, 
 comment afficher une page d'erreur  
+
+
+/****a dire****/
+
+url valide : form submission methode get --> QUERY_STRING inside url
+request parsing (mass) : get body si cest methode POST, get QUERY_STRING si methode GET (besoin pour cgi)

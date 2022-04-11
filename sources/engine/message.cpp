@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/10 10:31:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/11 17:30:58 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,17 +95,14 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header) // give sock and sockNbr to treat files
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header)
 {
-	//check methode et file pour cgi ou non
-
 	// fill header
+	(void)header;
+	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
+	
 	getRightFile(response);
-	(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
-					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
-
-	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "sending data to " << fde << std::endl;
+	// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -115,8 +112,6 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header) // give so
 	if (sendData(fde, response))
 		return (ERR);
 	
-	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
-	close(fde);
 	return (OK);
 }
 
@@ -154,7 +149,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			}
 			else if (!header.header(string))
 				status.statusCode(status.status(4, 0), header.getFirstLine());
-			if (endRequest(string, sock))
+			if (!endRequest(string, *sock))
 				break ;
 			line++;
 		}
@@ -166,6 +161,13 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		string += buf;
 	}
 	if (sendReponse(fde, response, header))
-		return (ERR);
+			return (ERR);
+	if (isNotCGI(response, *sock) == 0)
+	{
+		if (!GetCGIfile(*sock, sockNbr))
+			return ERR;
+	}
+	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
+	close(fde);
 	return (OK);
 }
