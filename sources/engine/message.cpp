@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/10 10:31:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/11 12:10:38 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response)
+static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl();
+	filename = response.checkUrl(sock, sockNbr);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
@@ -95,12 +95,12 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header) // give sock and sockNbr to treat files
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(response);
+	getRightFile(response, sock, sockNbr);
 	(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
@@ -165,7 +165,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, response, header))
+	if (sendReponse(fde, response, header, sock, sockNbr))
 		return (ERR);
 	return (OK);
 }

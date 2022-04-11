@@ -6,14 +6,14 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 23:27:50 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/11 11:53:32 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "httpResponse.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName("")
+									_header(""), _method(""), _fileName(""), _location("")
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
