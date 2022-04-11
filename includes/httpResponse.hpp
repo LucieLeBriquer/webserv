@@ -1,49 +1,49 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   httpResponse.hpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
+/*   Updated: 2022/04/10 09:49:38 by lle-briq         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef RESPONSE_HPP
 # define RESPONSE_HPP
-# include "httpRequest.hpp"
-
-class STATUS;
+# include "usefull.hpp"
 
 class HTTPResponse
 {
 	protected:
-		std::string _contentLen;
-		std::string _protocol;
-		std::string	_statusCode;
-		std::string	_url;
-		std::string	_header;
+		std::string 	_contentLen;
+		std::string 	_protocol;
+		std::string		_statusCode;
+		std::string		_url;
+		std::string		_header;
+		std::string		_method;
+		std::string		_fileName;
+
 	public:
-		HTTPResponse() {};
-		~HTTPResponse() {};
-		std::string	getHeader(void);
+		HTTPResponse(void);
+		HTTPResponse(const HTTPResponse &response);
+		~HTTPResponse();
 
-		void		rendering(void);
-		void		rendering(const std::string typeContent);
+		HTTPResponse	&operator=(const HTTPResponse &response);
 
+		std::string	getUrl(void );
+		std::string	getMethod( void );
+		std::string	getHeader( void );
+		void		rendering( void );
+		void		rendering( const std::string typeContent );
+		void		rendering( const std::string typeContent, bool b);
 		void		setContentLen( int len );
 		std::string	checkUrl();
-		void		setStatus(std::string code);
+		void		setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
-	//	void		body(int code, STATUS *sc, HTTPMethod *m);
-
-		std::string	getUrl(void) const
-		{
-			return this->_url;
-		}
-};
-
-class STATUS: public HTTPResponse
-{
-	friend class HTTPResponse;
-	protected:
-		std::string	_code;
-		typedef void (STATUS::*ptr)(int);
-		ptr			getStatus[3];
-	public:
-		std::string status(int code, int type);
-		void        err4xx(int type);
-		void        status2xx(int type);
-		void        err5xx( int type);
+		void		setFileName(const std::string &file);
+		std::string	getFileName(void) const;
 };
 
 #endif

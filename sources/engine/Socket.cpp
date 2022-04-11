@@ -12,21 +12,34 @@
 
 #include "../../includes/Socket.hpp"
 
-Socket::Socket() : _check(0), _methode(0)
+/*
+**		CONSTRUCTORS AND DESTRUCTOR
+*/
+
+Socket::Socket() : _check(OK), _method(0)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(0), _methode(0)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(0), _methode(0)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0)
 {
-	if (initSockets(this, config) < 0)
-		this->_check = -1;
+	if (initSockets(this, config))
+		this->_check = ERR;
 }
+
+Socket::~Socket()
+{
+	return ;
+}
+
+/*
+**		OVERLOAD OPERATORS
+*/
 
 Socket	&Socket::operator=(const Socket &socket)
 {
@@ -35,58 +48,50 @@ Socket	&Socket::operator=(const Socket &socket)
 		_config.clear();
 		_socket.clear();
 		_connSock.clear();
-		_Address.clear();
+		_address.clear();
 		_addrLen.clear();
 
 		_config = socket._config;
 		_socket = socket._socket;
 		_connSock = socket._connSock;
-		_Address = socket._Address;
+		_address = socket._address;
 		_addrLen = socket._addrLen;
 		_check = socket._check;
+		_env = socket._env;
+		_method = socket._method;
 	}
 	return (*this);
 }
 
-const int &					Socket::getSocket(int nbr) const
+std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 {
-	std::vector<int>::const_iterator	it = this->_socket.begin() + nbr;
+	for (int i = 0; i < obj.getSocketNbr(); i++)
+		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
 
-	return *it;
+	return o;
 }
 
-void						Socket::setSocket(int newSocket)
+/*
+**		MEMBER FUNCTIONS AND SETTERS
+*/
+
+
+int 		&Socket::modConnSock(int nbr)
 {
-	this->_socket.push_back(newSocket);
+	return (_connSock[nbr]);
 }
 
-const int &					Socket::getConnSock(int nbr) const
+void		Socket::setSocket(int newSocket)
 {
-	std::vector<int>::const_iterator	it = this->_connSock.begin() + nbr;
-
-	return *it;
+	_socket.push_back(newSocket);
 }
 
-void						Socket::setConnSock(int newConnSock)
+void		Socket::setConnSock(int newConnSock)
 {
-	this->_connSock.push_back(newConnSock);
+	_connSock.push_back(newConnSock);
 }
 
-int &						Socket::modConnSock(int nbr)
-{
-	std::vector<int>::iterator	it = this->_connSock.begin() + nbr;
-
-	return *it;
-}
-
-const struct sockaddr_in &	Socket::getAddress(int nbr) const
-{
-	std::vector<struct sockaddr_in>::const_iterator	it = this->_Address.begin() + nbr;
-
-	return *it;
-}
-
-void						Socket::setAddress(int port, const char *ip)
+void		Socket::setAddress(int port, const char *ip)
 {
 	struct sockaddr_in	address;
 	
@@ -95,30 +100,31 @@ void						Socket::setAddress(int port, const char *ip)
 	address.sin_port = htons(port);
 	memset(address.sin_zero, '\0', sizeof(address.sin_zero));
 	
-	this->_Address.push_back(address);
+	this->_address.push_back(address);
 	this->_addrLen.push_back(sizeof(address));
 }
 
-const socklen_t &			Socket::getAddrLen(int nbr) const
+void		Socket::setEnv(char** envp)
 {
-	std::vector<socklen_t>::const_iterator	it = this->_addrLen.begin() + nbr;
-
-	return *it;
+	this->_env = envp;
+}
+void		Socket::setMethod(int method)
+{
+	this->_method = method;
 }
 
-int							Socket::getSocketNbr(void) const
+/*
+**		GETTER FUNCTIONS
+*/
+
+const int &					Socket::getSocket(int nbr) const
 {
-	return this->_socket.size();
+	return (_socket[nbr]);
 }
 
-int							Socket::getCheck(void) const
+int							Socket::getMethod(void) const
 {
-	return this->_check;
-}
-
-Socket::~Socket()
-{
-	return ;
+	return this->_method;
 }
 
 const Server				Socket::getConfig(int nbr) const
@@ -136,25 +142,96 @@ char**						Socket::getEnv(void) const
 	return this->_env;
 }
 
-void						Socket::setEnv(char** envp)
+const socklen_t &			Socket::getAddrLen(int nbr) const
 {
-	this->_env = envp;
+	return (_addrLen[nbr]);
 }
 
-int							Socket::getMethode(void) const
+int							Socket::getSocketNbr(void) const
 {
-	return this->_methode;
+	return this->_socket.size();
 }
 
-void						Socket::setMethode(int methode)
+int							Socket::getCheck(void) const
 {
-	this->_methode = methode;
+	return this->_check;
 }
 
-std::ostream &	operator<<(std::ostream &o, Socket const &obj)
+const struct sockaddr_in &	Socket::getAddress(int nbr) const
 {
-	for (int i = 0; i < obj.getSocketNbr(); i++)
-		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
+	return (_address[nbr]);
+}
 
-	return o;
+const int &					Socket::getConnSock(int nbr) const
+{
+	return (_connSock[nbr]);
+}
+
+/*
+**		URL GETTER FUNCTIONS
+*/
+
+int			Socket::getConfigFromUrl(int nbr, const std::string url) const
+{
+	return (getConfig(nbr).configFromUrl(url));
+}
+
+std::string	Socket::errorPage(int nbr, const std::string url, int err) const
+{
+	mapErr				pages;
+	mapErr::iterator	it;
+	int					nbConfig;
+	
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0)
+		pages = getConfig(nbr).getErrorPages();
+	else
+		pages = getConfig(nbr, nbConfig).getErrorPages();
+	it = pages.find(err);
+	if (it == pages.end())
+		return ("/404.html");
+	return (getRoot(nbr, url) + "/" + it->second);
+}
+
+std::string Socket::getRoot(int nbr, const std::string url) const
+{
+	std::string	root;
+	int			nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	root = getConfig(nbr).getRoot();
+	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
+		root = getConfig(nbr, nbConfig).getRoot();
+	return (root);
+}
+
+std::string Socket::getRealUrl(int nbr, const std::string url) const
+{
+	return (getConfig(nbr).getRealUrl(url));
+}
+
+std::string Socket::getServerName(int nbr) const
+{
+	if (getConfig(nbr).isServerNamesSet())
+		return (getConfig(nbr).getServerNames()[0]);
+	return ("webserv");
+}
+
+bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
+{
+	int			nbConfig;
+	vecInt		methods;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
+	{
+		if (!getConfig(nbr).isMethodsSet())
+			return (true);
+		methods = getConfig(nbr).getMethods();
+	}
+	else
+		methods = getConfig(nbr, nbConfig).getMethods();
+	if (find(methods.begin(), methods.end(), method) != methods.end())
+		return (true);
+	return (false);
 }

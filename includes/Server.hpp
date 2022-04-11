@@ -49,6 +49,9 @@ class Server : public Block
 		const std::string	getHost(void) const;
 		int					getPort(void) const;
 		const vecStr		getServerNames(void) const;
+		
+		bool				isServerNamesSet(void) const;
+		bool				isHostSet(void) const;
 
 		// useful methods
 		int			configFromUrl(const std::string &str) const;

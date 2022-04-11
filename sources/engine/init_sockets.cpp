@@ -20,14 +20,14 @@ int		setsocknonblock(int sock)
 	if (flag < 0)
 	{
 		perror("Fcntl (F_GETFL) failed");
-		return -1;
+		return (ERR);
 	}
 	if (fcntl(sock, F_SETFL, flag | O_NONBLOCK) < 0)
 	{
 		perror("Fcntl (F_SETFL) failed");
-		return -1;
+		return (ERR);
 	}
-	return 1;
+	return (OK);
 }
 
 int		initSockets(Socket *sock, const Config &config)
@@ -41,28 +41,28 @@ int		initSockets(Socket *sock, const Config &config)
 		if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		{
 			perror("socket()");
-			return -1;
+			return (ERR);
 		}
 		sock->setSocket(listenSock);
 		sock->setConnSock(0);
 		if (setsockopt(sock->getSocket(i), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)))
 		{
 			perror("setsockopt()");
-			return -1;
+			return (ERR);
 		}
 		sock->setAddress(servers[i].getPort(), servers[i].getHost().c_str());
 		if (bind(sock->getSocket(i), (struct sockaddr *)&sock->getAddress(i), (int)sock->getAddrLen(i)) < 0)
 		{
 			perror("bind()");
-			return -1;
+			return (ERR);
 		}
-		if (setsocknonblock(sock->getSocket(i)) < 0)
-			return -1;
+		if (setsocknonblock(sock->getSocket(i)))
+			return (ERR);
 		if (listen(sock->getSocket(i), MAX_EVENTS) < 0)
 		{
 			perror("listen()");
-			return -1;
+			return (ERR);
 		}
 	}
-	return 1;
+	return (OK);
 }

@@ -1,4 +1,4 @@
-CC			= c++ -std=c++98 #-Wall -Wextra -Werror -std=c++98
+CC			= c++ -Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 NAME		= ./webserv
 NAME_SHORT	= webserv
@@ -13,7 +13,7 @@ SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 OBJS_DIR	= ./objects/
 OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
-SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine)
+SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine request response)
 
 _COLOR		= \033[32m
 _BOLDCOLOR	= \033[32;1m

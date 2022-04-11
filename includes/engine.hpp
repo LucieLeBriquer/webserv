@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 15:10:49 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/10 11:18:29 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,10 @@
 # define ENGINE_HPP
 
 # include "Socket.hpp"
-
-# include <map>
-# include <utility>
-# include <sys/types.h>
-# include <iostream>
-# include <unistd.h>
-# include <cstdio>
-# include <sys/epoll.h>
-# include <fcntl.h>
-# include <stdlib.h>
-# include <errno.h>
-# include <sstream>
-# include <sys/types.h>
-# include <sys/wait.h>
+# include "httpResponse.hpp"
+# include "Status.hpp"
+# include "httpRequest.hpp"
+# include "httpHeader.hpp"
 
 # define	BAD_METHODE	-1
 # define	GET			1
