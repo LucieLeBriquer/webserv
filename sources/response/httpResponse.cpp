@@ -6,11 +6,11 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/11 11:53:32 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/11 18:26:48 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "httpResponse.hpp"
+#include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location("")
@@ -145,7 +145,7 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 //	std::cout << "stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 }
 
-void HTTPResponse::rendering( void )
+void HTTPResponse::rendering( HTTPHeader &header )
 {
 //	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
@@ -154,13 +154,14 @@ void HTTPResponse::rendering( void )
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
-	this->_header += "Referrer-Policy: no-referrer\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	// this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += header.fillrender();
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
 	this->_header += "Date: " + timeStr; 
 	std::cout << this->_header << std::endl;
 }
 
-void HTTPResponse::rendering(const std::string typeContent)
+void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)
 {
 	time_t rawtime;
 	time(&rawtime);
@@ -168,17 +169,19 @@ void HTTPResponse::rendering(const std::string typeContent)
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += "Content-Type: " + typeContent + "\r\n";
-	this->_header += "Referrer-Policy: no-referrer\r\n";
+	this->_header += header.fillrender();
+	// this->_header += "Referrer-Policy: no-referrer\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
 	this->_header += "Date: " + timeStr;
 	std::cout << this->_header << std::endl;
 }
 
-void HTTPResponse::rendering(const std::string typeContent, bool b)
+void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header, bool b)
 {
 	time_t rawtime;
 	time(&rawtime);
 	(void)b;
+	(void)header;
 
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);

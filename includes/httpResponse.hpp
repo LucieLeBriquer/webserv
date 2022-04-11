@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/11 11:54:01 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/11 18:21:19 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 # include "usefull.hpp"
 
 class Socket;
+class HTTPHeader;
 class HTTPResponse
 {
 	protected:
@@ -37,9 +38,9 @@ class HTTPResponse
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
-		void		rendering( void );
-		void		rendering( const std::string typeContent );
-		void		rendering( const std::string typeContent, bool b);
+		void		rendering( HTTPHeader &header );
+		void		rendering( const std::string typeContent, HTTPHeader &header);
+		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
 		void		setContentLen( int len );
 		std::string	checkUrl(Socket *sock, int sockNbr);
 		void		redirect(Socket *sock, int sockNbr);

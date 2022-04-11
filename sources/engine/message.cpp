@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/11 12:10:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/11 18:39:09 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static bool	isCssFile(std::string name)
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr)
+static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
@@ -43,11 +43,11 @@ static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr)
 
 	response.setContentLen(size);
 	if (isCssFile(filename))
-		response.rendering("text/css");
+		response.rendering("text/css", header);
 	else if (isPngFile(filename))
-		response.rendering("image/avif");
+		response.rendering("image/avif", header);
 	else
-		response.rendering();
+		response.rendering(header);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -100,8 +100,8 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(response, sock, sockNbr);
-	(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
+	getRightFile(response, sock, sockNbr, header);
+	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
 	std::cout << "url = " << response.getUrl() << std::endl;
@@ -116,8 +116,22 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 		return (ERR);
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
-	close(fde);
+	//close(fde);
 	return (OK);
+}
+
+int		checkHeader(HTTPHeader &header, std::string string)
+{
+	string.erase(0, (getHead(string)).length());
+	std::cout <<"here=["<< string<<"]"<<std::endl;
+	while (1)
+	{
+		if (header.fillheader(&string) == -1)
+			break ; // a changer en fonction 
+	}
+	if (header.header() == -1)
+		return ERR;
+	return 1;
 }
 
 int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
@@ -129,10 +143,9 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line;
-	(void)sockNbr;
+	int				line(0);
+//	(void)sockNbr;
 
-	line = 0;
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -147,13 +160,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			if (line == 0)
 			{
 				if (header.method(string, &status, &response) == -1)
-				{
-					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
-				}
 			}
-			else if (!header.header(string))
-				status.statusCode(status.status(4, 0), header.getFirstLine());
 			if (endRequest(string, sock))
 				break ;
 			line++;
@@ -165,6 +173,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
+	if (checkHeader(header, string) == -1)
+		status.statusCode(status.status(4, 0), header.getFirstLine());
 	if (sendReponse(fde, response, header, sock, sockNbr))
 		return (ERR);
 	return (OK);

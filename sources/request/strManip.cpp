@@ -11,11 +11,10 @@ std::string copystr(std::string str, int start)
 
 std::vector<std::string> splitThis(std::string str)
 {
-    std::string command(str);
     std::vector<std::string> splited(3);
 
     int i = 0;
-    std::stringstream ssin(command);
+    std::stringstream ssin(str);
     while (ssin.good() && i < 3)
     {
         ssin >> splited[i];

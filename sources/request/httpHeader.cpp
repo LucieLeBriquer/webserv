@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 09:53:40 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/11 18:44:58 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,18 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _useragent(""), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentType(""), _contentLen(""), _useragent(""), _accept("")
 {
+	getFct[0] = &HTTPRequest::get;
+	getFct[1] = &HTTPRequest::post;
+	getFct[2] = &HTTPRequest::mdelete;
+
+	this->setFct[0] = &HTTPHeader::setHost;
+	this->setFct[1] = &HTTPHeader::setContentLen;
+	this->setFct[2] = &HTTPHeader::setUserA;
+	this->setFct[3] = &HTTPHeader::setAccept;
+	this->setFct[4] = &HTTPHeader::setContentType;
+
 	return ;
 }
 
@@ -66,6 +76,11 @@ void HTTPHeader::setContentLen(std::string value)
 	this->_contentLen = value;
 }
 
+void HTTPHeader::setContentType(std::string value)
+{
+	this->_contentType = value;
+}
+
 void HTTPHeader::setHost(std::string value)
 {
 	this->_host = value;
@@ -73,6 +88,7 @@ void HTTPHeader::setHost(std::string value)
 
 void HTTPHeader::setUserA(std::string value)
 {
+ std::cout << "there = ["<<value<<"]"<<std::endl;
 	this->_useragent = value;
 }
 
@@ -92,31 +108,68 @@ int HTTPHeader::getContext( void )
 
 std::string	HTTPHeader::getHost(void) const
 {
-	return (_host);
+	return ("Host: " + _host + "\r\n");
 }
 
 std::string	HTTPHeader::getContentLen(void) const
 {
-	return (_contentLen);
+	return ("Content-Length: " + _contentLen + "\r\n");
+}
+
+std::string	HTTPHeader::getContentType(void) const
+{
+	if (this->_contentType == "")
+		return "Content-Type: text/html; charset=UTF-8\r\n";
+	return ("Content-Type: " + _contentType + "\r\n");
 }
 
 std::string	HTTPHeader::getUserAgent(void) const
 {
-	return (_useragent);
+	return ("User-Agent: " + _useragent + "\r\n");
 }
 
 std::string	HTTPHeader::getAcceptFile(void) const
 {
-	return (_accept);
+	return ("Accepted: " + _accept + "\r\n");
 }
 
 /*
 **		MEMBER FUNCTIONS
 */
 
+std::string HTTPHeader::fillrender()
+{
+	std::vector<std::string> headers(4);
+	std::vector<std::string> content(4);
+	std::vector<std::string>::iterator it;
+	std::vector<std::string>::iterator it2;
+	std::string render;
+
+	headers[0] = getHost();
+	headers[1] = getContentLen();
+	headers[2] = getUserAgent();
+	headers[3] = getAcceptFile();
+
+	content[0] = _host;
+	content[1] = _contentLen;
+	content[2] = _useragent;
+	content[3] = _accept;
+
+	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
+	{
+		if (*it2 != "")
+			render += *it;
+	}
+	if (render != "")
+		render += "\r\n";
+	return render;
+}
+
 int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 {
 	int i;
+	if (req == "")
+		return -1;
 	for (i = 0; req[i]; i++)
 	{
 		if (!isupper(req[i]))
@@ -125,7 +178,9 @@ int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 	for (int j = 0; j < 4; j++)
 	{
 		if (!strncmp(req.c_str(), methods[j].c_str(), i))
+		{
 			return (j);
+		}
 	}
 	return (-1);
 }
@@ -151,17 +206,23 @@ int HTTPHeader::parseProtocol(const std::string protocol)
 	return 1;
 }
 
+std::string	getHead(std::string buf)
+{
+	std::string firstLine;
+
+	std::stringstream ssin(buf);
+	std::getline(ssin, firstLine, '\r');
+	return (firstLine);
+}
+
 int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 {
 	std::string methods[3] = {"GET", "POST", "DELETE"};
-	
+	std::string line;
 	int i;
 
-	getFct[0] = &HTTPRequest::get;
-	getFct[1] = &HTTPRequest::post;
-	getFct[2] = &HTTPRequest::mdelete;
-
-	std::vector<std::string> request = splitThis(buf);
+	line = getHead(buf);
+	std::vector<std::string> request = splitThis(line);
 	std::vector<std::string>::iterator it;
 	int arg = 0;
 	for (it = request.begin(); it != request.end(); it++)
@@ -174,6 +235,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
+	std::cout <<"comon"<<std::endl;
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
 		if (arg != 3)
 			return -1;
@@ -196,38 +258,54 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	deliver->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
+	std::cout << "hey "<< std::endl;
+	return 1;
+}
+int HTTPHeader::header()
+{
+	if (this->_method == "POST")
+	{
+		if (this->_contentLen == "" || this->_contentType == "")
+			return -1;
+	}
+	// else if (this->_method == "GET")
+	// {
+	
+	// }
 	return 1;
 }
 
-int HTTPHeader::header(std::string buf)
+int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[4] = {"host:", "content-length", "user-agent:", "accept:"};
-	
-	this->setFct[0] = &HTTPHeader::setHost;
-	this->setFct[1] = &HTTPHeader::setContentLen;
-	this->setFct[2] = &HTTPHeader::setUserA;
-	this->setFct[3] = &HTTPHeader::setAccept;
-
+	std::string header[5] = {"host:", "content-length:", "user-agent:", "accept:", "content-type:"};
+	std::string line;
 	int i, j;
 
-	for (i = 0; i < 3; i++)
+std::cout <<"ici"<<std::endl;
+	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
+		return -1;
+std::cout <<"ok"<<std::endl;
+	line = getHead(*buf);
+	(*buf).erase(0, line.length() + 1);
+	for (i = 0; i < 5; i++)
 	{
-		if (!strncasecmp(buf.c_str(), header[i].c_str(), header[i].length()))
+		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
 	}
-	if (i == 3)
+	if (i == 5)
 		return (0);
 	j = header[i].length();
-	if (buf[j] == ' ')
+	if (line[j] == ' ')
 		j++;
 	int pos = j;
-	while (buf[j] != '\n' && buf[j] != '\r' && buf[j] != ' ')
+	while (line[j] != '\n' && line[j] != '\r' && line[j] != ' ')
 	    j++;
 	int len = j - pos;
 	char tmp[len + 1];
-	buf.copy(tmp, len, pos);
+	line.copy(tmp, len, pos);
 	tmp[len] = '\0';
 
+	std::cout << "tmp = " <<tmp << std::endl;
 	this->_active = 1;
 	std::string value(tmp);
 	(this->*(this->setFct[i]))(value);

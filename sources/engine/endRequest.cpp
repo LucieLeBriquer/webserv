@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 15:42:34 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/11 16:08:39 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ int		endRequest(std::string string, Socket *sock)
 		sock->setMethod(POST);
 	else
 		sock->setMethod(BAD_METHODE);
-	if (sock->getMethod() == BAD_METHODE)
-		return (ERR);
-	std::cout << "methode = " << sock->getMethod() << std::endl;
+	// if (sock->getMethod() == BAD_METHODE)
+	// 	return (ERR);
+	//std::cout << "methode = " << sock->getMethod() << std::endl;
 	for (size_t i = 0; i < string.length(); i++)
 	{
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
