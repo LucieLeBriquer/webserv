@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 09:49:38 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:18:09 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define RESPONSE_HPP
 # include "usefull.hpp"
 
+class Socket;
+class HTTPHeader;
 class HTTPResponse
 {
 	protected:
@@ -24,6 +26,7 @@ class HTTPResponse
 		std::string		_header;
 		std::string		_method;
 		std::string		_fileName;
+		std::string		_location;
 
 	public:
 		HTTPResponse(void);
@@ -35,12 +38,14 @@ class HTTPResponse
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
-		void		rendering( void );
-		void		rendering( const std::string typeContent );
-		void		rendering( const std::string typeContent, bool b);
+		std::string	getStatus( void );
+		void		rendering( HTTPHeader &header );
+		void		rendering( const std::string typeContent, HTTPHeader &header);
+		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
 		void		setContentLen( int len );
-		std::string	checkUrl();
-		void		setStatus(std::string code, std::string str);
+		std::string	checkUrl(Socket *sock, int sockNbr);
+		void		redirect(Socket *sock, int sockNbr);
+		int			setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
 		void		setFileName(const std::string &file);
 		std::string	getFileName(void) const;
