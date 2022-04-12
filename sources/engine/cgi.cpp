@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:21:18 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,6 @@
  * dup2() give the 2nd arg role to the 1st arg
  * STDIN == 0 & STDOUT == 1
 	********/
-
-int		isNotCGI(HTTPResponse &response, Socket &sock)
-{
-	for (size_t i = 0; i < (response.getUrl()).length(); i++)
-	{
-		if (strncmp(&response.getUrl()[i], ".php", 4) == 0)
-		{
-			if (sock.getMethod() == GET)
-				sock.setBody(&response.getUrl()[i + 5]);
-			return OK;
-		}
-	}
-	return ERR;
-}
 
 int		mallocEnv(char ***env, Socket &sock, char ***arg)
 {
