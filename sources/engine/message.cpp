@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 10:27:48 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 12:55:46 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTP
 	size_t				size;
 
 	size = 0;
+	std::cout<< "right file"<< std::endl;
 	filename = response.checkUrl(sock, sockNbr);
 	response.setFileName(filename);
 
@@ -118,13 +119,14 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 
 int		checkHeader(HTTPHeader &header, std::string string)
 {
+	std::cout<< "ok ??"<< std::endl;
 	string.erase(0, (getHead(string)).length() + 2);
 	while (1)
 	{
-		if (header.fillheader(&string) == -1)
-			break ; // a changer en fonction du retour d'err
 		if (string == "")
 			break ;
+		if (header.fillheader(&string) == -1)
+			break ; // a changer en fonction du retour d'err
 	}
 	if (header.header() == -1)
 		return ERR;
@@ -169,6 +171,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
+	std::cout<< "avant de check"<< std::endl;
 	if (checkHeader(header, string) == -1)
 		status.statusCode(status.status(4, 0), header.getFirstLine());
 	if (sendReponse(fde, response, header, sock, sockNbr))

@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 10:18:09 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:47:25 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class HTTPResponse
 		std::string		_method;
 		std::string		_fileName;
 		std::string		_location;
-
+		int				_redir;
 	public:
 		HTTPResponse(void);
 		HTTPResponse(const HTTPResponse &response);

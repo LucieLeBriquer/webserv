@@ -6,14 +6,14 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 10:18:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 12:49:09 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName(""), _location("")
+									_header(""), _method(""), _fileName(""), _location(""), _redir(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -106,7 +106,9 @@ void HTTPResponse::redirect(Socket *sock, int sockNbr)
 //	sock->getConfig(sockNbr).getHost
 (void)sock;
 (void)sockNbr;
+	this->_redir = 1;
 	this->_location = "index.html";
+	this->_statusCode = "303";
 }
 
 std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
@@ -156,6 +158,8 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
 	this->_header += header.fillrender();
+	if (this->_redir)
+		this->_header += "Location: " + this->_location + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
 	this->_header += "Date: " + timeStr; 
 	std::cout << this->_header << std::endl;
