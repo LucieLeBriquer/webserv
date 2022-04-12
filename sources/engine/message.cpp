@@ -14,6 +14,8 @@
 
 bool	isPngFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
 		return (true);
 	return (false);	
@@ -21,6 +23,8 @@ bool	isPngFile(std::string name)
 
 bool	isCssFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
 		return (true);
 	return (false);	
