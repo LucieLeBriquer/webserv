@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 12:51:44 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 12:58:26 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 				if (header.method(string, &status, &response) == -1)
 					break ;
 			}
-			if (endRequest(string, sock))
+			if (endRequest(string, *sock))
 				break ;
 			line++;
 		}
