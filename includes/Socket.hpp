@@ -60,6 +60,8 @@ class Socket
 		std::string		getRoot(int nbr, const std::string url) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
+		std::string		getHost(int nbr) const;
+		vecStr			getIndex(int nbr) const;
 		
 	private:
 		std::vector<Server>				_config;
