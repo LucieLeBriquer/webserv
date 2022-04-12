@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 10:27:48 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 12:51:44 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line(0);
+	int				line(0), isBreak = 0;
 
 	while (1)
 	{
@@ -149,6 +149,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		if (byteCount == 0)
 		{
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
+			isBreak = 1;
 			break ;
 		}
 		else if (byteCount < 0)
@@ -169,9 +170,12 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (checkHeader(header, string) == -1)
-		status.statusCode(status.status(4, 0), header.getFirstLine());
-	if (sendReponse(fde, response, header, sock, sockNbr))
-		return (ERR);
+	if (isBreak == 0)
+	{
+		if (checkHeader(header, string) == -1)
+			status.statusCode(status.status(4, 0), header.getFirstLine());
+		if (sendReponse(fde, response, header, sock, sockNbr))
+			return (ERR);
+	}
 	return (OK);
 }
