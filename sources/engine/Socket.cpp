@@ -235,3 +235,18 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 		return (true);
 	return (false);
 }
+
+int			Socket::getConfigFromUrl(int nbr, const std::string url) const
+{
+	return (getConfig(nbr).configFromUrl(url));
+}
+
+std::string	Socket::getHost(int nbr) const
+{
+	return (getConfig(nbr).getHost());
+}
+
+vecStr		Socket::getIndex(int nbr) const
+{
+	return (getConfig(nbr).getIndex());
+}
