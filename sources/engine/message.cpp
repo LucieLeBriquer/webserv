@@ -6,33 +6,37 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 12:38:02 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:13:52 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-static bool	isPngFile(std::string name)
+bool	isPngFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
 		return (true);
 	return (false);	
 }
 
-static bool	isCssFile(std::string name)
+bool	isCssFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
 		return (true);
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response)
+static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl();
+	filename = response.checkUrl(sock, sockNbr);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
@@ -40,14 +44,8 @@ static void	getRightFile(HTTPResponse &response)
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
-
 	response.setContentLen(size);
-	if (isCssFile(filename))
-		response.rendering("text/css");
-	else if (isPngFile(filename))
-		response.rendering("image/avif");
-	else
-		response.rendering();
+	response.rendering(header);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -95,14 +93,17 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header)
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
 {
+	//check methode et file pour cgi ou non
+
 	// fill header
-	(void)header;
-	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
-	
-	getRightFile(response);
-	// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
+	getRightFile(response, sock, sockNbr, header);
+	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
+					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
+
+	std::cout << "url = " << response.getUrl() << std::endl;
+	std::cout << "sending data to " << fde << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -112,7 +113,26 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header)
 	if (sendData(fde, response))
 		return (ERR);
 	
+	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
+	// std::cout << "status ="<<response.getStatus()<<std::endl;
+	// if ((response.getStatus()).find("400") != std::string::npos )
+		// close(fde);
 	return (OK);
+}
+
+int		checkHeader(HTTPHeader &header, std::string string)
+{
+	string.erase(0, (getHead(string)).length() + 2);
+	while (1)
+	{
+		if (header.fillheader(&string) == -1)
+			break ; // a changer en fonction du retour d'err
+		if (string == "")
+			break ;
+	}
+	if (header.header() == -1)
+		return ERR;
+	return 1;
 }
 
 int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
@@ -124,10 +144,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line, isBreak = 0;
-	(void)sockNbr;
+	int				line(0), isBreak = 0;
 
-	line = 0;
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -143,14 +161,9 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			if (line == 0)
 			{
 				if (header.method(string, &status, &response) == -1)
-				{
-					std::cout << "Connection closed by foreign host." << std::endl;
 					break ;
-				}
 			}
-			else if (!header.header(string))
-				status.statusCode(status.status(4, 0), header.getFirstLine());
-			if (!endRequest(string, *sock))
+			if (endRequest(string, *sock))
 				break ;
 			line++;
 		}
@@ -163,15 +176,15 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	}
 	if (isBreak == 0)
 	{
-		if (sendReponse(fde, response, header))
-				return (ERR);
-		close(fde);
+		if (checkHeader(header, string) == -1)
+			status.statusCode(status.status(4, 0), header.getFirstLine());
+		if (sendReponse(fde, response, header, sock, sockNbr))
+			return (ERR);
 		// if (isNotCGI(response, *sock) == 0)
 		// {
 		// 	if (!GetCGIfile(*sock, sockNbr))
 		// 		return ERR;
 		// }
 	}
-	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	return (OK);
 }
