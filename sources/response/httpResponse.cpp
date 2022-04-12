@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/11 18:26:48 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:18:38 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,14 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 	return (*this);
 }
 
-
 std::string HTTPResponse::getMethod( void )
 {
 	return this->_method;
+}
+
+std::string HTTPResponse::getStatus( void )
+{
+	return this->_statusCode;
 }
 
 std::string HTTPResponse::getUrl( void )
@@ -121,7 +125,6 @@ std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
 	filename += this->_url;
 	if (status == 200)
 		this->redirect(sock, sockNbr);
-//	std::cout << "stat = "<< _statusCode << std::endl;
 	close(fd);
 	return filename;
 }
@@ -142,55 +145,52 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
-//	std::cout << "stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 }
 
 void HTTPResponse::rendering( HTTPHeader &header )
 {
-//	std::cout << " redener stat = "<< _statusCode << "prot =" << _protocol << "url = " <<_url << std::endl;
 	time_t rawtime;
 	time(&rawtime);
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
-	// this->_header += "Referrer-Policy: no-referrer\r\n";
 	this->_header += header.fillrender();
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
 	this->_header += "Date: " + timeStr; 
 	std::cout << this->_header << std::endl;
 }
 
-void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)
-{
-	time_t rawtime;
-	time(&rawtime);
-	std::string	timeStr = ctime(&rawtime);
-	timeStr = timeStr.substr(0, timeStr.size() - 1);
-	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	this->_header += "Content-Type: " + typeContent + "\r\n";
-	this->_header += header.fillrender();
-	// this->_header += "Referrer-Policy: no-referrer\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-	this->_header += "Date: " + timeStr;
-	std::cout << this->_header << std::endl;
-}
+// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)
+// {
+// 	time_t rawtime;
+// 	time(&rawtime);
+// 	std::string	timeStr = ctime(&rawtime);
+// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
+// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+// 	this->_header += "Content-Type: " + typeContent + "\r\n";
+// 	this->_header += header.fillrender();
+// 	// this->_header += "Referrer-Policy: no-referrer\r\n";
+// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+// 	this->_header += "Date: " + timeStr;
+// 	std::cout << this->_header << std::endl;
+// }
 
-void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header, bool b)
-{
-	time_t rawtime;
-	time(&rawtime);
-	(void)b;
-	(void)header;
+// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header, bool b)
+// {
+// 	time_t rawtime;
+// 	time(&rawtime);
+// 	(void)b;
+// 	(void)header;
 
-	std::string	timeStr = ctime(&rawtime);
-	timeStr = timeStr.substr(0, timeStr.size() - 1);
-	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
-	this->_header += "Date: " + timeStr + "\r\n";
-	this->_header += "Content-Type: " + typeContent + "\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-	this->_header += "Accept-Ranges: bytes";
-	std::cout << this->_header << std::endl;
-}
+// 	std::string	timeStr = ctime(&rawtime);
+// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
+// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+// 	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
+// 	this->_header += "Date: " + timeStr + "\r\n";
+// 	this->_header += "Content-Type: " + typeContent + "\r\n";
+// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+// 	this->_header += "Accept-Ranges: bytes";
+// 	std::cout << this->_header << std::endl;
+// }
 

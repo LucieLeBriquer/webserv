@@ -6,20 +6,20 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/11 18:39:09 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:27:48 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-static bool	isPngFile(std::string name)
+bool	isPngFile(std::string name)
 {
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
 		return (true);
 	return (false);	
 }
 
-static bool	isCssFile(std::string name)
+bool	isCssFile(std::string name)
 {
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
 		return (true);
@@ -40,14 +40,8 @@ static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTP
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
-
 	response.setContentLen(size);
-	if (isCssFile(filename))
-		response.rendering("text/css", header);
-	else if (isPngFile(filename))
-		response.rendering("image/avif", header);
-	else
-		response.rendering(header);
+	response.rendering(header);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -116,18 +110,21 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 		return (ERR);
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
-	//close(fde);
+	// std::cout << "status ="<<response.getStatus()<<std::endl;
+	// if ((response.getStatus()).find("400") != std::string::npos )
+		// close(fde);
 	return (OK);
 }
 
 int		checkHeader(HTTPHeader &header, std::string string)
 {
-	string.erase(0, (getHead(string)).length());
-	std::cout <<"here=["<< string<<"]"<<std::endl;
+	string.erase(0, (getHead(string)).length() + 2);
 	while (1)
 	{
 		if (header.fillheader(&string) == -1)
-			break ; // a changer en fonction 
+			break ; // a changer en fonction du retour d'err
+		if (string == "")
+			break ;
 	}
 	if (header.header() == -1)
 		return ERR;
@@ -144,7 +141,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPHeader		header;
 	Status			status;
 	int				line(0);
-//	(void)sockNbr;
 
 	while (1)
 	{

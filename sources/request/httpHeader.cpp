@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/11 18:44:58 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:28:08 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ void HTTPHeader::setHost(std::string value)
 
 void HTTPHeader::setUserA(std::string value)
 {
- std::cout << "there = ["<<value<<"]"<<std::endl;
 	this->_useragent = value;
 }
 
@@ -139,8 +138,8 @@ std::string	HTTPHeader::getAcceptFile(void) const
 
 std::string HTTPHeader::fillrender()
 {
-	std::vector<std::string> headers(4);
-	std::vector<std::string> content(4);
+	std::vector<std::string> headers(5);
+	std::vector<std::string> content(5);
 	std::vector<std::string>::iterator it;
 	std::vector<std::string>::iterator it2;
 	std::string render;
@@ -149,19 +148,19 @@ std::string HTTPHeader::fillrender()
 	headers[1] = getContentLen();
 	headers[2] = getUserAgent();
 	headers[3] = getAcceptFile();
+	headers[4] = getContentType();
 
 	content[0] = _host;
 	content[1] = _contentLen;
 	content[2] = _useragent;
 	content[3] = _accept;
+	content[4] = _contentType;
 
 	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
 	{
 		if (*it2 != "")
 			render += *it;
 	}
-	if (render != "")
-		render += "\r\n";
 	return render;
 }
 
@@ -212,6 +211,7 @@ std::string	getHead(std::string buf)
 
 	std::stringstream ssin(buf);
 	std::getline(ssin, firstLine, '\r');
+	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
 	return (firstLine);
 }
 
@@ -235,7 +235,6 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
-	std::cout <<"comon"<<std::endl;
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
 		if (arg != 3)
 			return -1;
@@ -258,7 +257,6 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	deliver->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
-	std::cout << "hey "<< std::endl;
 	return 1;
 }
 int HTTPHeader::header()
@@ -268,10 +266,14 @@ int HTTPHeader::header()
 		if (this->_contentLen == "" || this->_contentType == "")
 			return -1;
 	}
-	// else if (this->_method == "GET")
-	// {
+	else if (this->_method == "GET")
+	{
+		if (isCssFile(this->_url))
+			this->_contentType = "text/css";
+		else if (isPngFile(this->_url))
+			this->_contentType = "text/avif";
 	
-	// }
+	}
 	return 1;
 }
 
@@ -281,12 +283,10 @@ int HTTPHeader::fillheader(std::string *buf)
 	std::string line;
 	int i, j;
 
-std::cout <<"ici"<<std::endl;
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
 		return -1;
-std::cout <<"ok"<<std::endl;
 	line = getHead(*buf);
-	(*buf).erase(0, line.length() + 1);
+	(*buf).erase(0, line.length() + 2);
 	for (i = 0; i < 5; i++)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
@@ -305,10 +305,9 @@ std::cout <<"ok"<<std::endl;
 	line.copy(tmp, len, pos);
 	tmp[len] = '\0';
 
-	std::cout << "tmp = " <<tmp << std::endl;
 	this->_active = 1;
 	std::string value(tmp);
 	(this->*(this->setFct[i]))(value);
-	std::cout << "WIIIIIIIIIIIIIIIIIIIIIIIIII" << value << std::endl;
+	// std::cout << "WIIImIIIIIIIIIIIIIIIIIIIIIII" << value << std::endl;
 	return (1);
 }

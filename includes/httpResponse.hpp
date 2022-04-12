@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/11 18:21:19 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:18:09 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ class HTTPResponse
 		std::string	getUrl(void );
 		std::string	getMethod( void );
 		std::string	getHeader( void );
+		std::string	getStatus( void );
 		void		rendering( HTTPHeader &header );
 		void		rendering( const std::string typeContent, HTTPHeader &header);
 		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
