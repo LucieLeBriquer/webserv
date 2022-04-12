@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/11 17:30:58 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 12:38:02 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line;
+	int				line, isBreak = 0;
 	(void)sockNbr;
 
 	line = 0;
@@ -135,6 +135,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		if (byteCount == 0)
 		{
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
+			isBreak = 1;
 			break ;
 		}
 		else if (byteCount < 0)
@@ -160,14 +161,17 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	if (sendReponse(fde, response, header))
-			return (ERR);
-	if (isNotCGI(response, *sock) == 0)
+	if (isBreak == 0)
 	{
-		if (!GetCGIfile(*sock, sockNbr))
-			return ERR;
+		if (sendReponse(fde, response, header))
+				return (ERR);
+		close(fde);
+		// if (isNotCGI(response, *sock) == 0)
+		// {
+		// 	if (!GetCGIfile(*sock, sockNbr))
+		// 		return ERR;
+		// }
 	}
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
-	close(fde);
 	return (OK);
 }
