@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 12:55:46 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 14:12:34 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 bool	isPngFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
 		return (true);
 	return (false);	
@@ -21,18 +23,19 @@ bool	isPngFile(std::string name)
 
 bool	isCssFile(std::string name)
 {
+	if (name.size() < 4)
+		return (false);
 	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
 		return (true);
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTPHeader &header)
+static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	std::cout<< "right file"<< std::endl;
 	filename = response.checkUrl(sock, sockNbr);
 	response.setFileName(filename);
 
@@ -90,7 +93,7 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
@@ -119,7 +122,6 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 
 int		checkHeader(HTTPHeader &header, std::string string)
 {
-	std::cout<< "ok ??"<< std::endl;
 	string.erase(0, (getHead(string)).length() + 2);
 	while (1)
 	{
@@ -142,7 +144,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line(0);
+	int				line(0), isBreak = 0;
 
 	while (1)
 	{
@@ -151,6 +153,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		if (byteCount == 0)
 		{
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
+			isBreak = 1;
 			break ;
 		}
 		else if (byteCount < 0)
@@ -160,7 +163,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 				if (header.method(string, &status, &response) == -1)
 					break ;
 			}
-			if (endRequest(string, sock))
+			if (endRequest(string, *sock))
 				break ;
 			line++;
 		}
@@ -171,10 +174,12 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		string += buf;
 	}
-	std::cout<< "avant de check"<< std::endl;
-	if (checkHeader(header, string) == -1)
-		status.statusCode(status.status(4, 0), header.getFirstLine());
-	if (sendReponse(fde, response, header, sock, sockNbr))
-		return (ERR);
+	if (isBreak == 0)
+	{
+		if (checkHeader(header, string) == -1)
+			status.statusCode(status.status(4, 0), header.getFirstLine());
+		if (sendReponse(fde, response, header, *sock, sockNbr))
+			return (ERR);
+	}
 	return (OK);
 }

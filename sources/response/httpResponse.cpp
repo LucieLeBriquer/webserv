@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 12:49:09 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:15:56 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,35 +98,41 @@ void		HTTPResponse::setFileName(const std::string &file)
 	_fileName = file;
 }
 
-void HTTPResponse::redirect(Socket *sock, int sockNbr)
+std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filename)
 {
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
-
-//	sock->getConfig(sockNbr).getHost
-(void)sock;
 (void)sockNbr;
-	this->_redir = 1;
-	this->_location = "index.html";
-	this->_statusCode = "303";
+ std::cout << "filename = " << filename <<std::endl; 
+ std::cout << "real url = " << sock.getRealUrl(0, filename) <<std::endl;
+ std::cout << "host = " << sock.getConfig(0).getHost() <<std::endl;
+// (void)sock;
+	// this->_redir = 1;
+
+	this->_location = "/index.html";
+	this->_statusCode = "301 Moved Permanently";
+
+	return sock.getRealUrl(0, filename);
 }
 
-std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
+std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 {
-	std::string filename("html");
+	std::string filename;
 	std::string tmpname("html");
 	int fd;
 
-	this->_location = "";
+	if (this->_location != "")
+		this->_url = this->_location;
 	int status = this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
 	if (this->_url == "/")
 		this->_url = "/index.html";
 	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
-	filename += this->_url;
-	if (status == 200)
-		this->redirect(sock, sockNbr);
+	//filename += this->_url;
+	filename = this->redirect(sock, sockNbr, this->_url);
+	(void) status;
+	//if (filename == "html/404.html")
 	close(fd);
 	return filename;
 }
@@ -142,7 +148,6 @@ void	HTTPResponse::setContentLen(int len)
 void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
 	std::vector<std::string> line = splitThis(firstLine);
-
 
 	this->_statusCode = status;
 	this->_protocol = line[2];
