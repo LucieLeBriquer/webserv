@@ -257,7 +257,79 @@ std::string	Socket::getHost(int nbr) const
 	return (getConfig(nbr).getHost());
 }
 
-vecStr		Socket::getIndex(int nbr) const
+vecStr		Socket::getIndex(int nbr, const std::string url) const
 {
-	return (getConfig(nbr).getIndex());
+	int		nbConfig;
+	vecStr	index;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+		index = getConfig(nbr).getIndex();
+	else
+		index = getConfig(nbr, nbConfig).getIndex();
+	return (index);
+}
+
+bool		Socket::getAutoindex(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isAutoindexSet())
+		return (getConfig(nbr).getAutoIndex());
+	return (getConfig(nbr, nbConfig).getAutoIndex());
+}
+
+std::string	Socket::getRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+	{
+		if (!getConfig(nbr).isRedirUrlSet())
+			return ("");
+		return (getConfig(nbr).getRedirUrl());
+	}
+	return (getConfig(nbr, nbConfig).getRedirUrl());
+}
+
+size_t		Socket::getMaxClientBodySize(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMaxClientBodySet())
+		return (getConfig(nbr).getMaxClientBody());
+	return (getConfig(nbr, nbConfig).getMaxClientBody());
+}
+
+std::string	Socket::getCgiPass(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return ("");
+	return (getConfig(nbr, nbConfig).getCgiPass());
+}
+
+bool		Socket::isRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+		return (getConfig(nbr).isRedirUrlSet());
+	return (true);
+}
+
+bool		Socket::isCgi(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return (false);
+	return (true);
 }

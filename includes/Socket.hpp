@@ -65,7 +65,13 @@ class Socket
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
 		std::string		getHost(int nbr) const;
-		vecStr			getIndex(int nbr) const;
+		vecStr			getIndex(int nbr, const std::string url) const;
+		bool			getAutoindex(int nbr, const std::string url) const;
+		std::string		getRedir(int nbr, const std::string url) const;
+		size_t			getMaxClientBodySize(int nbr, const std::string url) const;
+		std::string		getCgiPass(int nbr, const std::string url) const;
+		bool			isCgi(int nbr, const std::string url) const;
+		bool			isRedir(int nbr, const std::string url) const;
 		
 	private:
 		std::vector<Server>				_config;
