@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:25:21 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/13 13:53:41 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,4 +250,91 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 	if (find(methods.begin(), methods.end(), method) != methods.end())
 		return (true);
 	return (false);
+}
+
+std::string	Socket::getHost(int nbr) const
+{
+	return (getConfig(nbr).getHost());
+}
+
+vecStr		Socket::getIndex(int nbr, const std::string url) const
+{
+	int		nbConfig;
+	vecStr	index;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+		index = getConfig(nbr).getIndex();
+	else
+		index = getConfig(nbr, nbConfig).getIndex();
+	return (index);
+}
+
+bool		Socket::hasIndex(int nbr, const std::string url) const
+{
+	return (!getIndex(nbr, url).empty());
+}
+
+bool		Socket::getAutoindex(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isAutoindexSet())
+		return (getConfig(nbr).getAutoIndex());
+	return (getConfig(nbr, nbConfig).getAutoIndex());
+}
+
+std::string	Socket::getRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+	{
+		if (!getConfig(nbr).isRedirUrlSet())
+			return ("");
+		return (getConfig(nbr).getRedirUrl());
+	}
+	return (getConfig(nbr, nbConfig).getRedirUrl());
+}
+
+size_t		Socket::getMaxClientBodySize(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMaxClientBodySet())
+		return (getConfig(nbr).getMaxClientBody());
+	return (getConfig(nbr, nbConfig).getMaxClientBody());
+}
+
+std::string	Socket::getCgiPass(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return ("");
+	return (getConfig(nbr, nbConfig).getCgiPass());
+}
+
+bool		Socket::isRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+		return (getConfig(nbr).isRedirUrlSet());
+	return (true);
+}
+
+bool		Socket::isCgi(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return (false);
+	return (true);
 }

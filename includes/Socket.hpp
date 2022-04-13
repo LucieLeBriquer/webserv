@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:26:31 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/13 13:53:31 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,15 @@ class Socket
 		std::string		getRoot(int nbr, const std::string url) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
+		std::string		getHost(int nbr) const;
+		vecStr			getIndex(int nbr, const std::string url) const;
+		bool			hasIndex(int nbr, const std::string url) const;
+		bool			getAutoindex(int nbr, const std::string url) const;
+		std::string		getRedir(int nbr, const std::string url) const;
+		size_t			getMaxClientBodySize(int nbr, const std::string url) const;
+		std::string		getCgiPass(int nbr, const std::string url) const;
+		bool			isCgi(int nbr, const std::string url) const;
+		bool			isRedir(int nbr, const std::string url) const;
 		
 	private:
 		std::vector<Server>				_config;

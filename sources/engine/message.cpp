@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:30:45 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 16:04:41 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		if (sendReponse(fde, response, header, sock, sockNbr))
 			return (ERR);
-		// if (isNotCGI(response, *sock) == 0)
+		// if (sock->isCgi(sockNbr, response.getUrl()))
 		// {
 		// 	if (!GetCGIfile(*sock, sockNbr))
 		// 		return ERR;

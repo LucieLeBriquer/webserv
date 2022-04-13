@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 10:18:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/13 12:34:47 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,10 +117,10 @@ std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
 
 	this->_location = "";
 	int status = this->setStatus(this->_statusCode, "");
-	tmpname += this->_url;
 	if (this->_url == "/")
 		this->_url = "/index.html";
-	else if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
+	tmpname += this->_url;
+	if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
 	filename += this->_url;
 	if (status == 200)
