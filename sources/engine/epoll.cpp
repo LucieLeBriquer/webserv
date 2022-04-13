@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 12:42:49 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:40:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void printStatus(int i, int nfds, Socket *sock, int fde)
 	{
 	case 1:
 	{
-		std::cout << std::endl;
+		std::cout << std::endl << BLUE;
 		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
-		std::cout << std::endl;
+		std::cout << END << std::endl;
 		break;
 	}
 	case 2:
@@ -116,7 +116,7 @@ int initEpoll(Socket *sock, const Config config)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-			printStatus(2, nfds, sock, events[n].data.fd);
+			//printStatus(2, nfds, sock, events[n].data.fd);
 			if ((events[n].events & EPOLLERR) || (events[n].events & EPOLLHUP) || (!(events[n].events & EPOLLIN)))
 			{
 				std::cout << "Epoll error, events = " << events[n].events << std::endl;

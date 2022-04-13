@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/13 12:34:47 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:50:50 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,8 +157,7 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
 	this->_header += header.fillrender();
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
-	this->_header += "Date: " + timeStr; 
-	std::cout << this->_header << std::endl;
+	this->_header += "Date: " + timeStr;
 }
 
 // void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)

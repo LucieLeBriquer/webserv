@@ -20,10 +20,10 @@ std::vector<std::string> splitThis(std::string str)
         ssin >> splited[i];
         i++;
     }
- 
+	/*
     std::cout << "1)[" << splited[0] << "]" << std::endl;
     std::cout << "2)["<< splited[1] << "]" << std::endl;
     std::cout << "3)["<< splited[2] << "]" << std::endl;
-
+	*/
     return splited;
 }
