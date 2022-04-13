@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 10:18:09 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:13:18 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,9 @@ class HTTPResponse
 		std::string		_method;
 		std::string		_fileName;
 		std::string		_location;
-
+		int				_redir;
 	public:
-		HTTPResponse(void);
-		HTTPResponse(const HTTPResponse &response);
+		HTTPResponse(void);		HTTPResponse(const HTTPResponse &response);
 		~HTTPResponse();
 
 		HTTPResponse	&operator=(const HTTPResponse &response);
@@ -43,8 +42,8 @@ class HTTPResponse
 		void		rendering( const std::string typeContent, HTTPHeader &header);
 		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
 		void		setContentLen( int len );
-		std::string	checkUrl(Socket *sock, int sockNbr);
-		void		redirect(Socket *sock, int sockNbr);
+		std::string	checkUrl(Socket &sock, int sockNbr);
+		std::string	redirect(Socket &sock, int sockNbr, std::string filename);
 		int			setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
 		void		setFileName(const std::string &file);

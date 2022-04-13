@@ -30,7 +30,7 @@ bool	isCssFile(std::string name)
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTPHeader &header)
+static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
@@ -96,7 +96,7 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
@@ -107,7 +107,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *s
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
 	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "realUrl = " << sock->getRealUrl(sockNbr, response.getUrl()) << std::endl;
+	std::cout << "realUrl = " << sock.getRealUrl(sockNbr, response.getUrl()) << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -129,10 +129,10 @@ int		checkHeader(HTTPHeader &header, std::string string)
 	string.erase(0, (getHead(string)).length() + 2);
 	while (1)
 	{
-		if (header.fillheader(&string) == -1)
-			break ; // a changer en fonction du retour d'err
 		if (string == "")
 			break ;
+		if (header.fillheader(&string) == -1)
+			break ; // a changer en fonction du retour d'err
 	}
 	if (header.header() == -1)
 		return ERR;
@@ -185,13 +185,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		if (sendResponse(fde, response, header, sock, sockNbr))
+		if (sendReponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
-		// if (sock->isCgi(sockNbr, response.getUrl()))
-		// {
-		// 	if (!GetCGIfile(*sock, sockNbr))
-		// 		return ERR;
-		// }
 	}
 	return (OK);
 }
