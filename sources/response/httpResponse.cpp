@@ -109,11 +109,8 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
  std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
 
 
-	//(void)sock;
-	//this->_redir=1;
-	
-	this->_location = "/index.html";
-	this->_statusCode = "301 Moved Permanently";
+	// this->_location = "/index.html";
+	// this->_statusCode = "301 Moved Permanently";
 
 	return sock.getRealUrl(sockNbr, filename);
 }
@@ -121,22 +118,21 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 {
 	std::string filename;
-	std::string tmpname("html");
+	// std::string tmpname 
 	int fd;
 
 	if (this->_location != "")
 		this->_url = this->_location;
 	this->setStatus(this->_statusCode, "");
-	tmpname += this->_url;
-	// if (this->_url == "/")
-	// 	this->_url = "/index.html";
+	std::string tmpname = sock.getRealUrl(sockNbr, this->_url);
+	tmpname = tmpname.substr(1, tmpname.length() - 1);
+	// std::cout << "url = "<< this->_url << std::endl;
+	// std::cout << "tmp = "<< tmpname << std::endl;
 	if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
-	//filename += this->_url;
 	filename = this->redirect(sock, sockNbr, this->_url);
-	//if (filename == "html/404.html")
 	close(fd);
-	return filename;
+	return filename.substr(1, filename.length() - 1);;
 }
 
 void	HTTPResponse::setContentLen(int len)
@@ -151,6 +147,7 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
 	std::vector<std::string> line = splitThis(firstLine);
 
+
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
@@ -164,8 +161,10 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += header.fillrender();
-	 if (this->_redir)
-              this->_header += "Location: " + this->_location + "\r\n";
+	if (this->_redir)
+		this->_header += "Location: " + this->_location + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
-	this->_header += "Date: " + timeStr;
+	this->_header += "Date: " + timeStr; 
+	std::cout << this->_header << std::endl;
 }
+

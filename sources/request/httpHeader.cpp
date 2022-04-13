@@ -115,12 +115,12 @@ std::string	HTTPHeader::getContentLen(void) const
 	return ("Content-Length: " + _contentLen + "\r\n");
 }
 
-std::string	HTTPHeader::getContentType(void) const
-{
-	if (this->_contentType == "")
-		return "Content-Type: text/html; charset=UTF-8\r\n";
-	return ("Content-Type: " + _contentType + "\r\n");
-}
+// std::string	HTTPHeader::getContentType(void) const
+// {
+// 	if (this->_contentType == "")
+// 		return "Content-Type: text/html; charset=UTF-8\r\n";
+// 	return ("Content-Type: " + _contentType + "\r\n");
+// }
 
 std::string	HTTPHeader::getUserAgent(void) const
 {
@@ -129,7 +129,7 @@ std::string	HTTPHeader::getUserAgent(void) const
 
 std::string	HTTPHeader::getAcceptFile(void) const
 {
-	return ("Accepted: " + _accept + "\r\n");
+	return ("Content-Type: " + _accept.substr(0, _accept.find(',')) + "\r\n");
 }
 
 /*
@@ -138,8 +138,8 @@ std::string	HTTPHeader::getAcceptFile(void) const
 
 std::string HTTPHeader::fillrender()
 {
-	std::vector<std::string> headers(5);
-	std::vector<std::string> content(5);
+	std::vector<std::string> headers(4);
+	std::vector<std::string> content(4);
 	std::vector<std::string>::iterator it;
 	std::vector<std::string>::iterator it2;
 	std::string render;
@@ -148,13 +148,11 @@ std::string HTTPHeader::fillrender()
 	headers[1] = getContentLen();
 	headers[2] = getUserAgent();
 	headers[3] = getAcceptFile();
-	headers[4] = getContentType();
 
 	content[0] = _host;
 	content[1] = _contentLen;
 	content[2] = _useragent;
 	content[3] = _accept;
-	content[4] = _contentType;
 
 	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
 	{
@@ -268,10 +266,10 @@ int HTTPHeader::header()
 	}
 	else if (this->_method == "GET")
 	{
-		if (isCssFile(this->_url))
-			this->_contentType = "text/css";
-		else if (isPngFile(this->_url))
-			this->_contentType = "text/avif";
+		// if (isCssFile(this->_url))
+		// 	this->_contentType = "text/css";
+		// else if (isPngFile(this->_url))
+		// 	this->_contentType = "text/avif";
 	
 	}
 	return 1;
@@ -298,16 +296,8 @@ int HTTPHeader::fillheader(std::string *buf)
 	if (line[j] == ' ')
 		j++;
 	int pos = j;
-	while (line[j] != '\n' && line[j] != '\r' && line[j] != ' ')
-	    j++;
-	int len = j - pos;
-	char tmp[len + 1];
-	line.copy(tmp, len, pos);
-	tmp[len] = '\0';
-
 	this->_active = 1;
-	std::string value(tmp);
+	std::string value(line.substr(pos, line.length() - pos));
 	(this->*(this->setFct[i]))(value);
-	// std::cout << "WIIImIIIIIIIIIIIIIIIIIIIIIII" << value << std::endl;
 	return (1);
 }

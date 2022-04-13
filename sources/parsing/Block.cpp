@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:05:50 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 15:08:50 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/13 13:31:02 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,10 +184,10 @@ void	Block::_setErrorPages(vecStr words)
 void	Block::_setAutoIndex(vecStr words)
 {
 	if (_autoindexSet)
-		return (_setWrongFormat("error_pages already defined"));
-	if (words.size() != 1)
-		return (_setWrongFormat("autoindex doesn't take arguments"));
-	_autoindex = true;
+		return (_setWrongFormat("autoindex already defined"));
+	if (words.size() != 2 || (words[1] != "on" && words[1] != "off"))
+		return (_setWrongFormat("autoindex needs 'on' or 'off'"));
+	_autoindex = (words[1] == "on");
 	_autoindexSet = true;
 }
 
