@@ -98,41 +98,38 @@ void		HTTPResponse::setFileName(const std::string &file)
 	_fileName = file;
 }
 
-std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filename)
+std::string HTTPResponse::checkUrl(std::string filename)
 {
-//Verifier si la listen directive ne passe pas une requete à un autre serveur
-//
-	std::string file;
-
- std::cout << "filename = " << filename <<std::endl; 
- std::cout << "real url = " << sock.getRealUrl(sockNbr, filename) <<std::endl;
- std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
-
-
-	// this->_location = "/index.html";
-	// this->_statusCode = "301 Moved Permanently";
-
-	return sock.getRealUrl(sockNbr, filename);
-}
-
-std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
-{
-	std::string filename;
-	// std::string tmpname 
 	int fd;
 
 	if (this->_location != "")
 		this->_url = this->_location;
-	this->setStatus(this->_statusCode, "");
-	std::string tmpname = sock.getRealUrl(sockNbr, this->_url);
-	tmpname = tmpname.substr(1, tmpname.length() - 1);
-	// std::cout << "url = "<< this->_url << std::endl;
-	// std::cout << "tmp = "<< tmpname << std::endl;
-	if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
+	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
-	filename = this->redirect(sock, sockNbr, this->_url);
+	else
+		this->setStatus(this->_statusCode, "");
 	close(fd);
-	return filename.substr(1, filename.length() - 1);;
+	return filename;
+}
+
+std::string HTTPResponse::redirect(Socket &sock, int sockNbr)
+{
+//Verifier si la listen directive ne passe pas une requete à un autre serveur
+//
+	std::string filename;
+	filename = sock.getRealUrl(sockNbr, this->_url);
+//	filename = filename.substr(1, filename.length() - 1);
+ std::cout << "filename = " << filename <<std::endl; 
+ std::cout << "status = " << _statusCode <<std::endl; 
+
+	if (sock.isRedir(sockNbr, filename))
+	{
+		this->_location = sock.getRedir(sockNbr, filename);
+ std::cout << "location = " << _location <<std::endl; 
+		this->_statusCode = "301 Moved Permanently";
+	}
+	this->checkUrl(filename);
+	return filename;
 }
 
 void	HTTPResponse::setContentLen(int len)

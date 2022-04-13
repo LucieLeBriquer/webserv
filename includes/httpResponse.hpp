@@ -39,11 +39,9 @@ class HTTPResponse
 		std::string	getHeader( void );
 		std::string	getStatus( void );
 		void		rendering( HTTPHeader &header );
-		void		rendering( const std::string typeContent, HTTPHeader &header);
-		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
 		void		setContentLen( int len );
-		std::string	checkUrl(Socket &sock, int sockNbr);
-		std::string	redirect(Socket &sock, int sockNbr, std::string filename);
+		std::string	checkUrl(std::string filename);
+		std::string	redirect(Socket &sock, int sockNbr);
 		int			setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
 		void		setFileName(const std::string &file);

@@ -12,31 +12,13 @@
 
 #include "engine.hpp"
 
-bool	isPngFile(std::string name)
-{
-	if (name.size() < 4)
-		return (false);
-	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
-		return (true);
-	return (false);	
-}
-
-bool	isCssFile(std::string name)
-{
-	if (name.size() < 4)
-		return (false);
-	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
-		return (true);
-	return (false);	
-}
-
 static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl(sock, sockNbr);
+	filename = response.redirect(sock, sockNbr);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
