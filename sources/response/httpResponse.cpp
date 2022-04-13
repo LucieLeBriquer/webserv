@@ -163,45 +163,9 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
 	this->_header += header.fillrender();
-	if (this->_redir)
-		this->_header += "Location: " + this->_location + "\r\n";
+	 if (this->_redir)
+              this->_header += "Location: " + this->_location + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
-	this->_header += "Date: " + timeStr; 
-	std::cout << this->_header << std::endl;
+	this->_header += "Date: " + timeStr;
 }
-
-// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)
-// {
-// 	time_t rawtime;
-// 	time(&rawtime);
-// 	std::string	timeStr = ctime(&rawtime);
-// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-// 	this->_header += "Content-Type: " + typeContent + "\r\n";
-// 	this->_header += header.fillrender();
-// 	// this->_header += "Referrer-Policy: no-referrer\r\n";
-// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-// 	this->_header += "Date: " + timeStr;
-// 	std::cout << this->_header << std::endl;
-// }
-
-// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header, bool b)
-// {
-// 	time_t rawtime;
-// 	time(&rawtime);
-// 	(void)b;
-// 	(void)header;
-
-// 	std::string	timeStr = ctime(&rawtime);
-// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-// 	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
-// 	this->_header += "Date: " + timeStr + "\r\n";
-// 	this->_header += "Content-Type: " + typeContent + "\r\n";
-// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-// 	this->_header += "Accept-Ranges: bytes";
-// 	std::cout << this->_header << std::endl;
-// }
-

@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 13:21:43 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:28:08 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,7 +211,7 @@ std::string	getHead(std::string buf)
 
 	std::stringstream ssin(buf);
 	std::getline(ssin, firstLine, '\r');
-	// std::cout <<"getline=["<< firstLine<<"]"<<std::endl;
+	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
 	return (firstLine);
 }
 
@@ -222,7 +222,6 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	int i;
 
 	line = getHead(buf);
-	// std::cout<< "line ["<< line <<"]"<< std::endl;
 	std::vector<std::string> request = splitThis(line);
 	std::vector<std::string>::iterator it;
 	int arg = 0;
@@ -260,7 +259,6 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return -1;
 	return 1;
 }
-
 int HTTPHeader::header()
 {
 	if (this->_method == "POST")
@@ -285,12 +283,9 @@ int HTTPHeader::fillheader(std::string *buf)
 	std::string line;
 	int i, j;
 
-	// std::cout<< "buf ["<< *buf <<"]"<< std::endl;
-
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
 		return -1;
 	line = getHead(*buf);
-//   std::cout <<"line in ["<<line << "]"<< std::endl;
 	(*buf).erase(0, line.length() + 2);
 	for (i = 0; i < 5; i++)
 	{

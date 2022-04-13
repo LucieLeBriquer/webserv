@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpRequest.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:38 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 14:12:43 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:45:42 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,6 @@ void HTTPRequest::mdelete(void){
 std::string	HTTPRequest::getFirstLine( void )
 {
 	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
-	// std::cout <<"FIRST LINE = "<< this->_fLine <<std::endl;
+	//std::cout <<"FIRST LINE = "<< this->_fLine <<std::endl;
 	return this->_fLine;
 }

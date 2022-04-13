@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   epoll.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:09:00 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:40:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ void printStatus(int i, int nfds, Socket *sock, int fde)
 	{
 	case 1:
 	{
-		std::cout << std::endl;
+		std::cout << std::endl << BLUE;
 		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
-		std::cout << std::endl;
+		std::cout << END << std::endl;
 		break;
 	}
 	case 2:
@@ -99,14 +99,15 @@ int addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, cons
 int initEpoll(Socket *sock, const Config config)
 {
 	struct epoll_event ev, events[MAX_EVENTS];
-	int nfds, epollfd, i;
+	int nfds = 0;
+	int epollfd, i;
 
 	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
 		return (ERR);
 
 	while (1)
 	{
-		printStatus(1, nfds, sock, events[-1].data.fd);
+		printStatus(1, nfds, sock, events[MAX_EVENTS - 1].data.fd);
 
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
@@ -115,7 +116,7 @@ int initEpoll(Socket *sock, const Config config)
 		}
 		for (int n = 0; n < nfds; n++)
 		{
-			printStatus(2, nfds, sock, events[n].data.fd);
+			//printStatus(2, nfds, sock, events[n].data.fd);
 			if ((events[n].events & EPOLLERR) || (events[n].events & EPOLLHUP) || (!(events[n].events & EPOLLIN)))
 			{
 				std::cout << "Epoll error, events = " << events[n].events << std::endl;
