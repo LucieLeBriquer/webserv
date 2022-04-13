@@ -178,13 +178,16 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		if (sendReponse(fde, response, header, sock, sockNbr))
-			return (ERR);
-		// if (sock->isCgi(sockNbr, response.getUrl()))
-		// {
-		// 	if (!GetCGIfile(*sock, sockNbr))
-		// 		return ERR;
-		// }
+		if (sock->isCgi(sockNbr, response.getUrl()))
+		{
+			if (GetCGIfile(*sock, sockNbr) < 0)
+				return ERR;
+		}
+		else
+		{
+			if (sendReponse(fde, response, header, sock, sockNbr))
+				return (ERR);
+		}
 	}
 	return (OK);
 }

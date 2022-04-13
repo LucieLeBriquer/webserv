@@ -32,7 +32,10 @@ int		endRequest(std::string string, Socket &sock)
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
+				{
+					sock.setBody(&string[j]);
 					return (ERR);
+				}
 			}
 		}
 	}
