@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 15:10:10 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/13 14:04:43 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,7 @@ static void	printConfFormat(std::string str)
 	std::cerr << "\terror_page\t\tERROR_NUM0 ERROR_PAGE0" << std::endl;
 	std::cerr << "\terror_page\t\tERROR_NUM1 ERROR_PAGE1" << std::endl;
 	std::cerr << "\t\t\t\t\t[...]" << std::endl;
-	std::cerr << "\tautoindex" << std::endl;
+	std::cerr << "\tautoindex\t\ton" << std::endl;
 
 	std::cerr << std::endl;
 	std::cerr << "\tlocation PATH {" << std::endl;
@@ -163,7 +163,7 @@ static void	printConfFormat(std::string str)
 	std::cerr << "\t\terror_page\t\tERROR_NUM0 ERROR_PAGE0" << std::endl;
 	std::cerr << "\t\terror_page\t\tERROR_NUM1 ERROR_PAGE1" << std::endl;
 	std::cerr << "\t\t\t\t\t\t[...]" << std::endl;
-	std::cerr << "\t\tautoindex" << std::endl;
+	std::cerr << "\t\tautoindex\t\toff" << std::endl;
 	std::cerr << "\t}" << std::endl;
 	std::cerr << "}" << std::endl;
 }
