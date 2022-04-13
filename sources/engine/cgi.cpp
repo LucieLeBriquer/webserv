@@ -51,10 +51,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	(*arg)[0] = (char *)malloc(sizeof(char) * ((sock.getEnv(0)).length() + 1));
+	i = strlen(&sock.getEnv(0)[9]);
+	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*env)[0], (sock.getEnv(0)).c_str());
+	strcpy((*arg)[0], &sock.getEnv(0)[9]);
 	(*arg)[1] = NULL;
 	return OK;
 }
