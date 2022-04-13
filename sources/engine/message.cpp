@@ -52,6 +52,9 @@ static int	sendHeader(int fde, HTTPResponse &response)
 {
 	std::string	header = response.getHeader() + "\r\n\r\n";
 
+	std::cout << "====================================================" << std::endl;
+	std::cout << header;
+	std::cout << "====================================================" << std::endl;
 	if (send(fde, header.c_str(), header.size(), 0) < 0)
 	{
 		perror("send()");
@@ -93,7 +96,7 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
@@ -102,8 +105,9 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *so
 	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
+	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
 	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "sending data to " << fde << std::endl;
+	std::cout << "realUrl = " << sock->getRealUrl(sockNbr, response.getUrl()) << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -170,7 +174,10 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		else
 		{
 			recv_len += byteCount;
-			std::cout << "get " << recv_len << " bytes from " << fde << " : buf = [ " << buf << " ] " << std::endl;
+			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
+			std::cout << "====================================================" << std::endl;
+			std::cout << buf ;
+			std::cout << "====================================================" << std::endl << std::endl;
 		}
 		string += buf;
 	}
@@ -185,7 +192,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else
 		{
-			if (sendReponse(fde, response, header, sock, sockNbr))
+			if (sendResponse(fde, response, header, sock, sockNbr))
 				return (ERR);
 		}
 	}
