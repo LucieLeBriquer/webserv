@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   epoll.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:09:00 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/13 12:42:49 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,14 +99,15 @@ int addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, cons
 int initEpoll(Socket *sock, const Config config)
 {
 	struct epoll_event ev, events[MAX_EVENTS];
-	int nfds, epollfd, i;
+	int nfds = 0;
+	int epollfd, i;
 
 	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
 		return (ERR);
 
 	while (1)
 	{
-		printStatus(1, nfds, sock, events[-1].data.fd);
+		printStatus(1, nfds, sock, events[MAX_EVENTS - 1].data.fd);
 
 		if ((nfds = epoll_wait(epollfd, events, MAX_EVENTS, -1)) < 0)
 		{
