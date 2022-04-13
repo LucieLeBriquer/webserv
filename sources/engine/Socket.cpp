@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 15:25:21 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/13 13:53:41 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,6 +268,11 @@ vecStr		Socket::getIndex(int nbr, const std::string url) const
 	else
 		index = getConfig(nbr, nbConfig).getIndex();
 	return (index);
+}
+
+bool		Socket::hasIndex(int nbr, const std::string url) const
+{
+	return (!getIndex(nbr, url).empty());
 }
 
 bool		Socket::getAutoindex(int nbr, const std::string url) const
