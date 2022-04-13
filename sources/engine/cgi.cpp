@@ -6,40 +6,89 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 17:10:16 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-void	GetCGIfile(std::string *file, int *tot_size, char **env)
-{
-	int		fd, status;
-	int		ret;
-	char	buf[B_SIZE + 1];
-	pid_t	pid;
-	char	*arg[2];
-	
-	// arg[0] = "/home/user42/Documents/42/webserv/bin-cgi/script.sh";
-	arg[1] = NULL;
+/*******
+ * RAPPEL *
+ * pipefd[2] : [0] = "read" end of pipe, [1] = "write" end of pipe
+ * dup2() give the 2nd arg role to the 1st arg
+ * STDIN == 0 & STDOUT == 1
+	********/
 
-	std::cout << "here we are" << std::endl;
+int		mallocEnv(char ***env, Socket &sock, char ***arg)
+{
+	size_t	i = 0;
+	
+	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
+	if (!(*env))
+		return ERR;
+	while (i < sock.getEnvSize())
+	{
+		(*env)[i] = (char *)malloc(sizeof(char) * ((sock.getEnv(i)).length() + 1));
+		if (!(*env)[i])
+			return ERR;
+		strcpy((*env)[i], (sock.getEnv(i)).c_str());
+		i++;
+	}
+	(*arg) = (char **)malloc(sizeof(char *) * 2);
+	if (!(*arg))
+		return ERR;
+	(*arg)[0] = (char *)malloc(sizeof(char) * ((sock.getEnv(0)).length() + 1));
+	if (!(*arg)[0])
+		return ERR;
+	strcpy((*env)[0], (sock.getEnv(0)).c_str());
+	(*arg)[1] = NULL;
+	return OK;
+}
+
+int		GetCGIfile(Socket &sock, int sockNbr)
+{
+	char		**env, **arg;
+	pid_t		pid;
+	int			fd[2], socket;
+	std::string	body;
+	
+	/********************************************/
+	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
+	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
+	sock.setEnv("REQUEST_METHODE=POST");
+	/********************************************/
+	pipe(fd);
+	socket = sock.getConnSock(sockNbr);
+	body = sock.getBody();
 	pid = fork();
+	if (mallocEnv(&env, sock, &arg) < 0)
+		return ERR;
+	
 	if (pid < 0)
 		exit(EXIT_FAILURE);
-	if (pid == 0)
+	else if (pid == 0) //inside child process
 	{
+		close(fd[1]); // closing "write" side
+		dup2(fd[0], STDIN_FILENO); // "read" side become stdin
+		dup2(socket, STDOUT_FILENO); // our connected socket become stdout
 		execve(arg[0], arg, env);
-		exit(EXIT_FAILURE);
 	}
-	else
-		waitpid(pid, &status, 0);
-	
-	fd = open("./bin-cgi/fileCGI", O_RDWR);
-	std::cout << "fd = " << fd << std::endl;
-	while ((ret = read(fd, buf, B_SIZE)) > 0)
+	else //inside parent process, we have to send the body through our pipefd[1]
 	{
-		(*file) += buf;
-		(*tot_size) += ret;
+		close(fd[0]); // closing "read" side
+		write(fd[1], body.c_str(), body.size()); // write() body on the "write" side
 	}
+	
+	//printing
+	std::cout << "inside cgi function : " << std::endl;
+	size_t i = 0;
+	while (i < sock.getEnvSize())
+	{
+		std::cout << "env[" << i << "] = " << env[i] << std::endl;
+		i++;
+	}
+	std::cout << " - connected socket = " << sock.getConnSock(sockNbr) << std::endl;
+	std::cout << " - body = " << sock.getBody() << std::endl;
+	return OK;
 }

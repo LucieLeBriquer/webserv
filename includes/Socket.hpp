@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 14:35:41 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:26:31 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,15 @@ class Socket
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
 
-		char**						getEnv(void) const;
-		void						setEnv(char** envp);
+		std::string	const			getEnv(int nbr) const;
+		void						setEnv(std::string envp);
+		size_t						getEnvSize(void) const;
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
+
+		char*						getBody(void) const;
+		void						setBody(char* newBody);
 
 		// config getter
 		const Server	getConfig(int nbr) const;
@@ -60,6 +64,14 @@ class Socket
 		std::string		getRoot(int nbr, const std::string url) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
+		std::string		getHost(int nbr) const;
+		vecStr			getIndex(int nbr, const std::string url) const;
+		bool			getAutoindex(int nbr, const std::string url) const;
+		std::string		getRedir(int nbr, const std::string url) const;
+		size_t			getMaxClientBodySize(int nbr, const std::string url) const;
+		std::string		getCgiPass(int nbr, const std::string url) const;
+		bool			isCgi(int nbr, const std::string url) const;
+		bool			isRedir(int nbr, const std::string url) const;
 		
 	private:
 		std::vector<Server>				_config;
@@ -68,8 +80,9 @@ class Socket
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		char**							_env;
+		std::vector<std::string>		_env;
 		int								_method;
+		char*							_body;
 	
 };
 

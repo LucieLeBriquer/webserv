@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 13:17:51 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/12 16:06:52 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ Socket		*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 int			requestReponse(int epollfd, int fde, Socket *sock, int sockNbr);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
-void		GetCGIfile(std::string *file, int *tot_size, char **env);
+
+int			GetCGIfile(Socket &sock, int sockNbr);
 
 #endif

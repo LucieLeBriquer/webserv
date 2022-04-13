@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/08 14:46:03 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:25:21 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,15 +104,19 @@ void		Socket::setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-void		Socket::setEnv(char** envp)
+void		Socket::setEnv(std::string envp)
 {
-	this->_env = envp;
+	this->_env.push_back(envp);
 }
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
 }
 
+void		Socket::setBody(char* newBody)
+{
+	this->_body = newBody;
+}
 /*
 **		GETTER FUNCTIONS
 */
@@ -137,9 +141,16 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-char**						Socket::getEnv(void) const
+std::string	const			Socket::getEnv(int nbr) const
 {
-	return this->_env;
+	std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
+	
+	return *it;
+}
+
+size_t						Socket::getEnvSize(void) const
+{
+	return this->_env.size();
 }
 
 const socklen_t &			Socket::getAddrLen(int nbr) const
@@ -165,6 +176,11 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 const int &					Socket::getConnSock(int nbr) const
 {
 	return (_connSock[nbr]);
+}
+
+char*						Socket::getBody(void) const
+{
+	return this->_body;
 }
 
 /*
@@ -234,4 +250,86 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 	if (find(methods.begin(), methods.end(), method) != methods.end())
 		return (true);
 	return (false);
+}
+
+std::string	Socket::getHost(int nbr) const
+{
+	return (getConfig(nbr).getHost());
+}
+
+vecStr		Socket::getIndex(int nbr, const std::string url) const
+{
+	int		nbConfig;
+	vecStr	index;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+		index = getConfig(nbr).getIndex();
+	else
+		index = getConfig(nbr, nbConfig).getIndex();
+	return (index);
+}
+
+bool		Socket::getAutoindex(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isAutoindexSet())
+		return (getConfig(nbr).getAutoIndex());
+	return (getConfig(nbr, nbConfig).getAutoIndex());
+}
+
+std::string	Socket::getRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+	{
+		if (!getConfig(nbr).isRedirUrlSet())
+			return ("");
+		return (getConfig(nbr).getRedirUrl());
+	}
+	return (getConfig(nbr, nbConfig).getRedirUrl());
+}
+
+size_t		Socket::getMaxClientBodySize(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMaxClientBodySet())
+		return (getConfig(nbr).getMaxClientBody());
+	return (getConfig(nbr, nbConfig).getMaxClientBody());
+}
+
+std::string	Socket::getCgiPass(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return ("");
+	return (getConfig(nbr, nbConfig).getCgiPass());
+}
+
+bool		Socket::isRedir(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isRedirUrlSet())
+		return (getConfig(nbr).isRedirUrlSet());
+	return (true);
+}
+
+bool		Socket::isCgi(int nbr, const std::string url) const
+{
+	int		nbConfig;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
+		return (false);
+	return (true);
 }

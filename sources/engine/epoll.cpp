@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/07 16:49:53 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:09:00 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int addCreateSocketEpoll(Socket *sock, struct epoll_event ev, int *epollfd, cons
 int initEpoll(Socket *sock, const Config config)
 {
 	struct epoll_event ev, events[MAX_EVENTS];
-	int nfds, epollfd, i, j;
+	int nfds, epollfd, i;
 
 	if (!addCreateSocketEpoll(sock, ev, &epollfd, config))
 		return (ERR);
@@ -129,14 +129,7 @@ int initEpoll(Socket *sock, const Config config)
 			}
 			else
 			{
-				j = 0;
-				while (j < sock->getSocketNbr())
-				{
-					if (events[n].data.fd == sock->getConnSock(j))
-						break ;
-					j++;
-				}
-				if (requestReponse(epollfd, events[n].data.fd, sock, j))
+				if (requestReponse(epollfd, events[n].data.fd, sock, n))
 					return (ERR);
 			}
 		}

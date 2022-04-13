@@ -27,7 +27,7 @@ class HTTPHeader : public HTTPRequest
 		std::string	_accept;
 
 		typedef void (HTTPHeader::*ptr)(std::string);
-		ptr			setFct[3];
+		ptr			setFct[5];
 		
 	public:
 		HTTPHeader();
