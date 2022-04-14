@@ -229,7 +229,7 @@ std::string Socket::getRoot(int nbr, const std::string url) const
 
 std::string Socket::getRealUrl(int nbr, const std::string url) const
 {
-	return (getConfig(nbr).getRealUrl(url));
+	return (removeSlash(getConfig(nbr).getRealUrl(url)));
 }
 
 std::string Socket::getServerName(int nbr) const

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 11:43:18 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 12:11:02 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,8 +128,6 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 	this->setStatus(this->_statusCode, "");
 
 	filename = sock.getRealUrl(sockNbr, this->_url);
-	filename = filename.substr(1, filename.size() - 1);
-
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 	{
 		this->setStatus("404", " Not Found");
