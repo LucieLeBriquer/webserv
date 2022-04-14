@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   usefull.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/12 10:13:25 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/14 11:37:17 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ std::string    fileName(int argc, char **argv);
 
 std::string 				copystr(std::string str, int start);
 std::vector<std::string>	splitThis(std::string str);
-bool					isPngFile(std::string name);
-bool					isCssFile(std::string name);
+
+std::string					removeSlash(const std::string &str);
 
 #endif

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 15:15:56 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/14 11:25:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,16 +104,15 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 //
 	std::string file;
 
- std::cout << "filename = " << filename <<std::endl; 
- std::cout << "real url = " << sock.getRealUrl(sockNbr, filename) <<std::endl;
- std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
-
+	std::cout << "filename = " << filename <<std::endl; 
+	std::cout << "real url = " << sock.getRealUrl(sockNbr, filename) <<std::endl;
+	std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
 
 	//(void)sock;
 	//this->_redir=1;
 	
-	this->_location = "/index.html";
-	this->_statusCode = "301 Moved Permanently";
+	//this->_location = "/index.html";
+	//this->_statusCode = "301 Moved Permanently";
 
 	return sock.getRealUrl(sockNbr, filename);
 }
@@ -121,22 +120,31 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 {
 	std::string filename;
-	std::string tmpname("html");
-	int fd;
+	std::string	page404;
+	int			fd;
 
 	if (this->_location != "")
 		this->_url = this->_location;
 	this->setStatus(this->_statusCode, "");
-	tmpname += this->_url;
-	// if (this->_url == "/")
-	// 	this->_url = "/index.html";
-	if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
+
+	filename = sock.getRealUrl(sockNbr, this->_url);
+	filename = filename.substr(1, filename.size() - 1);
+
+	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
+	{
 		this->setStatus("404", " Not Found");
-	//filename += this->_url;
-	filename = this->redirect(sock, sockNbr, this->_url);
-	//if (filename == "html/404.html")
+		page404 = sock.errorPage(sockNbr, _url, 404);
+		std::cout << "page404 = " << page404 << std::endl;
+		if ((fd = open(page404.c_str(), O_RDWR)) == -1)
+		{
+			// print something par defaut ? si meme notre 404.html n'existe pas
+		}
+		return (page404);
+	}
+	
+	//filename = this->redirect(sock, sockNbr, this->_url);
 	close(fd);
-	return filename;
+	return (filename);
 }
 
 void	HTTPResponse::setContentLen(int len)

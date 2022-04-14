@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 13:53:41 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 11:38:52 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,8 +205,14 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 		pages = getConfig(nbr, nbConfig).getErrorPages();
 	it = pages.find(err);
 	if (it == pages.end())
-		return ("/404.html");
-	return (getRoot(nbr, url) + "/" + it->second);
+	{
+		if (err == 400)
+			return ("html/400.html");
+		if (err == 405)
+			return ("html/405.html");
+		return ("html/404.html");
+	}
+	return (removeSlash(getRoot(nbr, url) + "/" + it->second));
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const
