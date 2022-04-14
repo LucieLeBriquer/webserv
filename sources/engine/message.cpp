@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 15:53:16 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 08:28:36 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,18 +96,18 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(response, sock, sockNbr, header);
+	getRightFile(response, *sock, sockNbr, header);
 	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
 	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "realUrl = " << sock.getRealUrl(sockNbr, response.getUrl()) << std::endl;
+	std::cout << "realUrl = " << sock->getRealUrl(sockNbr, response.getUrl()) << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -185,8 +185,16 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		if (sendReponse(fde, response, header, *sock, sockNbr))
-			return (ERR);
+		if (sock->isCgi(sockNbr, response.getUrl()))
+		{
+			if (GetCGIfile(*sock, sockNbr) < 0)
+				return ERR;
+		}
+		else
+		{
+			if (sendResponse(fde, response, header, sock, sockNbr))
+				return (ERR);
+		}
 	}
 	return (OK);
 }
