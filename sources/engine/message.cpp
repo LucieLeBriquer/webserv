@@ -86,7 +86,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	//check methode et file pour cgi ou non
 
 	// check if method is allowed for the requested url
-	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), response.getMethodNbr()))
+	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 	{
 		std::cerr << response.getUrl() << " method = " << response.getMethod() << std::endl;
 		response.setStatus("405", " Method Not Allowed");
@@ -184,7 +184,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else
 		{
-			response.setMethod(header.getMethod());
 			if (sendResponse(fde, response, header, *sock, sockNbr))
 				return (ERR);
 		}
