@@ -12,13 +12,15 @@
 
 #include "engine.hpp"
 
-static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
+static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
 	filename = response.checkUrl(sock, sockNbr);
+	if (filename == "")
+		return (ERR);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
@@ -28,6 +30,7 @@ static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTP
 	fileStream.close();
 	response.setContentLen(size);
 	response.rendering(header);
+	return (OK);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -83,9 +86,11 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(response, sock, sockNbr, header);
-	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
-					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
+	if (getRightFile(response, sock, sockNbr, header))
+	{
+		// cas ou meme notre page 404 est indispo -> send un html par default
+		return (OK);
+	}
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;

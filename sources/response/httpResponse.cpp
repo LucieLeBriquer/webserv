@@ -135,6 +135,7 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 		page404 = sock.errorPage(sockNbr, _url, 404);
 		if ((fd = open(page404.c_str(), O_RDWR)) == -1)
 		{
+			return ("");
 			// print something par defaut ? si meme notre 404.html n'existe pas
 		}
 		close(fd);
