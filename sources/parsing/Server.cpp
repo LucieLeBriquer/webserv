@@ -222,6 +222,7 @@ int		Server::configFromUrl(const std::string &url) const
 	std::string	path;
 	std::string	extension;
 	size_t		size;
+	std::string	rawUrl;
 
 	for (size_t i = 0; i < _locations.size(); i++)
 	{
@@ -229,9 +230,11 @@ int		Server::configFromUrl(const std::string &url) const
 		size = path.size();
 		if (path[0] == '*')
 		{
-			extension = path.substr(1, path.size() - 2);
-			if (url.size() > extension.size()
-				&& url.substr(0, url.find('?')).substr(url.size() - extension.size() - 1, extension.size()) == extension)
+			extension = path.substr(1, path.size() - 1);
+			rawUrl = url;
+			if (url.find('?') != std::string::npos)
+				rawUrl = url.substr(0, url.find('?'));
+			if (rawUrl.size() > extension.size() && rawUrl.substr(rawUrl.size() - extension.size(), extension.size()) == extension)
 				return (i);
 		}
 		else if (url.substr(0, size) == path && ((url.size() > size && url[size] == '/') || url.size() == size)
