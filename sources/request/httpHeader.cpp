@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 11:02:42 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 14:24:13 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,11 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentType(""), _contentLen(""), _useragent(""), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _accept("")
 {
-	getFct[0] = &HTTPRequest::get;
-	getFct[1] = &HTTPRequest::post;
-	getFct[2] = &HTTPRequest::mdelete;
-
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
-	this->setFct[2] = &HTTPHeader::setUserA;
+	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
 
 	return ;
@@ -51,7 +47,7 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 	{
 		_host = header._host;
 		_contentLen = header._contentLen;
-		_useragent = header._useragent;
+		_contentType = header._contentType;
 		_accept = header._accept;
 		
 		// http request parameters
@@ -70,6 +66,11 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 **		SETTERS
 */
 
+void HTTPHeader::setHost(std::string value)
+{
+	this->_host = value;
+}
+
 void HTTPHeader::setContentLen(std::string value)
 {
 	this->_contentLen = value;
@@ -77,23 +78,14 @@ void HTTPHeader::setContentLen(std::string value)
 
 void HTTPHeader::setContentType(std::string value)
 {
-	this->_contentType = value;
-}
-
-void HTTPHeader::setHost(std::string value)
-{
-	this->_host = value;
-}
-
-void HTTPHeader::setUserA(std::string value)
-{
-	this->_useragent = value;
+	this->_accept = value;
 }
 
 void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
 }
+
 
 /*
 **		GETTERS
@@ -114,12 +106,12 @@ std::string	HTTPHeader::getContentLen(void) const
 	return ("Content-Length: " + _contentLen + "\r\n");
 }
 
-std::string	HTTPHeader::getUserAgent(void) const
+std::string	HTTPHeader::getContentType(void) const
 {
-	return ("User-Agent: " + _useragent + "\r\n");
+	return ( _contentType);
 }
 
-std::string	HTTPHeader::getAcceptFile(void) const
+std::string	HTTPHeader::getResponseContentType(void) const
 {
 	return ("Content-Type: " + _accept.substr(0, _accept.find(',')) + "\r\n");
 }
@@ -130,21 +122,17 @@ std::string	HTTPHeader::getAcceptFile(void) const
 
 std::string HTTPHeader::fillrender()
 {
-	std::vector<std::string> headers(4);
-	std::vector<std::string> content(4);
+	std::vector<std::string> headers(2);
+	std::vector<std::string> content(2);
 	std::vector<std::string>::iterator it;
 	std::vector<std::string>::iterator it2;
 	std::string render;
 
 	headers[0] = getHost();
-	headers[1] = getContentLen();
-	headers[2] = getUserAgent();
-	headers[3] = getAcceptFile();
+	headers[1] = getResponseContentType();
 
 	content[0] = _host;
-	content[1] = _contentLen;
-	content[2] = _useragent;
-	content[3] = _accept;
+	content[1] = _accept;
 
 	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
 	{
@@ -231,7 +219,10 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return 1;
 	}
 	else
-		(this->*(getFct[i]))();
+	{
+		_method = methods[i];
+		//(this->*(getFct[i]))();
+	}
 	if (!this->parsePath(request[1]))
 	{
 		deliver->statusCode(code->status(4, 4), this->getFirstLine());
@@ -249,11 +240,12 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return -1;
 	return 1;
 }
+
 int HTTPHeader::header()
 {
 	if (this->_method == "POST")
 	{
-		if (this->_contentLen == "" || this->_contentType == "")
+		if (this->_contentLen == "")
 			return -1;
 	}
 	return 1;
@@ -261,20 +253,21 @@ int HTTPHeader::header()
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[5] = {"host:", "content-length:", "user-agent:", "accept:", "content-type:"};
+	std::string header[4] = {"host:", "content-length:", "content-type:" ,"accept:"};
 	std::string line;
+	int			headerSize = 4;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
 		return -1;
 	line = getHead(*buf);
 	(*buf).erase(0, line.length() + 2);
-	for (i = 0; i < 5; i++)
+	for (i = 0; i < headerSize; i++)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
 	}
-	if (i == 5)
+	if (i == headerSize)
 		return (0);
 	j = header[i].length();
 	if (line[j] == ' ')

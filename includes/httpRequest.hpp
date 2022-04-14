@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:59 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/10 09:55:11 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 14:20:18 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,6 @@ class HTTPRequest
 		std::string _url;		// le chemin vers la page demandee
 		int			_active;
 		std::string _fLine;
-		typedef void (HTTPRequest::*ptr)();
-		ptr			getFct[3];
 
 	public:
 		HTTPRequest();
@@ -36,9 +34,6 @@ class HTTPRequest
 		std::string		getFirstLine(void);
 		std::string		getMethod();
 		std::string		getUrl();
-		void			get(void);
-		void			post(void);
-		void			mdelete(void);
 
 };
 

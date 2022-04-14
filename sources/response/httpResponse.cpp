@@ -6,14 +6,15 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 11:07:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 14:17:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName(""), _location(""), _redir(0)
+									_header(""), _method(""), _fileName(""), _location(""), 
+									_statusNb(0), _redir(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -44,26 +45,29 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 		_header = response._header;
 		_method = response._method;
 		_fileName = response._fileName;
+		_location = response._location;
+		_statusNb = response._statusNb;
+		_redir = response._redir;
 	}
 	return (*this);
 }
 
-std::string HTTPResponse::getMethod( void )
+std::string HTTPResponse::getMethod(void) const
 {
 	return this->_method;
 }
 
-std::string HTTPResponse::getStatus( void )
+std::string HTTPResponse::getStatus(void) const
 {
 	return this->_statusCode;
 }
 
-std::string HTTPResponse::getUrl( void )
+std::string HTTPResponse::getUrl(void) const
 {
 	return this->_url;
 }
 
-std::string HTTPResponse::getHeader( void )
+std::string HTTPResponse::getHeader(void) const
 {
 	return this->_header;
 }
@@ -73,7 +77,17 @@ std::string	HTTPResponse::getFileName(void) const
 	return (_fileName);
 }
 
-int HTTPResponse::setStatus(std::string code, std::string str)
+int			HTTPResponse::getStatusNb(void) const
+{
+	return (_statusNb);
+}
+
+int			HTTPResponse::getMethodNbr(void) const
+{
+	return (getMethodNb(this->getMethod()));
+}
+
+int 		HTTPResponse::setStatus(std::string code, std::string str)
 {
 	std::stringstream ss;
 	std::map<int, std::string> getStatus;
@@ -90,12 +104,23 @@ int HTTPResponse::setStatus(std::string code, std::string str)
 	this->_statusCode = code + str;
 	if (status > 299)
 		this->_url = getStatus[status];
+	setStatusNb(status);
 	return status;
+}
+
+void 		HTTPResponse::setStatusNb(int nb)
+{
+	_statusNb = nb;
 }
 
 void		HTTPResponse::setFileName(const std::string &file)
 {
 	_fileName = file;
+}
+
+void		HTTPResponse::setMethod(const std::string &method)
+{
+	_method = method;
 }
 
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filename)
@@ -109,31 +134,47 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 	std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
 
 	//(void)sock;
-	//this->_redir=1;
+	//_redir=1;
 	
-	//this->_location = "/index.html";
-	//this->_statusCode = "301 Moved Permanently";
+	//_location = "/index.html";
+	//_statusCode = "301 Moved Permanently";
 
-	return sock.getRealUrl(sockNbr, filename);
+	return (sock.getRealUrl(sockNbr, filename));
 }
 
 std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 {
 	std::string filename;
-	int fd;
+	std::string	pageErr;
+	int			fd;
 
-	if (this->_location != "")
-		this->_url = this->_location;
-	this->setStatus(this->_statusCode, "");
+	// what's the point of this ? redir ?
+	/*if (_location != "")
+		_url = _location;
+	setStatus(_statusCode, "");*/
 
-	filename = sock.getRealUrl(sockNbr, this->_url);
-	filename = filename.substr(1, filename.size() - 1);
-	// if (this->_url == "/")
-	// 	this->_url = "/index.html";
+	// check if there was an error before (method not allowed etc)
+	if (_statusNb != 0)
+	{
+		pageErr = sock.errorPage(sockNbr, _url, _statusNb);
+		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
+			return ("");
+		close(fd);
+		return (pageErr);
+	}
+
+	filename = sock.getRealUrl(sockNbr, _url);
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
-		this->setStatus("404", " Not Found");
+	{
+		setStatus("404", " Not Found");
+		pageErr = sock.errorPage(sockNbr, _url, 404);
+		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
+			return ("");
+		close(fd);
+		return (pageErr);
+	}
 	
-	//filename = this->redirect(sock, sockNbr, this->_url);
+	//filename = redirect(sock, sockNbr, _url);
 	close(fd);
 	return (filename);
 }

@@ -3,40 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 08:37:54 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/14 14:37:02 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-bool	isPngFile(std::string name)
-{
-	if (name.size() < 4)
-		return (false);
-	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".png") == 0)
-		return (true);
-	return (false);	
-}
-
-bool	isCssFile(std::string name)
-{
-	if (name.size() < 4)
-		return (false);
-	if (strcmp(name.substr(name.size() - 4, 4).c_str(), ".css") == 0)
-		return (true);
-	return (false);	
-}
-
-static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
+static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
 	filename = response.checkUrl(sock, sockNbr);
+	if (filename == "")
+		return (ERR);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
@@ -46,6 +30,7 @@ static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTP
 	fileStream.close();
 	response.setContentLen(size);
 	response.rendering(header);
+	return (OK);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -96,18 +81,26 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
 	//check methode et file pour cgi ou non
 
-	// fill header
-	getRightFile(response, sock, sockNbr, header);
-	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
-					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
+	// check if method is allowed for the requested url
+	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
+	{
+		std::cerr << response.getUrl() << " method = " << response.getMethod() << std::endl;
+		response.setStatus("405", " Method Not Allowed");
+	}
 
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
-	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "realUrl = " << sock.getRealUrl(sockNbr, response.getUrl()) << std::endl;
+	// fill header
+	if (getRightFile(response, sock, sockNbr, header))
+	{
+		// if even page and err page are unavailable, print a small page according to the statusNb
+		return (OK);
+	}
+
+	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
+	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -144,7 +137,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	char			buf[BUFFER_SIZE] = {0};
 	int				byteCount, recv_len = 0;
 	std::string		string;
-	HTTPRequest		request;
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
@@ -177,7 +169,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << buf ;
-			std::cout << "====================================================" << std::endl << std::endl;
+			std::cout << "\n====================================================" << std::endl << std::endl;
 		}
 		string += buf;
 	}

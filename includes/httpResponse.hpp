@@ -27,27 +27,36 @@ class HTTPResponse
 		std::string		_method;
 		std::string		_fileName;
 		std::string		_location;
+		int				_statusNb;
 		int				_redir;
+
 	public:
-		HTTPResponse(void);		HTTPResponse(const HTTPResponse &response);
+		HTTPResponse(void);
+		HTTPResponse(const HTTPResponse &response);
 		~HTTPResponse();
 
 		HTTPResponse	&operator=(const HTTPResponse &response);
 
-		std::string	getUrl(void );
-		std::string	getMethod( void );
-		std::string	getHeader( void );
-		std::string	getStatus( void );
-		void		rendering( HTTPHeader &header );
-		void		rendering( const std::string typeContent, HTTPHeader &header);
-		void		rendering( const std::string typeContent, HTTPHeader &header, bool b);
-		void		setContentLen( int len );
+		std::string	getUrl(void) const;
+		std::string	getMethod(void) const;
+		std::string	getHeader(void) const;
+		std::string	getStatus(void) const;
+		std::string	getFileName(void) const;
+		int			getStatusNb(void) const;
+		int			getMethodNbr(void) const;
+
+		void		rendering(HTTPHeader &header);
+
+		void		setContentLen(int len);
+		void		setStatusErr(int nbErr);
+		int			setStatus(std::string code, std::string str);
+		void		setFileName(const std::string &file);
+		void		setStatusNb(int nb);
+		void		setMethod(const std::string &method);
+
 		std::string	checkUrl(Socket &sock, int sockNbr);
 		std::string	redirect(Socket &sock, int sockNbr, std::string filename);
-		int			setStatus(std::string code, std::string str);
 		void		statusCode(std::string status, std::string firstLine);
-		void		setFileName(const std::string &file);
-		std::string	getFileName(void) const;
 };
 
 #endif

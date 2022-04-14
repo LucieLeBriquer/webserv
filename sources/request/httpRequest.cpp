@@ -54,21 +54,14 @@ HTTPRequest	&HTTPRequest::operator=(const HTTPRequest &request)
 **		MEMBER FUNCTIONS
 */
 
-void HTTPRequest::get(void){
-	this->_method = "GET";
-}
-
-void HTTPRequest::post(void){
-	this->_method  = "POST";
-}
-
-void HTTPRequest::mdelete(void){
-	this->_method  = "DELETE";
-}
-
-std::string	HTTPRequest::getFirstLine( void )
+std::string	HTTPRequest::getFirstLine(void)
 {
 	this->_fLine = this->_method + " " + this->_url + " " + this->_httpv;
 	//std::cout <<"FIRST LINE = "<< this->_fLine <<std::endl;
 	return this->_fLine;
+}
+
+std::string	HTTPRequest::getMethod(void)
+{
+	return (_method);
 }
