@@ -82,3 +82,15 @@ comment afficher une page d'erreur
 
 url valide : form submission methode get --> QUERY_STRING inside url
 request parsing (mass) : get body si cest methode POST, get QUERY_STRING si methode GET (besoin pour cgi)
+
+/***********httpHeader.cpp*************/
+
+dans fillheader(*buf)
+
+while (line[j] != '\n' && line[j] != '\r' && line[j] != ' ' && line[j] != 0)
+instead of :
+while (line[j] != '\n' && line[j] != '\r' && line[j] != ' ')
+??
+std::cout << "line[" << j << "] = |" << line[j] << "| = " << line[j] + 48 << std::endl;
+
+std::cout << "j = " << j << " | pos = " << pos << " | len = " << len << " | tmp = " << tmp << std::endl;
