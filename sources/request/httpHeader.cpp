@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 13:30:17 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 14:24:13 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,8 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _accept("")
 {
-	getFct[0] = &HTTPRequest::get;
-	getFct[1] = &HTTPRequest::post;
-	getFct[2] = &HTTPRequest::mdelete;
-
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
@@ -51,6 +47,7 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 	{
 		_host = header._host;
 		_contentLen = header._contentLen;
+		_contentType = header._contentType;
 		_accept = header._accept;
 		
 		// http request parameters
@@ -222,7 +219,10 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return 1;
 	}
 	else
-		(this->*(getFct[i]))();
+	{
+		_method = methods[i];
+		//(this->*(getFct[i]))();
+	}
 	if (!this->parsePath(request[1]))
 	{
 		deliver->statusCode(code->status(4, 4), this->getFirstLine());
@@ -240,6 +240,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return -1;
 	return 1;
 }
+
 int HTTPHeader::header()
 {
 	if (this->_method == "POST")

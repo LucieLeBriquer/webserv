@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 08:37:54 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/14 14:30:22 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,14 +81,21 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
 	//check methode et file pour cgi ou non
+
+	// check if method is allowed for the requested url
+	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), response.getMethodNbr()))
+	{
+		std::cerr << response.getUrl() << " method = " << response.getMethod() << std::endl;
+		response.setStatus("405", " Method Not Allowed");
+	}
 
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
 	{
-		// cas ou meme notre page 404 est indispo -> send un html par default
+		// if even our 404 is unavailable, print a small page
 		return (OK);
 	}
 
@@ -130,7 +137,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	char			buf[BUFFER_SIZE] = {0};
 	int				byteCount, recv_len = 0;
 	std::string		string;
-	HTTPRequest		request;
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
@@ -163,7 +169,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << buf ;
-			std::cout << "====================================================" << std::endl << std::endl;
+			std::cout << "\n====================================================" << std::endl << std::endl;
 		}
 		string += buf;
 	}
@@ -178,6 +184,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 		}
 		else
 		{
+			response.setMethod(header.getMethod());
 			if (sendResponse(fde, response, header, *sock, sockNbr))
 				return (ERR);
 		}
