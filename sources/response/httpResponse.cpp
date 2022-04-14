@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 11:25:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 11:43:18 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 	//this->_location = "/index.html";
 	//this->_statusCode = "301 Moved Permanently";
 
-	return sock.getRealUrl(sockNbr, filename);
+	return (sock.getRealUrl(sockNbr, filename));
 }
 
 std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
@@ -134,11 +134,11 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 	{
 		this->setStatus("404", " Not Found");
 		page404 = sock.errorPage(sockNbr, _url, 404);
-		std::cout << "page404 = " << page404 << std::endl;
 		if ((fd = open(page404.c_str(), O_RDWR)) == -1)
 		{
 			// print something par defaut ? si meme notre 404.html n'existe pas
 		}
+		close(fd);
 		return (page404);
 	}
 	
