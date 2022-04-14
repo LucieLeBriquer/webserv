@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 14:30:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 14:37:02 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
 	{
-		// if even our 404 is unavailable, print a small page
+		// if even page and err page are unavailable, print a small page according to the statusNb
 		return (OK);
 	}
 
