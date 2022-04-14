@@ -105,9 +105,8 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
-	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "realUrl = " << sock.getRealUrl(sockNbr, response.getUrl()) << std::endl;
+	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
+	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
