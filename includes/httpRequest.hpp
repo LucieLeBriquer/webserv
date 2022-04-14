@@ -25,7 +25,7 @@ class HTTPRequest
 		int			_active;
 		std::string _fLine;
 		typedef void (HTTPRequest::*ptr)();
-		ptr			getFct[4];
+		ptr			getFct[3];
 
 	public:
 		HTTPRequest();
