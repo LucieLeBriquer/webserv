@@ -18,7 +18,7 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl(sock, sockNbr);
+	filename = response.checkUrl(sock, sockNbr, header);
 	if (filename == "")
 		return (ERR);
 	response.setFileName(filename);
@@ -85,7 +85,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 {
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
-		response.setStatus("405", " Method Not Allowed");
+		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))

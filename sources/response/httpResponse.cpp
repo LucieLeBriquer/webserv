@@ -87,7 +87,7 @@ int			HTTPResponse::getMethodNbr(void) const
 	return (getMethodNb(this->getMethod()));
 }
 
-int 		HTTPResponse::setStatus(std::string code, std::string str)
+int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
 {
 	std::stringstream ss;
 	std::map<int, std::string> getStatus;
@@ -104,6 +104,7 @@ int 		HTTPResponse::setStatus(std::string code, std::string str)
 	this->_statusCode = code + str;
 	if (status > 299)
 		this->_url = getStatus[status];
+	header.setContentTypeResponse("text/html");
 	setStatusNb(status);
 	return status;
 }
@@ -142,21 +143,17 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 	return (sock.getRealUrl(sockNbr, filename));
 }
 
-std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
+std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string filename;
 	std::string	pageErr;
 	int			fd;
 
-	// what's the point of this ? redir ?
-	/*if (_location != "")
-		_url = _location;
-	setStatus(_statusCode, "");*/
-
 	// check if there was an error before (method not allowed etc)
 	if (_statusNb != 0)
 	{
 		pageErr = sock.errorPage(sockNbr, _url, _statusNb);
+		std::cout << PURPLE << pageErr << END << std::endl;
 		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
 			return ("");
 		close(fd);
@@ -166,8 +163,9 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 	filename = sock.getRealUrl(sockNbr, _url);
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 	{
-		setStatus("404", " Not Found");
+		setStatus("404", " Not Found", header);
 		pageErr = sock.errorPage(sockNbr, _url, 404);
+		std::cout << PURPLE << pageErr << END << std::endl;
 		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
 			return ("");
 		close(fd);

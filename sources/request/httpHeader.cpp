@@ -16,7 +16,7 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
@@ -48,6 +48,7 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 		_host = header._host;
 		_contentLen = header._contentLen;
 		_contentType = header._contentType;
+		_contentTypeResponse = header._contentTypeResponse;
 		_accept = header._accept;
 		
 		// http request parameters
@@ -78,12 +79,18 @@ void HTTPHeader::setContentLen(std::string value)
 
 void HTTPHeader::setContentType(std::string value)
 {
-	this->_accept = value;
+	this->_contentType = value;
+}
+
+void HTTPHeader::setContentTypeResponse(std::string value)
+{
+	this->_contentTypeResponse = value;
 }
 
 void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
+	setContentTypeResponse(_accept.substr(0, _accept.find(',')));
 }
 
 
@@ -108,12 +115,12 @@ std::string	HTTPHeader::getContentLen(void) const
 
 std::string	HTTPHeader::getContentType(void) const
 {
-	return ( _contentType);
+	return (_contentType);
 }
 
 std::string	HTTPHeader::getResponseContentType(void) const
 {
-	return ("Content-Type: " + _accept.substr(0, _accept.find(',')) + "\r\n");
+	return ("Content-Type: " + _contentTypeResponse + "\r\n");
 }
 
 /*

@@ -205,10 +205,10 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 	if (it == pages.end())
 	{
 		if (err == 400)
-			return ("html/400.html");
+			return ("html/default/400.html");
 		if (err == 405)
-			return ("html/405.html");
-		return ("html/404.html");
+			return ("html/default/405.html");
+		return ("html/default/404.html");
 	}
 	return (removeSlash(getRoot(nbr, url) + "/" + it->second));
 }

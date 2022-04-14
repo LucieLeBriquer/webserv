@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 15:13:18 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/14 18:34:11 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,12 @@ class HTTPResponse
 
 		void		setContentLen(int len);
 		void		setStatusErr(int nbErr);
-		int			setStatus(std::string code, std::string str);
+		int			setStatus(std::string code, std::string str, HTTPHeader &header);
 		void		setFileName(const std::string &file);
 		void		setStatusNb(int nb);
 		void		setMethod(const std::string &method);
 
-		std::string	checkUrl(Socket &sock, int sockNbr);
+		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
 		std::string	redirect(Socket &sock, int sockNbr, std::string filename);
 		void		statusCode(std::string status, std::string firstLine);
 };
