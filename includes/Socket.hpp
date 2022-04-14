@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 13:53:31 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:35:25 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ class Socket
 		const int &					getSocket(int nbr) const;
 		void						setSocket(int newSocket);
 
-		const int &					getConnSock(int nbr) const;
-		void						setConnSock(int newConnSock);
-		int &						modConnSock(int nbr);
+		void						addConnection(int connSock, int sockNb);
+		int							getConnection(int connSock);
+		const mapSock				getAllConnections(void) const;
 		
 		const struct sockaddr_in &	getAddress(int nbr) const;
 		void						setAddress(int port, const char *ip);
@@ -75,13 +75,13 @@ class Socket
 		bool			isRedir(int nbr, const std::string url) const;
 		
 	private:
-		std::vector<Server>				_config;
-		std::vector<int>				_socket;
-		std::vector<int>				_connSock;
+		vecSrv							_config;
+		vecInt							_socket;
+		mapSock							_connected;
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		std::vector<std::string>		_env;
+		vecStr							_env;
 		int								_method;
 		char*							_body;
 	

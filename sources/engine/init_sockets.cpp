@@ -44,7 +44,6 @@ int		initSockets(Socket *sock, const Config &config)
 			return (ERR);
 		}
 		sock->setSocket(listenSock);
-		sock->setConnSock(0);
 		if (setsockopt(sock->getSocket(i), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)))
 		{
 			perror("setsockopt()");
