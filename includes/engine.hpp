@@ -31,7 +31,7 @@ int			initSockets(Socket *sock, const Config config);
 int			initEpoll(Socket *sock, const Config config);
 int			socketMatch(int fde, Socket *sock);
 Socket		*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);
-int			requestReponse(int epollfd, int fde, Socket *sock, int sockNbr);
+int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 11:38:52 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:28:46 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ Socket	&Socket::operator=(const Socket &socket)
 	{
 		_config.clear();
 		_socket.clear();
-		_connSock.clear();
+		_connected.clear();
 		_address.clear();
 		_addrLen.clear();
 
 		_config = socket._config;
 		_socket = socket._socket;
-		_connSock = socket._connSock;
+		_connected = socket._connected;
 		_address = socket._address;
 		_addrLen = socket._addrLen;
 		_check = socket._check;
@@ -67,7 +67,6 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 {
 	for (int i = 0; i < obj.getSocketNbr(); i++)
 		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
-
 	return o;
 }
 
@@ -75,20 +74,24 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 **		MEMBER FUNCTIONS AND SETTERS
 */
 
-
-int 		&Socket::modConnSock(int nbr)
-{
-	return (_connSock[nbr]);
-}
-
 void		Socket::setSocket(int newSocket)
 {
 	_socket.push_back(newSocket);
 }
 
-void		Socket::setConnSock(int newConnSock)
+void		Socket::addConnection(int connSock, int sockNb)
 {
-	_connSock.push_back(newConnSock);
+	_connected[connSock] = sockNb;
+}
+
+int			Socket::getConnection(int connSock)
+{
+	return (_connected[connSock]);
+}
+
+const mapSock	Socket::getAllConnections(void) const
+{
+	return (_connected);
 }
 
 void		Socket::setAddress(int port, const char *ip)
@@ -171,11 +174,6 @@ int							Socket::getCheck(void) const
 const struct sockaddr_in &	Socket::getAddress(int nbr) const
 {
 	return (_address[nbr]);
-}
-
-const int &					Socket::getConnSock(int nbr) const
-{
-	return (_connSock[nbr]);
 }
 
 char*						Socket::getBody(void) const

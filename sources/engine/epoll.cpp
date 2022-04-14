@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 15:40:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:38:04 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@ void printStatus(int i, int nfds, Socket *sock, int fde)
 	{
 		std::cout << std::endl << BLUE;
 		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
+
+		mapSock	connected = sock->getAllConnections();
+		for (mapSock::iterator it = connected.begin(); it != connected.end(); ++it)
+			std::cout << "\t" << it->first << " -> " << it->second << std::endl;
 		std::cout << END << std::endl;
 		break;
 	}
@@ -46,9 +50,10 @@ Socket *initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 	while (1)
 	{
 		struct sockaddr in_addr;
-		socklen_t in_addr_len = sizeof(in_addr);
+		socklen_t		in_addr_len = sizeof(in_addr);
+		int				newFd;
 
-		if ((sock->modConnSock(i) = accept(sock->getSocket(i), (struct sockaddr *)&in_addr, &in_addr_len)) < 0)
+		if ((newFd = accept(sock->getSocket(i), (struct sockaddr *)&in_addr, &in_addr_len)) < 0)
 		{
 			if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
 			{
@@ -61,11 +66,12 @@ Socket *initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 				return NULL;
 			}
 		}
-		if (setsocknonblock(sock->getConnSock(i)) < 0)
+		if (setsocknonblock(newFd) < 0)
 			return NULL;
 		ev.events = EPOLLIN | EPOLLET;
-		ev.data.fd = sock->getConnSock(i);
-		if (epoll_ctl(epollfd, EPOLL_CTL_ADD, sock->getConnSock(i), &ev) < 0)
+		ev.data.fd = newFd;
+		sock->addConnection(newFd, i);
+		if (epoll_ctl(epollfd, EPOLL_CTL_ADD, newFd, &ev) < 0)
 		{
 			perror("epoll_ctl: sock->getConnSock(i)");
 			return NULL;
@@ -130,7 +136,7 @@ int initEpoll(Socket *sock, const Config config)
 			}
 			else
 			{
-				if (requestReponse(epollfd, events[n].data.fd, sock, n))
+				if (requestReponse(epollfd, events[n].data.fd, sock))
 					return (ERR);
 			}
 		}

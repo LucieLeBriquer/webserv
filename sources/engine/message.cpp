@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 14:37:02 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:13:56 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,14 +83,9 @@ static int	sendData(int fde, HTTPResponse &response)
 
 int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
-	//check methode et file pour cgi ou non
-
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
-	{
-		std::cerr << response.getUrl() << " method = " << response.getMethod() << std::endl;
 		response.setStatus("405", " Method Not Allowed");
-	}
 
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
@@ -113,7 +108,11 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
-		// close(fde);
+	if (response.getStatusNb() != 200 && response.getStatusNb() != 0)
+	{
+		// remove from matching map
+		close(fde);
+	}
 	return (OK);
 }
 
@@ -132,7 +131,7 @@ int		checkHeader(HTTPHeader &header, std::string string)
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
+int		requestReponse(int epollfd, int fde, Socket *sock)
 {
 	char			buf[BUFFER_SIZE] = {0};
 	int				byteCount, recv_len = 0;
@@ -141,6 +140,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	HTTPHeader		header;
 	Status			status;
 	int				line(0), isBreak = 0;
+	int				sockNbr = sock->getConnection(fde);
 
 	while (1)
 	{
