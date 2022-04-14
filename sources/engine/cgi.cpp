@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 13:11:31 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/14 18:35:52 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,17 +50,16 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 {
 	char		**env, **arg;
 	pid_t		pid;
-	int			fd[2], socket;
+	int			fd[2], status;
 	std::string	body;
 	
 	/********************************************/
 	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
-	// sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	// sock.setEnv("CONTENT_LENGTH=13"); //need get content length
-	// sock.setEnv("REQUEST_METHOD=POST");
+	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
+	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
+	sock.setEnv("REQUEST_METHOD=POST");
 	/********************************************/
 	pipe(fd);
-	socket = sockNbr;
 	body = sock.getBody();
 	pid = fork();
 	if (mallocEnv(&env, sock, &arg) < 0)
@@ -72,13 +71,14 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	{
 		close(fd[1]); // closing "write" side
 		dup2(fd[0], STDIN_FILENO); // "read" side become stdin
-		dup2(socket, STDOUT_FILENO); // our connected socket become stdout
+		dup2(sockNbr, STDOUT_FILENO); // our connected socket become stdout
 		execve(arg[0], arg, env);
 	}
 	else //inside parent process, we have to send the body through our pipefd[1]
 	{
 		close(fd[0]); // closing "read" side
 		write(fd[1], body.c_str(), body.size()); // write() body on the "write" side
+		waitpid(pid, &status, 0);
 	}
 	
 	//printing

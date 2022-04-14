@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:13:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/14 18:30:53 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// deliver data
 	if (sendData(fde, response))
 		return (ERR);
-	
+		
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
@@ -179,6 +179,15 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		if (sock->isCgi(sockNbr, response.getUrl()))
 		{
+			std::string	header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
+			std::cout << "====================================================" << std::endl;
+			std::cout << header;
+			std::cout << "====================================================" << std::endl;
+			if (send(fde, header.c_str(), header.size(), 0) < 0)
+			{
+				perror("send()");
+				return (ERR);
+			}
 			if (GetCGIfile(*sock, sockNbr) < 0)
 				return ERR;
 		}

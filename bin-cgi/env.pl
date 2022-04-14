@@ -1,6 +1,6 @@
 #!/usr/local/bin/perl
 
-print "Content-type: text/html", "\n\n";
+# print "Content-type: text/html", "\n\n";
 
 print "<HTML>", "\n";
 print "<HEAD><TITLE>Simple Virtual HTML Document</TITLE></HEAD>", "\n";
