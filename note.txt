@@ -82,10 +82,3 @@ comment afficher une page d'erreur
 
 url valide : form submission methode get --> QUERY_STRING inside url
 request parsing (mass) : get body si cest methode POST, get QUERY_STRING si methode GET (besoin pour cgi)
-
-
-// if (isNotCGI(response, *sock) == 0)
-// {
-// 	if (!GetCGIfile(*sock, sockNbr))
-// 		return ERR;
-// }
