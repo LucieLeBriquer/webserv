@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:04:41 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/14 08:28:36 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ bool	isCssFile(std::string name)
 	return (false);	
 }
 
-static void	getRightFile(HTTPResponse &response, Socket *sock, int sockNbr, HTTPHeader &header)
+static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
@@ -96,12 +96,12 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket *sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
 {
 	//check methode et file pour cgi ou non
 
 	// fill header
-	getRightFile(response, sock, sockNbr, header);
+	getRightFile(response, *sock, sockNbr, header);
 	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
 					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
 
@@ -129,10 +129,10 @@ int		checkHeader(HTTPHeader &header, std::string string)
 	string.erase(0, (getHead(string)).length() + 2);
 	while (1)
 	{
-		if (header.fillheader(&string) == -1)
-			break ; // a changer en fonction du retour d'err
 		if (string == "")
 			break ;
+		if (header.fillheader(&string) == -1)
+			break ; // a changer en fonction du retour d'err
 	}
 	if (header.header() == -1)
 		return ERR;

@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/13 15:50:50 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:15:56 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName(""), _location("")
+									_header(""), _method(""), _fileName(""), _location(""), _redir(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -98,33 +98,43 @@ void		HTTPResponse::setFileName(const std::string &file)
 	_fileName = file;
 }
 
-void HTTPResponse::redirect(Socket *sock, int sockNbr)
+std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filename)
 {
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
+	std::string file;
 
-//	sock->getConfig(sockNbr).getHost
-(void)sock;
-(void)sockNbr;
-	this->_location = "index.html";
+ std::cout << "filename = " << filename <<std::endl; 
+ std::cout << "real url = " << sock.getRealUrl(sockNbr, filename) <<std::endl;
+ std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
+
+
+	//(void)sock;
+	//this->_redir=1;
+	
+	this->_location = "/index.html";
+	this->_statusCode = "301 Moved Permanently";
+
+	return sock.getRealUrl(sockNbr, filename);
 }
 
-std::string HTTPResponse::checkUrl(Socket *sock, int sockNbr)
+std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr)
 {
-	std::string filename("html");
+	std::string filename;
 	std::string tmpname("html");
 	int fd;
 
-	this->_location = "";
-	int status = this->setStatus(this->_statusCode, "");
-	if (this->_url == "/")
-		this->_url = "/index.html";
+	if (this->_location != "")
+		this->_url = this->_location;
+	this->setStatus(this->_statusCode, "");
 	tmpname += this->_url;
+	// if (this->_url == "/")
+	// 	this->_url = "/index.html";
 	if ((fd = open(tmpname.c_str(), O_RDWR)) == -1)
 		this->setStatus("404", " Not Found");
-	filename += this->_url;
-	if (status == 200)
-		this->redirect(sock, sockNbr);
+	//filename += this->_url;
+	filename = this->redirect(sock, sockNbr, this->_url);
+	//if (filename == "html/404.html")
 	close(fd);
 	return filename;
 }
@@ -141,7 +151,6 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
 	std::vector<std::string> line = splitThis(firstLine);
 
-
 	this->_statusCode = status;
 	this->_protocol = line[2];
 	this->_url = line[1];
@@ -154,42 +163,9 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	this->_header += "Content-Type: text/html; charset=UTF-8\r\n";
 	this->_header += header.fillrender();
+	 if (this->_redir)
+              this->_header += "Location: " + this->_location + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
 	this->_header += "Date: " + timeStr;
 }
-
-// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header)
-// {
-// 	time_t rawtime;
-// 	time(&rawtime);
-// 	std::string	timeStr = ctime(&rawtime);
-// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-// 	this->_header += "Content-Type: " + typeContent + "\r\n";
-// 	this->_header += header.fillrender();
-// 	// this->_header += "Referrer-Policy: no-referrer\r\n";
-// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-// 	this->_header += "Date: " + timeStr;
-// 	std::cout << this->_header << std::endl;
-// }
-
-// void HTTPResponse::rendering(const std::string typeContent, HTTPHeader &header, bool b)
-// {
-// 	time_t rawtime;
-// 	time(&rawtime);
-// 	(void)b;
-// 	(void)header;
-
-// 	std::string	timeStr = ctime(&rawtime);
-// 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-// 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-// 	this->_header += "Server: webserv\r\n"; // replace by server_name so we need to access the socket
-// 	this->_header += "Date: " + timeStr + "\r\n";
-// 	this->_header += "Content-Type: " + typeContent + "\r\n";
-// 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-// 	this->_header += "Accept-Ranges: bytes";
-// 	std::cout << this->_header << std::endl;
-// }
-
