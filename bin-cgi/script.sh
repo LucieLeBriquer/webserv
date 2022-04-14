@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# if [[ $REQUEST_METHOD != "POST" ]]; then
-# 	echo "No POST request" ; exit
-# fi
+if [[ $REQUEST_METHOD != "POST" ]]; then
+	echo "No POST request" ; exit
+fi
 
 # if [[ $CONTENT_TYPE != "application/x-www-form-urlencoded" ]]; then
 # 	echo "Wrong encoded type" ; exit
@@ -30,14 +30,11 @@ for i in "${pairs[@]}"; do
 	data[${result[0]}]="${result[1]}"
 done
 
-echo "" > fileCGI
+echo "Content-Type: text/html"
+echo ""
 
-echo "HTTP/1.1 200 OK" >> fileCGI
-echo "Content-Type: text/html" >> fileCGI
-echo "" >> fileCGI
+echo "<html> <head> <title> CGI script </title> </head> <body>"
 
-echo "<html> <head> <title> CGI script </title> </head> <body>" >> fileCGI
+echo "<h1>${data[@]}</h1>"
 
-echo "<h1>${data[@]}</h1>" >> fileCGI
-
-echo "</body> </html>" >> fileCGI
+echo "</body> </html>"
