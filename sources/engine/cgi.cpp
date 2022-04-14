@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/14 13:11:31 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	
 	/********************************************/
 	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
-	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
-	sock.setEnv("REQUEST_METHODE=POST");
+	// sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
+	// sock.setEnv("CONTENT_LENGTH=13"); //need get content length
+	// sock.setEnv("REQUEST_METHOD=POST");
 	/********************************************/
 	pipe(fd);
 	socket = sockNbr;
@@ -68,7 +68,7 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	
 	if (pid < 0)
 		exit(EXIT_FAILURE);
-	else if (pid == 0) //inside child process
+	if (pid == 0) //inside child process
 	{
 		close(fd[1]); // closing "write" side
 		dup2(fd[0], STDIN_FILENO); // "read" side become stdin
