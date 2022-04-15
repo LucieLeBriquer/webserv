@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 18:35:52 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/15 09:27:43 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	i = strlen(&sock.getEnv(0)[10]);
+	i = strlen("/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*arg)[0], &sock.getEnv(0)[10]);
+	strcpy((*arg)[0], "/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[1] = NULL;
 	return OK;
 }
@@ -54,10 +54,10 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	std::string	body;
 	
 	/********************************************/
-	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
-	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
-	sock.setEnv("REQUEST_METHOD=POST");
+	// sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	// sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
+	// sock.setEnv("CONTENT_LENGTH=13"); //need get content length
+	// sock.setEnv("REQUEST_METHOD=POST");
 	/********************************************/
 	pipe(fd);
 	body = sock.getBody();
@@ -65,6 +65,8 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
 	
+	int tt = open(arg[0], O_RDONLY);
+	std::cout << "tt = " << tt << std::endl; // why it's print 2 times ?
 	if (pid < 0)
 		exit(EXIT_FAILURE);
 	if (pid == 0) //inside child process
@@ -78,8 +80,9 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	{
 		close(fd[0]); // closing "read" side
 		write(fd[1], body.c_str(), body.size()); // write() body on the "write" side
-		waitpid(pid, &status, 0);
+		close(fd[1]);
 	}
+	waitpid(pid, &status, 0);
 	
 	//printing
 	std::cout << "inside cgi function : " << std::endl;

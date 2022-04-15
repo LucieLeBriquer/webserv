@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 18:30:53 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/15 09:03:27 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		if (sock->isCgi(sockNbr, response.getUrl()))
 		{
+			std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
+			std::cout << " from " << ORANGE << sock->getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 			std::string	header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
 			std::cout << "====================================================" << std::endl;
 			std::cout << header;
