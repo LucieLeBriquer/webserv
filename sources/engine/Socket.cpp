@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:28:46 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 17:53:16 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -341,4 +341,22 @@ bool		Socket::isCgi(int nbr, const std::string url) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
 		return (false);
 	return (true);
+}
+
+bool		Socket::isRootPath(int nbr, const std::string url) const
+{
+	int			nbConfig;
+	Location	loc;
+	std::string	path;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0)
+		return (url == "/");
+	path = url;
+	if (url[url.size() - 1] == '/')
+		path = url.substr(0, url.size() - 1);
+	loc = getConfig(nbr, nbConfig);
+	if (loc.getPath() == path)
+		return (true);
+	return (false);
 }

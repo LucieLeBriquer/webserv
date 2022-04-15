@@ -73,6 +73,7 @@ class Socket
 		std::string		getCgiPass(int nbr, const std::string url) const;
 		bool			isCgi(int nbr, const std::string url) const;
 		bool			isRedir(int nbr, const std::string url) const;
+		bool			isRootPath(int nbr, const std::string url) const;
 		
 	private:
 		vecSrv							_config;
@@ -84,7 +85,6 @@ class Socket
 		vecStr							_env;
 		int								_method;
 		char*							_body;
-	
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/15 15:14:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 18:12:36 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,23 +171,13 @@ std::string	HTTPResponse::_returnSetErrPage(Socket &sock, int sockNbr, std::stri
 	return (pageErr);
 }
 
-std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header)
+std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header)
 {
-	std::string filename;
-	std::string	pageErr;
+	int			fd;
 	vecStr		index;
 	std::string	indexStr;
-	int			fd;
 
-	// check if there was an error before (method not allowed etc)
-	if (_statusNb != 0)
-		return (_returnErrPage(sock, sockNbr));
-
-	filename = sock.getRealUrl(sockNbr, _url);
-
-	// if it's a directory
-	//std::cout << PURPLE << filename << END << std::endl;
-	if (filename[filename.size() - 1] == '/') // to change into RealUrl first
+	if (sock.isRootPath(sockNbr, _url))
 	{
 		index = sock.getIndex(sockNbr, _url);
 		for (size_t i = 0; i < index.size(); i++)
@@ -199,11 +189,29 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 				return (indexStr);
 			}
 		}
-		if (!sock.getAutoindex(sockNbr, _url))
-			return (_returnSetErrPage(sock, sockNbr, "403", " Forbiden", header));
-		_needAutoindex = true;
-		return (filename);
 	}
+	if (!sock.getAutoindex(sockNbr, _url))
+		return (_returnSetErrPage(sock, sockNbr, "403", " Forbiden", header));
+	_needAutoindex = true;
+	return ("");
+}
+
+std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header)
+{
+	std::string filename;
+	std::string	pageErr;
+	int			fd;
+
+	// check if there was an error before (method not allowed etc)
+	if (_statusNb != 0)
+		return (_returnErrPage(sock, sockNbr));
+
+	filename = sock.getRealUrl(sockNbr, _url);
+
+	// if it's a directory
+	std::cout << PURPLE << filename << END << std::endl;
+	if (isDirectory(filename))
+		return (_manageDirectory(sock, sockNbr, header));
 
 	// if it's a file
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)

@@ -34,6 +34,8 @@ class HTTPResponse
 		std::string		_returnErrPage(Socket &sock, int sockNbr);
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 										std::string str, HTTPHeader &header);
+		std::string		_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header);
+		std::string		_manageRegularFile(Socket &sock, int sockNbr, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);

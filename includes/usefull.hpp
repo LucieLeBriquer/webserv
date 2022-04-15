@@ -48,12 +48,12 @@
 # include <cstdlib>
 # include <cstdio>
 
-
 # include <arpa/inet.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <sys/epoll.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 
 typedef std::vector<std::string>	vecStr;
 typedef std::map<int, std::string>	mapErr;
@@ -83,6 +83,9 @@ vecStr			splitThis(std::string str);
 std::string		removeSlash(const std::string &str);
 std::string		toString(int nb);
 std::string		toString(size_t nb);
+
+bool			isDirectory(std::string path);
+bool			isRegFile(std::string path);
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
