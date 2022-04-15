@@ -77,6 +77,13 @@ int				getMethodNb(std::string method);
 std::string		getMethod(int methodNm);
 std::ostream	&showMethod(std::ostream &o, vecInt methods);
 
+std::string		fileName(int argc, char **argv);
+std::string 	copystr(std::string str, int start);
+vecStr			splitThis(std::string str);
+std::string		removeSlash(const std::string &str);
+std::string		toString(int nb);
+std::string		toString(size_t nb);
+
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
 	for (size_t i = 0; i + 1 < vect.size(); i++)
@@ -90,11 +97,5 @@ std::ostream	&operator<<(std::ostream &o, mapErr map);
 
 static const int			nbMethods = 3;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
-std::string    fileName(int argc, char **argv);
-
-std::string 				copystr(std::string str, int start);
-std::vector<std::string>	splitThis(std::string str);
-
-std::string					removeSlash(const std::string &str);
 
 #endif

@@ -153,7 +153,6 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	if (_statusNb != 0)
 	{
 		pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-		std::cout << PURPLE << pageErr << END << std::endl;
 		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
 			return ("");
 		close(fd);
@@ -165,7 +164,6 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	{
 		setStatus("404", " Not Found", header);
 		pageErr = sock.errorPage(sockNbr, _url, 404);
-		std::cout << PURPLE << pageErr << END << std::endl;
 		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
 			return ("");
 		close(fd);

@@ -37,4 +37,6 @@ std::string	getHead(std::string buf);
 
 int			GetCGIfile(Socket &sock, int sockNbr);
 
+int			sendDefaultPage(int fde, HTTPResponse &response);
+
 #endif

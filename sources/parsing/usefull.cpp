@@ -328,3 +328,24 @@ std::string			removeSlash(const std::string &str)
 		return (str.substr(1, str.size() - 1));
 	return (str);
 }
+
+
+/*
+**		STRING MANIP FUNCTIONS
+*/
+
+std::string		toString(int nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}
+
+std::string		toString(size_t nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}

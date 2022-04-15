@@ -89,10 +89,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
-	{
-		// if even page and err page are unavailable, print a small page according to the statusNb
-		return (OK);
-	}
+		return (sendDefaultPage(fde, response)); // if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
