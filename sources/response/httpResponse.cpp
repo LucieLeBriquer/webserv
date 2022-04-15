@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/12 15:15:56 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/15 18:55:25 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,18 +118,14 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr)
 //
 	std::string filename;
 	filename = sock.getRealUrl(sockNbr, this->_url);
-//	filename = filename.substr(1, filename.length() - 1);
- std::cout << "filename = " << filename <<std::endl; 
- std::cout << "status = " << _statusCode <<std::endl; 
 
 	if (sock.isRedir(sockNbr, filename))
 	{
 		this->_location = sock.getRedir(sockNbr, filename);
- std::cout << "location = " << _location <<std::endl; 
 		this->_statusCode = "301 Moved Permanently";
+		return "";
 	}
-	this->checkUrl(filename);
-	return filename;
+	return this->checkUrl(filename);
 }
 
 void	HTTPResponse::setContentLen(int len)
