@@ -210,7 +210,7 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 			return ("html/default/405.html");
 		return ("html/default/404.html");
 	}
-	return (removeSlash(getRoot(nbr, url) + "/" + it->second));
+	return (getRoot(nbr, url) + "/" + it->second);
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const
@@ -222,7 +222,7 @@ std::string Socket::getRoot(int nbr, const std::string url) const
 	root = getConfig(nbr).getRoot();
 	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
 		root = getConfig(nbr, nbConfig).getRoot();
-	return (root);
+	return (removeSlash(root));
 }
 
 std::string Socket::getRealUrl(int nbr, const std::string url) const
@@ -267,7 +267,7 @@ vecStr		Socket::getIndex(int nbr, const std::string url) const
 	vecStr	index;
 
 	nbConfig = getConfigFromUrl(nbr, url);
-	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+	if (nbConfig < 0)
 		index = getConfig(nbr).getIndex();
 	else
 		index = getConfig(nbr, nbConfig).getIndex();

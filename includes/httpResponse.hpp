@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 18:34:11 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:10:25 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ class HTTPResponse
 		std::string		_location;
 		int				_statusNb;
 		int				_redir;
+		bool			_needAutoindex;
+
+		std::string		_returnErrPage(Socket &sock, int sockNbr);
+		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
+										std::string str, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);

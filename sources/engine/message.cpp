@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:13:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 14:48:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,11 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
-
+	
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
-		return (sendDefaultPage(fde, response)); // if even page and err page are unavailable, print a small page according to the statusNb
+		return (sendDefaultPage(fde, response));
+		// if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;

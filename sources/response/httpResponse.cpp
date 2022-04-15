@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 14:17:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:14:15 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
-									_statusNb(0), _redir(0)
+									_statusNb(0), _redir(0), _needAutoindex(false)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -48,6 +48,7 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 		_location = response._location;
 		_statusNb = response._statusNb;
 		_redir = response._redir;
+		_needAutoindex = response._needAutoindex;
 	}
 	return (*this);
 }
@@ -97,6 +98,7 @@ int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &hea
 	ss >> status;
 
 	getStatus[400] = "/400.html";
+	getStatus[403] = "/403.html";
 	getStatus[404] = "/404.html";
 	getStatus[405] = "/405.html";
 	getStatus[505] = "/505.html";
@@ -143,32 +145,69 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filena
 	return (sock.getRealUrl(sockNbr, filename));
 }
 
+std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
+{
+	std::string	pageErr;
+	int			fd;
+
+	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
+	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
+		return ("");
+	close(fd);
+	return (pageErr);
+}
+
+std::string	HTTPResponse::_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
+											std::string str, HTTPHeader &header)
+{
+	std::string	pageErr;
+	int			fd;
+
+	setStatus(code, str, header);
+	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
+	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
+		return ("");
+	close(fd);
+	return (pageErr);
+}
+
 std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string filename;
 	std::string	pageErr;
+	vecStr		index;
+	std::string	indexStr;
 	int			fd;
 
 	// check if there was an error before (method not allowed etc)
 	if (_statusNb != 0)
-	{
-		pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-			return ("");
-		close(fd);
-		return (pageErr);
-	}
+		return (_returnErrPage(sock, sockNbr));
 
 	filename = sock.getRealUrl(sockNbr, _url);
-	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
+
+	// if it's a directory
+	//std::cout << PURPLE << filename << END << std::endl;
+	if (filename[filename.size() - 1] == '/') // to change into RealUrl first
 	{
-		setStatus("404", " Not Found", header);
-		pageErr = sock.errorPage(sockNbr, _url, 404);
-		if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-			return ("");
-		close(fd);
-		return (pageErr);
+		index = sock.getIndex(sockNbr, _url);
+		for (size_t i = 0; i < index.size(); i++)
+		{
+			indexStr = sock.getRoot(sockNbr, _url) + "/" + index[i];
+			if ((fd = open(indexStr.c_str(), O_RDWR)) != -1)
+			{
+				close(fd);
+				return (indexStr);
+			}
+		}
+		if (!sock.getAutoindex(sockNbr, _url))
+			return (_returnSetErrPage(sock, sockNbr, "403", " Forbiden", header));
+		_needAutoindex = true;
+		return (filename);
 	}
+
+	// if it's a file
+	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
+		return (_returnSetErrPage(sock, sockNbr, "404", " Not Found", header));
 	
 	//filename = redirect(sock, sockNbr, _url);
 	close(fd);
