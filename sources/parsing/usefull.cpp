@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/15 17:39:41 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 19:10:36 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,7 +324,7 @@ std::string	fileName(int argc, char **argv)
 
 std::string			removeSlash(const std::string &str)
 {
-	if (str.size() > 0 && str[0] == '/')
+	if (str.size() > 1 && str[0] == '/')
 		return (str.substr(1, str.size() - 1));
 	return (str);
 }
@@ -362,12 +362,8 @@ bool	isDirectory(std::string path)
 		path = "./";
 	else
 		path = "./" + path;
-	if(path[path.size() - 1] != '/' || stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFDIR))
-	{
-		std::cout << path << " is not a directory" << std::endl;
+	if(stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFDIR))
 		return (false);
-	}
-	std::cout << path << " is a directory" << std::endl;
 	return (true);
 }
 
@@ -379,11 +375,7 @@ bool	isRegFile(std::string path)
 		path = "./";
 	else
 		path = "./" + path;
-	if(path[path.size() - 1] == '/' || stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFREG))
-	{
-		std::cout << path << " is not a regular file" << std::endl;
+	if(stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFREG))
 		return (false);
-	}
-	std::cout << path << " is a regular file" << std::endl;
 	return (true);
 }

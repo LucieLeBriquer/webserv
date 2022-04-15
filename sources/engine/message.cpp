@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/15 14:48:39 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 20:31:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl(sock, sockNbr, header);
+	filename = response.redirect(sock, sockNbr, header);
 	if (filename == "")
 		return (ERR);
 	response.setFileName(filename);
@@ -86,10 +86,22 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
-	
+
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
+	{
+		if (response.getRedir() == 1)
+		{
+			response.rendering(header);
+			response.setRedir(0);
+			if (sendHeader(fde, response))
+				return (ERR);
+			return (OK);
+		}
+		else if (response.getNeedAutoindex())
+			return (sendAutoindexPage(fde, response));
 		return (sendDefaultPage(fde, response));
+	}
 		// if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;

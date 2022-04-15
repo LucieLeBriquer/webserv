@@ -19,12 +19,7 @@ void printStatus(int i, int nfds, Socket *sock, int fde)
 	case 1:
 	{
 		std::cout << std::endl << BLUE;
-		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << std::endl;
-
-		mapSock	connected = sock->getAllConnections();
-		for (mapSock::iterator it = connected.begin(); it != connected.end(); ++it)
-			std::cout << "\t" << it->first << " -> " << it->second << std::endl;
-		std::cout << END << std::endl;
+		std::cout << "++++++++++++ Waiting for new connection ++++++++++++" << END << std::endl << std::endl;
 		break;
 	}
 	case 2:

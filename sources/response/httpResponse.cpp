@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/15 18:12:36 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 20:10:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,16 @@ int			HTTPResponse::getMethodNbr(void) const
 	return (getMethodNb(this->getMethod()));
 }
 
+int			HTTPResponse::getRedir(void) const
+{
+	return (_redir);
+}
+
+bool		HTTPResponse::getNeedAutoindex(void) const
+{
+	return (_needAutoindex);
+}
+
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
 {
 	std::stringstream ss;
@@ -105,8 +115,10 @@ int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &hea
 
 	this->_statusCode = code + str;
 	if (status > 299)
+	{
 		this->_url = getStatus[status];
-	header.setContentTypeResponse("text/html");
+		header.setContentTypeResponse("text/html");
+	}
 	setStatusNb(status);
 	return status;
 }
@@ -126,23 +138,27 @@ void		HTTPResponse::setMethod(const std::string &method)
 	_method = method;
 }
 
-std::string HTTPResponse::redirect(Socket &sock, int sockNbr, std::string filename)
+void		HTTPResponse::setRedir(int r)
+{
+	_redir = r;
+}
+
+std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
 {
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
-	std::string file;
+	std::string filename;
+	filename = sock.getRealUrl(sockNbr, this->_url);
 
-	std::cout << "filename = " << filename <<std::endl; 
-	std::cout << "real url = " << sock.getRealUrl(sockNbr, filename) <<std::endl;
-	std::cout << "host = " << sock.getConfig(sockNbr).getHost() <<std::endl;
-
-	//(void)sock;
-	//_redir=1;
-	
-	//_location = "/index.html";
-	//_statusCode = "301 Moved Permanently";
-
-	return (sock.getRealUrl(sockNbr, filename));
+	if (sock.isRedir(sockNbr, filename))
+	{
+		this->_location = sock.getRedir(sockNbr, filename);
+		this->_statusCode = "301 Moved Permanently";
+		this->_redir = 1;
+		this->_contentLen = "178";
+		return "";
+	}
+	return (this->checkUrl(sock, sockNbr, header));
 }
 
 std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
@@ -183,6 +199,7 @@ std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader
 		for (size_t i = 0; i < index.size(); i++)
 		{
 			indexStr = sock.getRoot(sockNbr, _url) + "/" + index[i];
+			std::cout << indexStr << std::endl;
 			if ((fd = open(indexStr.c_str(), O_RDWR)) != -1)
 			{
 				close(fd);
@@ -207,9 +224,14 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 		return (_returnErrPage(sock, sockNbr));
 
 	filename = sock.getRealUrl(sockNbr, _url);
+	std::cout << PURPLE << "[Trying to get]" << END ;
+	if (isDirectory(filename))
+		std::cout << " directory ";
+	else
+		std::cout << " file ";
+	std::cout << PURPLE << "\"" << filename << "\"" << END << std::endl << std::endl;
 
 	// if it's a directory
-	std::cout << PURPLE << filename << END << std::endl;
 	if (isDirectory(filename))
 		return (_manageDirectory(sock, sockNbr, header));
 
@@ -249,6 +271,6 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	this->_header += header.fillrender();
 	 if (this->_redir)
               this->_header += "Location: " + this->_location + "\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";	
+	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
 	this->_header += "Date: " + timeStr;
 }
