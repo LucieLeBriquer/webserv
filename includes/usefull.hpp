@@ -24,6 +24,8 @@
 # define ERR -1
 # define OK 0
 # define LOG 0
+# define DIRECTORY 0
+# define REGFILE 1
 
 // librairies
 # include <iostream>
@@ -54,11 +56,15 @@
 # include <sys/epoll.h>
 # include <sys/types.h>
 # include <sys/stat.h>
+# include <dirent.h>
 
-typedef std::vector<std::string>	vecStr;
-typedef std::map<int, std::string>	mapErr;
-typedef	std::vector<int>			vecInt;
-typedef	std::map<int, int>			mapSock;
+typedef std::vector<std::string>					vecStr;
+typedef std::map<int, std::string>					mapErr;
+typedef	std::vector<int>							vecInt;
+typedef	std::map<int, int>							mapSock;
+typedef std::vector< std::pair<std::string, int> > vecFiles;
+typedef struct dirent fileInfo;
+typedef DIR	directory;
 
 bool	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
@@ -83,6 +89,7 @@ vecStr			splitThis(std::string str);
 std::string		removeSlash(const std::string &str);
 std::string		toString(int nb);
 std::string		toString(size_t nb);
+std::string		toString(long nb);
 
 bool			isDirectory(std::string path);
 bool			isRegFile(std::string path);

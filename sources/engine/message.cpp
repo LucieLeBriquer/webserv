@@ -99,7 +99,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 			return (OK);
 		}
 		else if (response.getNeedAutoindex())
-			return (sendAutoindexPage(fde, response));
+			return (sendAutoindexPage(fde, response, response.getUrl()));
 		return (sendDefaultPage(fde, response));
 	}
 		// if even page and err page are unavailable, print a small page according to the statusNb

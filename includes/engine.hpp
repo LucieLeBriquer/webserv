@@ -38,6 +38,6 @@ std::string	getHead(std::string buf);
 int			GetCGIfile(Socket &sock, int sockNbr);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
-int			sendAutoindexPage(int fde, HTTPResponse &response);
+int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path);
 
 #endif

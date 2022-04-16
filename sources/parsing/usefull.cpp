@@ -350,6 +350,14 @@ std::string		toString(size_t nb)
 	return (ss.str());
 }
 
+std::string		toString(long nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}
+
 /*
 **		FILE AND DIRECTORY FUNCTIONS
 */
