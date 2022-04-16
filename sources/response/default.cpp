@@ -74,16 +74,6 @@ static void	getDirectoryContent(std::string path, vecFiles &files)
 		return ;
 
 	std::sort(files.begin(), files.end());
-	for (size_t i = 0; i < files.size(); i++)
-	{
-		if (files[i].second == DIRECTORY)
-			std::cout << BLUE << files[i].first << "/" << END << std::endl;
-	}
-	for (size_t i = 0; i < files.size(); i++)
-	{
-		if (files[i].second == REGFILE)
-			std::cout << files[i].first << std::endl;
-	}
 }
 
 static std::string	printFileName(std::string file, size_t len = 52)
