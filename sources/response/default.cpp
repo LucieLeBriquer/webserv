@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 13:50:27 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/16 15:53:47 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/16 16:11:28 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static std::string	printFileName(std::string file, size_t len = 52)
 	return (res);
 }
 
-static std::string	getTimeAndSize(std::string file, int type)
+static std::string	getTimeAndSize(const std::string file, int type)
 {
 	std::string	time;
 	std::string	sizeFile = "-";
@@ -108,10 +108,10 @@ static std::string	getTimeAndSize(std::string file, int type)
 			res += std::string(21 - sizeFile.size(), ' ') + sizeFile;
 		return (res + "\n");
 	}
-	return (std::string(45, ' ') + "-\n");
+	return (std::string(44, ' ') + "-\n");
 }
 
-static std::string	getFileInfoFormat(const std::pair<std::string,int> file, int type)
+static std::string	getFileInfoFormat(const std::pair<std::string,int> file, int type, const std::string &directory)
 {
 	std::string res;
 
@@ -119,30 +119,30 @@ static std::string	getFileInfoFormat(const std::pair<std::string,int> file, int 
 		res = "<a class=\"directory\" href=\"" + file.first + "/\">" + printFileName(file.first + "/");
 	else
 		res = "<a class=\"file\" href=\"" + file.first + "\">" + printFileName(file.first);
-	res += " " + getTimeAndSize(file.first, type);
+	res += " " + getTimeAndSize(directory + file.first, type);
 	return (res);
 }
 
-static std::string	getDirectories(const vecFiles &files)
+static std::string	getDirectories(const vecFiles &files, const std::string &directory)
 {
 	std::string	dirPart = "";
 
 	for (size_t i = 0; i < files.size(); i++)
 	{
 		if (files[i].second == DIRECTORY)
-			dirPart += getFileInfoFormat(files[i], DIRECTORY);
+			dirPart += getFileInfoFormat(files[i], DIRECTORY, directory);
 	}
 	return (dirPart);
 }
 
-static std::string	getRegularFiles(const vecFiles &files)
+static std::string	getRegularFiles(const vecFiles &files, const std::string &directory)
 {
 	std::string	filePart = "";
 
 	for (size_t i = 0; i < files.size(); i++)
 	{
 		if (files[i].second == REGFILE)
-			filePart += getFileInfoFormat(files[i], REGFILE);
+			filePart += getFileInfoFormat(files[i], REGFILE, directory);
 	}
 	return (filePart);
 }
@@ -177,8 +177,8 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path)
 	
 	body += "</style>\n";
 	body += "<h1>Index of <div class=\"path\">" + path + "</div></h1>\n<hr>\n<pre>\n";
-	body += getDirectories(files);
-	body += getRegularFiles(files);
+	body += getDirectories(files, "." + path);
+	body += getRegularFiles(files, "." + path);
 	body += "</pre>\n<hr>\n</body>\n</html>";
 	
 	header = "HTTP/1.1 " + response.getStatus() + "\r\n"; // a remplacer par getProtocol
