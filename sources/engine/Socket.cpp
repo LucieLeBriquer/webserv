@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/15 17:53:16 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,16 @@ std::string Socket::getRoot(int nbr, const std::string url) const
 	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
 		root = getConfig(nbr, nbConfig).getRoot();
 	return (removeSlash(root));
+}
+
+std::string Socket::addRoot(int nbr, const std::string url, const std::string path) const
+{
+	std::string	root;
+
+	root = getRoot(nbr, url);
+	if (root.size() > 0)
+		return (root + "/" + path);
+	return (path);
 }
 
 std::string Socket::getRealUrl(int nbr, const std::string url) const

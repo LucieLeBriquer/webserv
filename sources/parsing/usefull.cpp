@@ -324,7 +324,7 @@ std::string	fileName(int argc, char **argv)
 
 std::string			removeSlash(const std::string &str)
 {
-	if (str.size() > 1 && str[0] == '/')
+	if (str.size() > 0 && str[0] == '/')
 		return (str.substr(1, str.size() - 1));
 	return (str);
 }

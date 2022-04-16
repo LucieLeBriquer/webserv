@@ -150,9 +150,9 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	std::string filename;
 	filename = sock.getRealUrl(sockNbr, this->_url);
 
-	if (sock.isRedir(sockNbr, filename))
+	if (sock.isRedir(sockNbr, _url))
 	{
-		this->_location = sock.getRedir(sockNbr, filename);
+		this->_location = sock.getRedir(sockNbr, _url);
 		this->_statusCode = "301 Moved Permanently";
 		this->_redir = 1;
 		this->_contentLen = "178";
@@ -198,7 +198,7 @@ std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader
 		index = sock.getIndex(sockNbr, _url);
 		for (size_t i = 0; i < index.size(); i++)
 		{
-			indexStr = sock.getRoot(sockNbr, _url) + "/" + index[i];
+			indexStr = sock.addRoot(sockNbr, _url, index[i]);
 			std::cout << indexStr << std::endl;
 			if ((fd = open(indexStr.c_str(), O_RDWR)) != -1)
 			{
