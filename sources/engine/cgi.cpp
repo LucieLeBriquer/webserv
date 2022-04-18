@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/18 16:22:25 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	(*arg)[0] = (char *)malloc(sizeof(char) * ((sock.getEnv(0)).length() + 1));
+	i = strlen(&sock.getEnv(0)[10]);
+	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*env)[0], (sock.getEnv(0)).c_str());
+	strcpy((*arg)[0], &sock.getEnv(0)[10]);
 	(*arg)[1] = NULL;
 	return OK;
 }
@@ -53,13 +54,13 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	std::string	body;
 	
 	/********************************************/
-	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
 	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
 	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
 	sock.setEnv("REQUEST_METHODE=POST");
 	/********************************************/
 	pipe(fd);
-	socket = sock.getConnSock(sockNbr);
+	socket = sockNbr;
 	body = sock.getBody();
 	pid = fork();
 	if (mallocEnv(&env, sock, &arg) < 0)
@@ -88,7 +89,8 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 		std::cout << "env[" << i << "] = " << env[i] << std::endl;
 		i++;
 	}
-	std::cout << " - connected socket = " << sock.getConnSock(sockNbr) << std::endl;
+	std::cout << " - arg[0] = " << arg[0] << std::endl;
+	std::cout << " - connected socket = " << sockNbr << std::endl;
 	std::cout << " - body = " << sock.getBody() << std::endl;
 	return OK;
 }

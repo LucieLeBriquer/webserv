@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 13:53:41 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ Socket	&Socket::operator=(const Socket &socket)
 	{
 		_config.clear();
 		_socket.clear();
-		_connSock.clear();
+		_connected.clear();
 		_address.clear();
 		_addrLen.clear();
 
 		_config = socket._config;
 		_socket = socket._socket;
-		_connSock = socket._connSock;
+		_connected = socket._connected;
 		_address = socket._address;
 		_addrLen = socket._addrLen;
 		_check = socket._check;
@@ -67,7 +67,6 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 {
 	for (int i = 0; i < obj.getSocketNbr(); i++)
 		o << " listenSock[" << i << "] = " << obj.getSocket(i) << " ";
-
 	return o;
 }
 
@@ -75,20 +74,24 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 **		MEMBER FUNCTIONS AND SETTERS
 */
 
-
-int 		&Socket::modConnSock(int nbr)
-{
-	return (_connSock[nbr]);
-}
-
 void		Socket::setSocket(int newSocket)
 {
 	_socket.push_back(newSocket);
 }
 
-void		Socket::setConnSock(int newConnSock)
+void		Socket::addConnection(int connSock, int sockNb)
 {
-	_connSock.push_back(newConnSock);
+	_connected[connSock] = sockNb;
+}
+
+int			Socket::getConnection(int connSock)
+{
+	return (_connected[connSock]);
+}
+
+const mapSock	Socket::getAllConnections(void) const
+{
+	return (_connected);
 }
 
 void		Socket::setAddress(int port, const char *ip)
@@ -173,11 +176,6 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-const int &					Socket::getConnSock(int nbr) const
-{
-	return (_connSock[nbr]);
-}
-
 char*						Socket::getBody(void) const
 {
 	return this->_body;
@@ -205,7 +203,13 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 		pages = getConfig(nbr, nbConfig).getErrorPages();
 	it = pages.find(err);
 	if (it == pages.end())
-		return ("/404.html");
+	{
+		if (err == 400)
+			return ("html/default/400.html");
+		if (err == 405)
+			return ("html/default/405.html");
+		return ("html/default/404.html");
+	}
 	return (getRoot(nbr, url) + "/" + it->second);
 }
 
@@ -218,12 +222,22 @@ std::string Socket::getRoot(int nbr, const std::string url) const
 	root = getConfig(nbr).getRoot();
 	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
 		root = getConfig(nbr, nbConfig).getRoot();
-	return (root);
+	return (removeSlash(root));
+}
+
+std::string Socket::addRoot(int nbr, const std::string url, const std::string path) const
+{
+	std::string	root;
+
+	root = getRoot(nbr, url);
+	if (root.size() > 0)
+		return (root + "/" + path);
+	return (path);
 }
 
 std::string Socket::getRealUrl(int nbr, const std::string url) const
 {
-	return (getConfig(nbr).getRealUrl(url));
+	return (removeSlash(getConfig(nbr).getRealUrl(url)));
 }
 
 std::string Socket::getServerName(int nbr) const
@@ -263,7 +277,7 @@ vecStr		Socket::getIndex(int nbr, const std::string url) const
 	vecStr	index;
 
 	nbConfig = getConfigFromUrl(nbr, url);
-	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+	if (nbConfig < 0)
 		index = getConfig(nbr).getIndex();
 	else
 		index = getConfig(nbr, nbConfig).getIndex();
@@ -337,4 +351,22 @@ bool		Socket::isCgi(int nbr, const std::string url) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
 		return (false);
 	return (true);
+}
+
+bool		Socket::isRootPath(int nbr, const std::string url) const
+{
+	int			nbConfig;
+	Location	loc;
+	std::string	path;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0)
+		return (url == "/");
+	path = url;
+	if (url[url.size() - 1] == '/')
+		path = url.substr(0, url.size() - 1);
+	loc = getConfig(nbr, nbConfig);
+	if (loc.getPath() == path)
+		return (true);
+	return (false);
 }

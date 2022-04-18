@@ -3,22 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/13 15:53:16 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/18 16:09:21 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
+static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
 {
 	std::string 		filename;
 	size_t				size;
 
 	size = 0;
-	filename = response.redirect(sock, sockNbr);
+	filename = response.redirect(sock, sockNbr, header);
+	if (filename == "")
+		return (ERR);
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
@@ -28,6 +30,7 @@ static void	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTP
 	fileStream.close();
 	response.setContentLen(size);
 	response.rendering(header);
+	return (OK);
 }
 
 static int	sendHeader(int fde, HTTPResponse &response)
@@ -78,18 +81,31 @@ static int	sendData(int fde, HTTPResponse &response)
 	return (OK);
 }
 
-int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr) // give sock and sockNbr to treat files
+int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
-	//check methode et file pour cgi ou non
+	// check if method is allowed for the requested url
+	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
+		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
-	getRightFile(response, sock, sockNbr, header);
-	//(void)header;	// pour l'instant le parsing ne se fait pas mais quand on aura les données on pourra les fill dans le header de la réponse
-					// ça sera beaucoup plus clean par exemple pour le type de fichier renvoyé
+	if (getRightFile(response, sock, sockNbr, header))
+	{
+		if (response.getRedir() == 1)
+		{
+			response.rendering(header);
+			response.setRedir(0);
+			if (sendHeader(fde, response))
+				return (ERR);
+			return (OK);
+		}
+		else if (response.getNeedAutoindex())
+			return (sendAutoindexPage(fde, response, response.getUrl()));
+		return (sendDefaultPage(fde, response));
+	}
+		// if even page and err page are unavailable, print a small page according to the statusNb
 
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
-	std::cout << "url = " << response.getUrl() << std::endl;
-	std::cout << "realUrl = " << sock.getRealUrl(sockNbr, response.getUrl()) << std::endl;
+	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
+	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
 	// deliver header
 	if (sendHeader(fde, response))
@@ -102,7 +118,11 @@ int		sendReponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &so
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
-		// close(fde);
+	if (response.getStatusNb() != 200 && response.getStatusNb() != 0)
+	{
+		// remove from matching map
+		close(fde);
+	}
 	return (OK);
 }
 
@@ -116,21 +136,21 @@ int		checkHeader(HTTPHeader &header, std::string string)
 		if (header.fillheader(&string) == -1)
 			break ; // a changer en fonction du retour d'err
 	}
-	if (header.header() == -1)
+	if (header.header(string) == -1)
 		return ERR;
 	return 1;
 }
 
-int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
+int		requestReponse(int epollfd, int fde, Socket *sock)
 {
 	char			buf[BUFFER_SIZE] = {0};
 	int				byteCount, recv_len = 0;
 	std::string		string;
-	HTTPRequest		request;
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
 	int				line(0), isBreak = 0;
+	int				sockNbr = sock->getConnection(fde);
 
 	while (1)
 	{
@@ -159,7 +179,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << buf ;
-			std::cout << "====================================================" << std::endl << std::endl;
+			std::cout << "\n====================================================" << std::endl << std::endl;
 		}
 		string += buf;
 	}
@@ -167,8 +187,16 @@ int		requestReponse(int epollfd, int fde, Socket *sock, int sockNbr)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		if (sendReponse(fde, response, header, *sock, sockNbr))
-			return (ERR);
+		if (sock->isCgi(sockNbr, response.getUrl()))
+		{
+			if (GetCGIfile(*sock, sockNbr) < 0)
+				return ERR;
+		}
+		else
+		{
+			if (sendResponse(fde, response, header, *sock, sockNbr))
+				return (ERR);
+		}
 	}
 	return (OK);
 }

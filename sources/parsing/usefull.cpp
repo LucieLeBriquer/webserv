@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/13 14:04:43 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/15 19:10:36 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -315,4 +315,75 @@ std::string	fileName(int argc, char **argv)
 	if (argc >= 2)
 		configFile = argv[1];
 	return (configFile);
+}
+
+
+/*
+**		URL MANIP FUNCTIONS
+*/
+
+std::string			removeSlash(const std::string &str)
+{
+	if (str.size() > 0 && str[0] == '/')
+		return (str.substr(1, str.size() - 1));
+	return (str);
+}
+
+
+/*
+**		STRING MANIP FUNCTIONS
+*/
+
+std::string		toString(int nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}
+
+std::string		toString(size_t nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}
+
+std::string		toString(long nb)
+{
+	std::stringstream	ss;
+
+	ss << nb;
+	return (ss.str());
+}
+
+/*
+**		FILE AND DIRECTORY FUNCTIONS
+*/
+
+bool	isDirectory(std::string path)
+{
+	struct stat info;
+
+	if (path == "/")
+		path = "./";
+	else
+		path = "./" + path;
+	if(stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFDIR))
+		return (false);
+	return (true);
+}
+
+bool	isRegFile(std::string path)
+{
+	struct stat info;
+
+	if (path == "/")
+		path = "./";
+	else
+		path = "./" + path;
+	if(stat(path.c_str(), &info) != 0 || !(info.st_mode & S_IFREG))
+		return (false);
+	return (true);
 }
