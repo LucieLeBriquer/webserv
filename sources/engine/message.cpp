@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/15 20:31:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/18 16:44:28 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 			return (OK);
 		}
 		else if (response.getNeedAutoindex())
-			return (sendAutoindexPage(fde, response, response.getUrl()));
+			return (sendAutoindexPage(fde, response, response.getUrl(), sock.getRoot(sockNbr, response.getUrl())));
 		return (sendDefaultPage(fde, response));
 	}
 

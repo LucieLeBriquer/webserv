@@ -49,6 +49,7 @@ class HTTPResponse
 		std::string	getHeader(void) const;
 		std::string	getStatus(void) const;
 		std::string	getFileName(void) const;
+		std::string	getProtocol(void) const;
 		int			getStatusNb(void) const;
 		int			getMethodNbr(void) const;
 		int			getRedir(void) const;

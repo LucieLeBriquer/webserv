@@ -78,6 +78,11 @@ std::string	HTTPResponse::getFileName(void) const
 	return (_fileName);
 }
 
+std::string	HTTPResponse::getProtocol(void) const
+{
+	return (_protocol);
+}
+
 int			HTTPResponse::getStatusNb(void) const
 {
 	return (_statusNb);
