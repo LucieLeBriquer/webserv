@@ -102,7 +102,6 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 			return (sendAutoindexPage(fde, response, response.getUrl()));
 		return (sendDefaultPage(fde, response));
 	}
-		// if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;

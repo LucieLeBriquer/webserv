@@ -269,8 +269,10 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += header.fillrender();
-	 if (this->_redir)
-              this->_header += "Location: " + this->_location + "\r\n";
+	if (this->_redir)
+        this->_header += "Location: " + this->_location + "\r\n";
 	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
 	this->_header += "Date: " + timeStr;
+	if (this->_redir)
+		this->_header += "\r\n";
 }
