@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 13:50:27 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/16 16:11:28 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/18 11:46:25 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,10 @@ static std::string	printFileName(std::string file, size_t len = 52)
 
 	if (file.size() > 52)
 		res = file.substr(0, len - 3) + "..></a>";
-	else
+	else if (file != "../")
 		res = file + "</a>" + std::string(len - file.size(), ' ');
+	else
+		res = file + "</a>";
 	return (res);
 }
 
@@ -119,7 +121,10 @@ static std::string	getFileInfoFormat(const std::pair<std::string,int> file, int 
 		res = "<a class=\"directory\" href=\"" + file.first + "/\">" + printFileName(file.first + "/");
 	else
 		res = "<a class=\"file\" href=\"" + file.first + "\">" + printFileName(file.first);
-	res += " " + getTimeAndSize(directory + file.first, type);
+	if (file.first != "..")
+		res += " " + getTimeAndSize(directory + file.first, type);
+	else
+		res += "\n";
 	return (res);
 }
 
