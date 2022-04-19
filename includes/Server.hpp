@@ -58,7 +58,7 @@ class Server : public Block
 		std::string	getRealUrl(const std::string &str) const;
 
 		// static
-		static const int	nbKeywords = 9;
+		static const int			nbKeywords = 9;
 		static const std::string	keywords[nbKeywords];
 };
 

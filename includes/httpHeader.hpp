@@ -25,6 +25,7 @@ class HTTPHeader : public HTTPRequest
 		std::string	_host;
 		std::string	_contentLen;
 		std::string	_contentType;
+		std::string	_contentTypeResponse;
 		std::string	_accept;
 		ptr			setFct[4];
 		
@@ -48,6 +49,7 @@ class HTTPHeader : public HTTPRequest
 		void		setHost(std::string value);
 		void		setContentLen(std::string value);
 		void		setContentType(std::string value);
+		void		setContentTypeResponse(std::string value);
 		void		setAccept(std::string value);
 
 		void		checkContext(void);

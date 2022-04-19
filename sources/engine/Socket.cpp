@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:28:46 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,12 +205,12 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 	if (it == pages.end())
 	{
 		if (err == 400)
-			return ("html/400.html");
+			return ("html/default/400.html");
 		if (err == 405)
-			return ("html/405.html");
-		return ("html/404.html");
+			return ("html/default/405.html");
+		return ("html/default/404.html");
 	}
-	return (removeSlash(getRoot(nbr, url) + "/" + it->second));
+	return (getRoot(nbr, url) + "/" + it->second);
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const
@@ -222,7 +222,17 @@ std::string Socket::getRoot(int nbr, const std::string url) const
 	root = getConfig(nbr).getRoot();
 	if (nbConfig >= 0 && getConfig(nbr, nbConfig).isRootSet())
 		root = getConfig(nbr, nbConfig).getRoot();
-	return (root);
+	return (removeSlash(root));
+}
+
+std::string Socket::addRoot(int nbr, const std::string url, const std::string path) const
+{
+	std::string	root;
+
+	root = getRoot(nbr, url);
+	if (root.size() > 0)
+		return (root + "/" + path);
+	return (path);
 }
 
 std::string Socket::getRealUrl(int nbr, const std::string url) const
@@ -267,7 +277,7 @@ vecStr		Socket::getIndex(int nbr, const std::string url) const
 	vecStr	index;
 
 	nbConfig = getConfigFromUrl(nbr, url);
-	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isIndexSet())
+	if (nbConfig < 0)
 		index = getConfig(nbr).getIndex();
 	else
 		index = getConfig(nbr, nbConfig).getIndex();
@@ -341,4 +351,22 @@ bool		Socket::isCgi(int nbr, const std::string url) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isCgiPassSet())
 		return (false);
 	return (true);
+}
+
+bool		Socket::isRootPath(int nbr, const std::string url) const
+{
+	int			nbConfig;
+	Location	loc;
+	std::string	path;
+
+	nbConfig = getConfigFromUrl(nbr, url);
+	if (nbConfig < 0)
+		return (url == "/");
+	path = url;
+	if (url[url.size() - 1] == '/')
+		path = url.substr(0, url.size() - 1);
+	loc = getConfig(nbr, nbConfig);
+	if (loc.getPath() == path)
+		return (true);
+	return (false);
 }

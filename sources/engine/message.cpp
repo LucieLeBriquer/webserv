@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/15 09:03:27 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/18 16:44:28 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	size_t				size;
 
 	size = 0;
-	filename = response.checkUrl(sock, sockNbr);
+	filename = response.redirect(sock, sockNbr, header);
 	if (filename == "")
 		return (ERR);
 	response.setFileName(filename);
@@ -85,13 +85,22 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 {
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
-		response.setStatus("405", " Method Not Allowed");
+		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
 	{
-		// if even page and err page are unavailable, print a small page according to the statusNb
-		return (OK);
+		if (response.getRedir() == 1)
+		{
+			response.rendering(header);
+			response.setRedir(0);
+			if (sendHeader(fde, response))
+				return (ERR);
+			return (OK);
+		}
+		else if (response.getNeedAutoindex())
+			return (sendAutoindexPage(fde, response, response.getUrl(), sock.getRoot(sockNbr, response.getUrl())));
+		return (sendDefaultPage(fde, response));
 	}
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
@@ -104,7 +113,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// deliver data
 	if (sendData(fde, response))
 		return (ERR);
-		
+	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
@@ -179,17 +188,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		if (sock->isCgi(sockNbr, response.getUrl()))
 		{
-			std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
-			std::cout << " from " << ORANGE << sock->getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
-			std::string	header = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n";
-			std::cout << "====================================================" << std::endl;
-			std::cout << header;
-			std::cout << "====================================================" << std::endl;
-			if (send(fde, header.c_str(), header.size(), 0) < 0)
-			{
-				perror("send()");
-				return (ERR);
-			}
 			if (GetCGIfile(*sock, sockNbr) < 0)
 				return ERR;
 		}

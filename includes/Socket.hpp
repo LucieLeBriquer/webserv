@@ -62,6 +62,7 @@ class Socket
 		std::string		getRealUrl(int nbr, const std::string url) const;
 		std::string		errorPage(int nbr, const std::string url, int err) const;
 		std::string		getRoot(int nbr, const std::string url) const;
+		std::string		addRoot(int nbr, const std::string url, const std::string path) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
 		std::string		getHost(int nbr) const;
@@ -73,6 +74,7 @@ class Socket
 		std::string		getCgiPass(int nbr, const std::string url) const;
 		bool			isCgi(int nbr, const std::string url) const;
 		bool			isRedir(int nbr, const std::string url) const;
+		bool			isRootPath(int nbr, const std::string url) const;
 		
 	private:
 		vecSrv							_config;
@@ -84,7 +86,6 @@ class Socket
 		vecStr							_env;
 		int								_method;
 		char*							_body;
-	
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

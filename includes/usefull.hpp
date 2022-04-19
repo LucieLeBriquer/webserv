@@ -24,6 +24,8 @@
 # define ERR -1
 # define OK 0
 # define LOG 0
+# define DIRECTORY 0
+# define REGFILE 1
 
 // librairies
 # include <iostream>
@@ -48,17 +50,21 @@
 # include <cstdlib>
 # include <cstdio>
 
-
 # include <arpa/inet.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <sys/epoll.h>
 # include <sys/types.h>
+# include <sys/stat.h>
+# include <dirent.h>
 
-typedef std::vector<std::string>	vecStr;
-typedef std::map<int, std::string>	mapErr;
-typedef	std::vector<int>			vecInt;
-typedef	std::map<int, int>			mapSock;
+typedef std::vector<std::string>					vecStr;
+typedef std::map<int, std::string>					mapErr;
+typedef	std::vector<int>							vecInt;
+typedef	std::map<int, int>							mapSock;
+typedef std::vector< std::pair<std::string, int> > vecFiles;
+typedef struct dirent fileInfo;
+typedef DIR	directory;
 
 bool	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
 void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
@@ -77,6 +83,17 @@ int				getMethodNb(std::string method);
 std::string		getMethod(int methodNm);
 std::ostream	&showMethod(std::ostream &o, vecInt methods);
 
+std::string		fileName(int argc, char **argv);
+std::string 	copystr(std::string str, int start);
+vecStr			splitThis(std::string str);
+std::string		removeSlash(const std::string &str);
+std::string		toString(int nb);
+std::string		toString(size_t nb);
+std::string		toString(long nb);
+
+bool			isDirectory(std::string path);
+bool			isRegFile(std::string path);
+
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
 	for (size_t i = 0; i + 1 < vect.size(); i++)
@@ -90,11 +107,5 @@ std::ostream	&operator<<(std::ostream &o, mapErr map);
 
 static const int			nbMethods = 3;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
-std::string    fileName(int argc, char **argv);
-
-std::string 				copystr(std::string str, int start);
-std::vector<std::string>	splitThis(std::string str);
-
-std::string					removeSlash(const std::string &str);
 
 #endif
