@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [[ $REQUEST_METHOD != "POST" ]]; then
-	echo "No POST request" ; exit
-fi
+# if [[ $REQUEST_METHOD != "POST" ]]; then
+# 	echo "No POST request" ; exit
+# fi
 
 # if [[ $CONTENT_TYPE != "application/x-www-form-urlencoded" ]]; then
 # 	echo "Wrong encoded type" ; exit
@@ -29,11 +29,6 @@ for i in "${pairs[@]}"; do
 	readarray -d '=' -t result < <(printf '%s' "$i")
 	data[${result[0]}]="${result[1]}"
 done
-
-echo "HTTP/1.1 200 OK"
-echo "Host: localhost:8080"
-echo "Content-Type: text/html"
-echo ""
 
 echo "<html> <head> <title> CGI script </title> </head> <body>"
 
