@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/18 16:44:28 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 11:31:52 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,10 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		if (sock->isCgi(sockNbr, response.getUrl()))
 		{
-			if (GetCGIfile(*sock, sockNbr) < 0)
+			// sock->setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
+			// sock->setEnv("CONTENT_LENGTH=13"); //need get content length
+			sock->setEnv("REQUEST_METHOD=POST");
+			if (GetCGIfile(*sock, fde) < 0)
 				return ERR;
 		}
 		else
