@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/18 15:16:04 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/19 14:49:37 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ class HTTPHeader : public HTTPRequest
 		void		checkContext(void);
 
 		std::string	getHost(void) const;
+		std::string	getMethod(void) const;
 		std::string	getContentType(void) const;
 		std::string	getContentLen(void) const;
 		std::string	getAccept(void) const;

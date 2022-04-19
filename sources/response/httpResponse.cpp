@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/15 20:10:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:36:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,11 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 std::string HTTPResponse::getMethod(void) const
 {
 	return this->_method;
+}
+
+std::string HTTPResponse::getContentLen(void) const
+{
+	return this->_contentLen;
 }
 
 std::string HTTPResponse::getStatus(void) const
@@ -138,6 +143,11 @@ void		HTTPResponse::setMethod(const std::string &method)
 	_method = method;
 }
 
+void		HTTPResponse::setUrl(const std::string &url)
+{
+	_url = url;
+}
+
 void		HTTPResponse::setRedir(int r)
 {
 	_redir = r;
@@ -150,7 +160,7 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	std::string filename;
 	filename = sock.getRealUrl(sockNbr, this->_url);
 
-	if (sock.isRedir(sockNbr, _url))
+	if (sock.isRedir(sockNbr, this->_url))
 	{
 		this->_location = sock.getRedir(sockNbr, _url);
 		this->_statusCode = "301 Moved Permanently";
@@ -269,8 +279,9 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
 	this->_header += header.fillrender();
-	 if (this->_redir)
-              this->_header += "Location: " + this->_location + "\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	if (this->_redir)
+        this->_header += "Location: " + this->_location + "\r\n";
+	if (this->_contentLen != "")
+		this->_header += "Content-Length: " + this->_contentLen + "\r\n";
 	this->_header += "Date: " + timeStr;
 }

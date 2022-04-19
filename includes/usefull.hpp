@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   usefull.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/14 16:17:59 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 13:26:34 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> ve
 
 std::ostream	&operator<<(std::ostream &o, mapErr map);
 
-static const int			nbMethods = 3;
-static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
+static const int			nbMethods = 4;
+static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE", "HEAD"};
 
 #endif

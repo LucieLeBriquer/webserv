@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/18 16:22:25 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:55:58 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	return OK;
 }
 
-int		GetCGIfile(Socket &sock, int sockNbr)
+int		GetCGIfile(Socket &sock, int sockNbr, HTTPResponse &response)
 {
 	char		**env, **arg;
 	pid_t		pid;
@@ -54,15 +54,15 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	std::string	body;
 	
 	/********************************************/
-	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
+	sock.setEnv("PATH_INFO=/mnt/nfs/homes/masboula/goinfre/webserv/bin-cgi/env.pl");
 	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
-	sock.setEnv("REQUEST_METHODE=POST");
+	sock.setEnv("CONTENT_LENGTH=" + response.getContentLen()); //need get content length
+	sock.setEnv("REQUEST_METHODE=" + response.getMethod());
 	/********************************************/
 	pipe(fd);
 	socket = sockNbr;
-	body = sock.getBody();
 	pid = fork();
+	body = sock.getBody();
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
 	
@@ -91,6 +91,6 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	}
 	std::cout << " - arg[0] = " << arg[0] << std::endl;
 	std::cout << " - connected socket = " << sockNbr << std::endl;
-	std::cout << " - body = " << sock.getBody() << std::endl;
+	std::cout << " - body = " << body << std::endl;
 	return OK;
 }

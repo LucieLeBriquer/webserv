@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:35:25 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:33:57 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ class Socket
 		int							getMethod(void) const;
 		void						setMethod(int method);
 
-		char*						getBody(void) const;
-		void						setBody(char* newBody);
+		const char*						getBody(void) const;
+		void						setBody(const char* newBody);
 
 		// config getter
 		const Server	getConfig(int nbr) const;
@@ -85,7 +85,7 @@ class Socket
 		int								_check;
 		vecStr							_env;
 		int								_method;
-		char*							_body;
+		const char*							_body;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

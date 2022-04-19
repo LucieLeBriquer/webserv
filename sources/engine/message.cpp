@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/18 16:09:21 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:51:42 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,9 @@ static int	sendData(int fde, HTTPResponse &response)
 	char			buf[BUFFER_SIZE];
 	int				i;
 	char			c;
-	
+
+	if (response.getMethod() == "HEAD")
+		return (OK);
 	while (fileStream.get(c))
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -102,6 +104,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 			return (sendAutoindexPage(fde, response, response.getUrl()));
 		return (sendDefaultPage(fde, response));
 	}
+
 		// if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
@@ -111,8 +114,13 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sendHeader(fde, response))
 		return (ERR);
 
-	// deliver data
-	if (sendData(fde, response))
+
+	if (!sock.isCgi(sockNbr, response.getUrl()))
+	{
+		if (GetCGIfile(sock, sockNbr, response) < 0)
+			return (ERR);
+	}
+	else if (sendData(fde, response)) // deliver data
 		return (ERR);
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
@@ -158,6 +166,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		byteCount = recv(fde, buf, BUFFER_SIZE, 0);
 		if (byteCount == 0)
 		{
+			std::cout << "stops ??" << std::endl;
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
 			isBreak = 1;
 			break ;
@@ -187,11 +196,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		if (sock->isCgi(sockNbr, response.getUrl()))
-		{
-			if (GetCGIfile(*sock, sockNbr) < 0)
-				return ERR;
-		}
 		else
 		{
 			if (sendResponse(fde, response, header, *sock, sockNbr))

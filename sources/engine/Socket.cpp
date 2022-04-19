@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:34:04 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void		Socket::setMethod(int method)
 	this->_method = method;
 }
 
-void		Socket::setBody(char* newBody)
+void		Socket::setBody(const char* newBody)
 {
 	this->_body = newBody;
 }
@@ -176,7 +176,7 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-char*						Socket::getBody(void) const
+const char*						Socket::getBody(void) const
 {
 	return this->_body;
 }

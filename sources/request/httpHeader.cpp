@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/18 16:27:16 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:27:15 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,11 @@ void HTTPHeader::setAccept(std::string value)
 int HTTPHeader::getContext( void )
 {
 	return this->_active;
+}
+
+std::string	HTTPHeader::getMethod(void) const
+{
+	return _method;
 }
 
 std::string	HTTPHeader::getHost(void) const
@@ -218,7 +223,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
 	this->_method = "NULL";
-	std::cout << "[" <<line << "]" << std::endl;
+	// std::cout << "[" <<line << "]" << std::endl;
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
@@ -227,11 +232,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return 1;
 	}
 	else
-	{
-		_method = methods[i];
-	std::cout << "meth [" <<_method << "]" << std::endl;
-		//(this->*(getFct[i]))();
-	}
+		this->_method = methods[i];
 	if (!this->parsePath(request[1]))
 	{
 		deliver->statusCode(code->status(4, 4), this->getFirstLine());
@@ -247,6 +248,8 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	deliver->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
+	deliver->setMethod(this->_method);
+	deliver->setUrl(this->_url);
 	return 1;
 }
 
@@ -254,6 +257,7 @@ int HTTPHeader::header(std::string str)
 {
 	if (this->_method == "POST")
 	{
+		std::cout << "POST["<< str << "]"<< std::endl;
 		if (this->_contentLen == "")
 			return -1;
 	}
