@@ -107,6 +107,12 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
+	if (sock.isCgi(sockNbr, response.getUrl()))
+    {
+        header.setContentTypeResponse("text/html");
+        response.rendering(header);
+    }
+
 	// deliver header
 	if (sendHeader(fde, response))
 		return (ERR);

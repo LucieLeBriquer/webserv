@@ -37,11 +37,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	i = strlen("/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	i = strlen("./bin-cgi/script.sh");
 	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*arg)[0], "/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	strcpy((*arg)[0], "./bin-cgi/script.sh");
 	(*arg)[1] = NULL;
 	return OK;
 }
