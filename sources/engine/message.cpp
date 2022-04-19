@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:41:36 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/19 17:05:40 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
+		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}
