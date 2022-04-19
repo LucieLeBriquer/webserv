@@ -61,7 +61,12 @@ std::string	HTTPRequest::getFirstLine(void)
 	return this->_fLine;
 }
 
-std::string	HTTPRequest::getMethod(void)
+std::string	HTTPRequest::getUrl(void) const
+{
+	return (_url);
+}
+
+std::string	HTTPRequest::getMethod(void) const
 {
 	return (_method);
 }

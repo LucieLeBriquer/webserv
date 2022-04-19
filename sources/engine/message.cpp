@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/18 16:44:28 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 14:48:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,6 +186,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
+		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
 		if (sock->isCgi(sockNbr, response.getUrl()))
 		{
 			if (GetCGIfile(*sock, sockNbr) < 0)

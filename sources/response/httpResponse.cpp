@@ -112,10 +112,10 @@ int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &hea
 	ss << code;
 	ss >> status;
 
-	getStatus[400] = "/400.html";
-	getStatus[403] = "/403.html";
-	getStatus[404] = "/404.html";
-	getStatus[405] = "/405.html";
+	getStatus[400] = "html/default/400.html";
+	getStatus[403] = "html/default/403.html";
+	getStatus[404] = "html/default/404.html";
+	getStatus[405] = "html/default/405.html";
 	getStatus[505] = "/505.html";
 
 	this->_statusCode = code + str;
