@@ -23,7 +23,7 @@ int	main(int argc, char **argv)
 	sock = Socket(config);
 	if (sock.getCheck() < 0)
 		exit(EXIT_FAILURE);
-
+	
 	if (!initEpoll(&sock, config))
 		exit(EXIT_FAILURE);
 	return (0);

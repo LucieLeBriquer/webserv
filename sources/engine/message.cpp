@@ -90,6 +90,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
+	std::cout << "url before = " << response.getUrl() << std::endl;
 	if (getRightFile(response, sock, sockNbr, header))
 	{
 		if (response.getRedir() == 1)
@@ -101,11 +102,9 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 			return (OK);
 		}
 		else if (response.getNeedAutoindex())
-			return (sendAutoindexPage(fde, response, response.getUrl()));
+			return (sendAutoindexPage(fde, response, response.getUrl(), sock.getRoot(sockNbr, response.getUrl())));
 		return (sendDefaultPage(fde, response));
 	}
-
-		// if even page and err page are unavailable, print a small page according to the statusNb
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
@@ -114,14 +113,18 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sendHeader(fde, response))
 		return (ERR);
 
-
-	if (!sock.isCgi(sockNbr, response.getUrl()))
+	std::cout << "url after = " << response.getUrl() << std::endl;
+	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
-		if (GetCGIfile(sock, sockNbr, response) < 0)
+		if (GetCGIfile(sock, fde) < 0)
+			return ERR;
+	}
+	else
+	{
+		// deliver data
+		if (sendData(fde, response))
 			return (ERR);
 	}
-	else if (sendData(fde, response)) // deliver data
-		return (ERR);
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
@@ -196,11 +199,9 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		else
-		{
-			if (sendResponse(fde, response, header, *sock, sockNbr))
-				return (ERR);
-		}
+		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
+		if (sendResponse(fde, response, header, *sock, sockNbr))
+			return (ERR);
 	}
 	return (OK);
 }

@@ -37,48 +37,42 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	i = strlen(&sock.getEnv(0)[10]);
+	i = strlen("/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*arg)[0], &sock.getEnv(0)[10]);
+	strcpy((*arg)[0], "/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[1] = NULL;
 	return OK;
 }
 
-int		GetCGIfile(Socket &sock, int sockNbr, HTTPResponse &response)
+int		GetCGIfile(Socket &sock, int sockNbr)
 {
 	char		**env, **arg;
 	pid_t		pid;
-	int			fd[2], socket;
+	int			status;
 	std::string	body;
 	
-	/********************************************/
-	sock.setEnv("PATH_INFO=/mnt/nfs/homes/masboula/goinfre/webserv/bin-cgi/env.pl");
-	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	sock.setEnv("CONTENT_LENGTH=" + response.getContentLen()); //need get content length
-	sock.setEnv("REQUEST_METHODE=" + response.getMethod());
-	/********************************************/
-	pipe(fd);
-	socket = sockNbr;
-	pid = fork();
 	body = sock.getBody();
+	body += "\n\0";
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
 	
+	int tt = open("file", O_CREAT | O_RDWR);
+	write(tt, body.c_str(), body.size());
+	
+	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
-	else if (pid == 0) //inside child process
+	if (pid == 0)
 	{
-		close(fd[1]); // closing "write" side
-		dup2(fd[0], STDIN_FILENO); // "read" side become stdin
-		dup2(socket, STDOUT_FILENO); // our connected socket become stdout
+		dup2(sockNbr, STDOUT_FILENO); // our connected socket become stdout
 		execve(arg[0], arg, env);
 	}
-	else //inside parent process, we have to send the body through our pipefd[1]
+	else
 	{
-		close(fd[0]); // closing "read" side
-		write(fd[1], body.c_str(), body.size()); // write() body on the "write" side
+		close(sockNbr);
+		waitpid(pid, &status, 0);
 	}
 	
 	//printing
@@ -91,6 +85,6 @@ int		GetCGIfile(Socket &sock, int sockNbr, HTTPResponse &response)
 	}
 	std::cout << " - arg[0] = " << arg[0] << std::endl;
 	std::cout << " - connected socket = " << sockNbr << std::endl;
-	std::cout << " - body = " << body << std::endl;
+	std::cout << " - body = " << sock.getBody() << std::endl;
 	return OK;
 }

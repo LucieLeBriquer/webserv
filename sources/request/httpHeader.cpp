@@ -90,7 +90,6 @@ void HTTPHeader::setContentTypeResponse(std::string value)
 void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
-	setContentTypeResponse(_accept.substr(0, _accept.find(',')));
 }
 
 

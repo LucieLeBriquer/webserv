@@ -9,11 +9,11 @@
 # fi
 
 # recupFile empty and fill it line by line from stdin
-echo "" > recupFile
+rm recupFile
 
 while read line; do
-  echo "$line" >> recupFile
-done < "${1:-/dev/stdin}"
+	echo "$line" >> recupFile
+done < file
 
 # lines from stdin wrote into recupFile copy into string
 str=$(cat 'recupFile')
@@ -30,14 +30,10 @@ for i in "${pairs[@]}"; do
 	data[${result[0]}]="${result[1]}"
 done
 
-echo "" > fileCGI
+echo "<html> <head> <title> CGI script </title> </head> <body>"
 
-echo "HTTP/1.1 200 OK" >> fileCGI
-echo "Content-Type: text/html" >> fileCGI
-echo "" >> fileCGI
+echo "<h1>Inside CGI script</h1>"
 
-echo "<html> <head> <title> CGI script </title> </head> <body>" >> fileCGI
+echo "<p>${data[@]}</p>"
 
-echo "<h1>${data[@]}</h1>" >> fileCGI
-
-echo "</body> </html>" >> fileCGI
+echo "</body> </html>"

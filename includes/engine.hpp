@@ -36,10 +36,9 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
-int		GetCGIfile(Socket &sock, int sockNbr, HTTPResponse &response);
-// int			GetCGIfile(Socket &sock, int sockNbr);
+int			GetCGIfile(Socket &sock, int sockNbr);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
-int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path);
+int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);
 
 #endif

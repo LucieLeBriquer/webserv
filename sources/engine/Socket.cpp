@@ -208,6 +208,8 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 			return ("html/default/400.html");
 		if (err == 405)
 			return ("html/default/405.html");
+		if (err == 403)
+			return ("html/default/403.html");
 		return ("html/default/404.html");
 	}
 	return (getRoot(nbr, url) + "/" + it->second);

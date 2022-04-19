@@ -31,7 +31,7 @@ int	sendDefaultPage(int fde, HTTPResponse &response)
 	body += "\t<h2 align =\"center\">Error ";
 	body += toString(response.getStatusNb()) + "</h2>\n</body>\n</html>";
 	
-	header = "HTTP/1.1 " + response.getStatus() + "\r\n"; // a remplacer par getProtocol
+	header = response.getProtocol() + ' ' + response.getStatus() + "\r\n";
 	header += "Content-Type: text/html\r\n";
 	header += "Content-Length: " + toString(body.size()) + "\r\n";
 	header += "Date: " + timeStr;
@@ -82,8 +82,10 @@ static std::string	printFileName(std::string file, size_t len = 52)
 
 	if (file.size() > 52)
 		res = file.substr(0, len - 3) + "..></a>";
-	else
+	else if (file != "../")
 		res = file + "</a>" + std::string(len - file.size(), ' ');
+	else
+		res = file + "</a>";
 	return (res);
 }
 
@@ -119,7 +121,10 @@ static std::string	getFileInfoFormat(const std::pair<std::string,int> file, int 
 		res = "<a class=\"directory\" href=\"" + file.first + "/\">" + printFileName(file.first + "/");
 	else
 		res = "<a class=\"file\" href=\"" + file.first + "\">" + printFileName(file.first);
-	res += " " + getTimeAndSize(directory + file.first, type);
+	if (file.first != "..")
+		res += " " + getTimeAndSize(directory + file.first, type);
+	else
+		res += "\n";
 	return (res);
 }
 
@@ -147,7 +152,7 @@ static std::string	getRegularFiles(const vecFiles &files, const std::string &dir
 	return (filePart);
 }
 
-int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path)
+int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root)
 {
 	std::string		body;
 	std::string		header;
@@ -155,13 +160,19 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path)
 	vecFiles		files;
 	std::string		timeStr;
 	time_t 			rawtime;
+	std::string		directory;
 	
 	time(&rawtime);
 	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-
-	getDirectoryContent("." + path, files);
 	
+	if (root.empty())
+		directory = "./" + removeSlash(path);
+	else
+		directory = "./" + root + "/" + removeSlash(path);
+	
+	getDirectoryContent(directory, files);
+
 	body = "<!DOCTYPE HTML>\n\n<html>\n<body>\n";
 	body += "<style>\n\t* {\n\t\tline-height: 1.4em;\n";
 	body += "\t\tbackground-color: #221f22;\n";
@@ -177,11 +188,11 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path)
 	
 	body += "</style>\n";
 	body += "<h1>Index of <div class=\"path\">" + path + "</div></h1>\n<hr>\n<pre>\n";
-	body += getDirectories(files, "." + path);
-	body += getRegularFiles(files, "." + path);
+	body += getDirectories(files, directory);
+	body += getRegularFiles(files, directory);
 	body += "</pre>\n<hr>\n</body>\n</html>";
 	
-	header = "HTTP/1.1 " + response.getStatus() + "\r\n"; // a remplacer par getProtocol
+	header = response.getProtocol() + ' ' + response.getStatus() + "\r\n";
 	header += "Content-Type: text/html\r\n";
 	header += "Content-Length: " + toString(body.size()) + "\r\n";
 	header += "Date: " + timeStr;
