@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:11:28 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	i = strlen(&sock.getEnv(0)[10]);
+	i = strlen("/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*arg)[0], &sock.getEnv(0)[10]);
+	strcpy((*arg)[0], "/home/user42/Documents/42/webserv/bin-cgi/script.sh");
 	(*arg)[1] = NULL;
 	return OK;
 }
@@ -50,35 +50,29 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 {
 	char		**env, **arg;
 	pid_t		pid;
-	int			fd[2], socket;
+	int			status;
 	std::string	body;
 	
-	/********************************************/
-	sock.setEnv("PATH_INFO=/home/user42/Documents/42/webserv/bin-cgi/env.pl");
-	sock.setEnv("CONTENT_TYPE=application/x-www-form-urlencoded"); // need get content type
-	sock.setEnv("CONTENT_LENGTH=13"); //need get content length
-	sock.setEnv("REQUEST_METHODE=POST");
-	/********************************************/
-	pipe(fd);
-	socket = sockNbr;
 	body = sock.getBody();
-	pid = fork();
+	body += "\n\0";
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
 	
+	int tt = open("file", O_CREAT | O_RDWR);
+	write(tt, body.c_str(), body.size());
+	
+	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
-	else if (pid == 0) //inside child process
+	if (pid == 0)
 	{
-		close(fd[1]); // closing "write" side
-		dup2(fd[0], STDIN_FILENO); // "read" side become stdin
-		dup2(socket, STDOUT_FILENO); // our connected socket become stdout
+		dup2(sockNbr, STDOUT_FILENO); // our connected socket become stdout
 		execve(arg[0], arg, env);
 	}
-	else //inside parent process, we have to send the body through our pipefd[1]
+	else
 	{
-		close(fd[0]); // closing "read" side
-		write(fd[1], body.c_str(), body.size()); // write() body on the "write" side
+		close(sockNbr);
+		waitpid(pid, &status, 0);
 	}
 	
 	//printing

@@ -1,5 +1,10 @@
 <?php
 
+echo "HTTP/1.1 200 OK";
+echo "Host: localhost:8080";
+echo "Content-Type: text/html";
+echo "";
+
 //Call getenv() function without argument
 
 $env_array = getenv();

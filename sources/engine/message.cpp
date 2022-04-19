@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 14:48:30 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 17:05:40 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
+	std::cout << "url before = " << response.getUrl() << std::endl;
 	if (getRightFile(response, sock, sockNbr, header))
 	{
 		if (response.getRedir() == 1)
@@ -110,9 +111,18 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sendHeader(fde, response))
 		return (ERR);
 
-	// deliver data
-	if (sendData(fde, response))
-		return (ERR);
+	std::cout << "url after = " << response.getUrl() << std::endl;
+	if (sock.isCgi(sockNbr, response.getUrl()))
+	{
+		if (GetCGIfile(sock, fde) < 0)
+			return ERR;
+	}
+	else
+	{
+		// deliver data
+		if (sendData(fde, response))
+			return (ERR);
+	}
 	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
@@ -187,16 +197,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
-		if (sock->isCgi(sockNbr, response.getUrl()))
-		{
-			if (GetCGIfile(*sock, sockNbr) < 0)
-				return ERR;
-		}
-		else
-		{
-			if (sendResponse(fde, response, header, *sock, sockNbr))
-				return (ERR);
-		}
+		if (sendResponse(fde, response, header, *sock, sockNbr))
+			return (ERR);
 	}
 	return (OK);
 }
