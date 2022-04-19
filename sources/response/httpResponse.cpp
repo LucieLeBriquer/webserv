@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/15 20:10:01 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 17:08:49 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,24 +106,15 @@ bool		HTTPResponse::getNeedAutoindex(void) const
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
 {
 	std::stringstream ss;
-	std::map<int, std::string> getStatus;
 	int status;
 	
 	ss << code;
 	ss >> status;
 
-	getStatus[400] = "html/default/400.html";
-	getStatus[403] = "html/default/403.html";
-	getStatus[404] = "html/default/404.html";
-	getStatus[405] = "html/default/405.html";
-	getStatus[505] = "/505.html";
 
 	this->_statusCode = code + str;
 	if (status > 299)
-	{
-		this->_url = getStatus[status];
 		header.setContentTypeResponse("text/html");
-	}
 	setStatusNb(status);
 	return status;
 }
@@ -160,8 +151,9 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		this->_location = sock.getRedir(sockNbr, _url);
 		this->_statusCode = "301 Moved Permanently";
 		this->_redir = 1;
+		this->_statusNb = 301;
 		this->_contentLen = "178";
-		return "";
+		return ("");
 	}
 	return (this->checkUrl(sock, sockNbr, header));
 }
@@ -169,27 +161,27 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 {
 	std::string	pageErr;
-	int			fd;
 
 	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-		return ("");
-	close(fd);
-	return (pageErr);
+	if (pageErr != "") // error page precised
+	{
+		std::cout << "pageErr = " << pageErr << std::endl;
+		this->_location = pageErr;
+		this->_statusCode = "302 Moved Temporarily";
+		this->_redir = 1;
+		this->_statusNb = 302;
+		this->_contentLen = "154";
+	}
+	return ("");
 }
 
 std::string	HTTPResponse::_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 											std::string str, HTTPHeader &header)
 {
 	std::string	pageErr;
-	int			fd;
 
 	setStatus(code, str, header);
-	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-		return ("");
-	close(fd);
-	return (pageErr);
+	return (_returnErrPage(sock, sockNbr));
 }
 
 std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header)
@@ -244,7 +236,6 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 		return (_returnSetErrPage(sock, sockNbr, "404", " Not Found", header));
 	
-	//filename = redirect(sock, sockNbr, _url);
 	close(fd);
 	return (filename);
 }

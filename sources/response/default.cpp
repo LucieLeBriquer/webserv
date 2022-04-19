@@ -6,11 +6,72 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 13:50:27 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/18 16:49:09 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:24:32 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "engine.hpp"
+
+static int			getErrorNb(std::string code)
+{
+	for (int i = 0; i < nbError; i++)
+	{
+		if (code == errorNb[i])
+			return (i);
+	}
+	return (ERR);
+}
+
+static std::string	getErrorMsg(std::string code)
+{
+	int	nb = getErrorNb(code);
+
+	if (nb == ERR)
+		return ("");
+	return (errorMsg[nb]);
+}
+
+static std::string	getErrorExplanation(std::string code)
+{
+	int	nb = getErrorNb(code);
+
+	if (nb == ERR)
+		return ("");
+	return (errorExplanation[nb]);
+}
+
+static std::string	getPageContent(std::string code)
+{
+	std::string	content;
+	
+	content = "<!DOCTYPE HTML>\n\n\t<html>\n\t<head>";
+	content += "\n\t<title>Webserv</title>";
+	content += "\n\t<link rel=\"shortcut icon\" href=\"https://lucie-lebriquer.fr/webserv/favicon.png\"/>";
+	content += "\n\t<meta charset=\"utf-8\"/>";
+	content += "\n\t<link rel=\"stylesheet\" href=\"https://lucie-lebriquer.fr/webserv/default.css\"/>";
+	content += "\n\t<script src=\"https://kit.fontawesome.com/58cd01063a.js\" crossorigin=\"anonymous\"></script>";
+	content += "\n\t</head>\n<header>";
+	content += "\n\t<div class=\"logo\">";
+	content += "\n\t\t<img src=\"https://lucie-lebriquer.fr/webserv/logo.png\">";
+	content += "\n\t\t<div class=\"titlename\">Webserv</div>";
+	content += "\n\t\t<div class=\"title\">euses - default</div>";
+	content += "\n\t</div>\n\t<span class=\"buttonTab\">";
+	content += "\n\t\t<a href=\"https://github.com/LucieLeBriquer/webserv.git\"><i class=\"fab fa-github\"></i><span class=\"tabname\">Source</span></a>";
+	content += "\n\t</span>\n</header>\n\n<body>\n<div class=\"vertical\">";
+	content += "\n\t<center>\n\t<h6 class=\"title404_1\">";
+	content += code;
+	content += "</h6><br><br><br>\n\t<h6 class=\"title404_2\">";
+	content += getErrorMsg(code);
+	content += "</h6><br><br><br>\n\t";
+	content += getErrorExplanation(code);
+	content += "\n</div>\n</body>\n\n<footer>\n\t<ul class=\"footer\">\n\t\t<li></li>";
+	content += "\n\t\t<li><a href=\"https://github.com/MassiliaB\" target=\"_blank\"><i class=\"fab fa-github\"></i> masboula</a></li>";
+	content += "\n\t\t<li><a href=\"https://github.com/loupascreau\" target=\"_blank\"><i class=\"fab fa-github\"></i> lpascreau</a></li>";
+	content += "\n\t\t<li><a href=\"https://github.com/LucieLeBriquer\" target=\"_blank\"><i class=\"fab fa-github\"></i> lle-briq</a></li>";
+	content += "\n\t\t<li></li>\n\t</ul>\n</footer>\n</html>\n";
+	
+	return (content);
+}
 
 int	sendDefaultPage(int fde, HTTPResponse &response)
 {
@@ -23,13 +84,8 @@ int	sendDefaultPage(int fde, HTTPResponse &response)
 	time(&rawtime);
 	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-	
-	body = "<!DOCTYPE HTML>\n\n<html>\n<body>\n";
-	body += "<style>\n\t* {\n\t\tfont-family: Helvetica, sans-serif;\n";
-	body += "\t\tfont-size: 2em;\n";
-	body += "}\n</style>\n";
-	body += "\t<h2 align =\"center\">Error ";
-	body += toString(response.getStatusNb()) + "</h2>\n</body>\n</html>";
+
+	body = getPageContent(toString(response.getStatusNb()));
 	
 	header = response.getProtocol() + ' ' + response.getStatus() + "\r\n";
 	header += "Content-Type: text/html\r\n";
@@ -38,7 +94,7 @@ int	sendDefaultPage(int fde, HTTPResponse &response)
 	
 	toSend = header + "\r\n\r\n" + body;
 	
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
+	std::cout << ORANGE << "[Sending] " << END << "default error page to " << fde << std::endl;
 	std::cout << "====================================================" << std::endl;
 	std::cout << header << std::endl;
 	std::cout << "====================================================" << std::endl;
@@ -199,7 +255,7 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::st
 	
 	toSend = header + "\r\n\r\n" + body;
 
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde << std::endl;
+	std::cout << ORANGE << "[Sending] " << END << "autoindex page to " << fde << std::endl;
 	std::cout << "====================================================" << std::endl;
 	std::cout << header << std::endl;
 	std::cout << "====================================================" << std::endl;
