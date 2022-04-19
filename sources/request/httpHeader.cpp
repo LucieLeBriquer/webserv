@@ -90,7 +90,6 @@ void HTTPHeader::setContentTypeResponse(std::string value)
 void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
-	setContentTypeResponse(_accept.substr(0, _accept.find(',')));
 }
 
 
@@ -196,7 +195,6 @@ std::string	getHead(std::string buf)
 
 	std::stringstream ssin(buf);
 	std::getline(ssin, firstLine, '\r');
-	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
 	return (firstLine);
 }
 
@@ -226,10 +224,8 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return 1;
 	}
 	else
-	{
 		_method = methods[i];
-		//(this->*(getFct[i]))();
-	}
+	
 	if (!this->parsePath(request[1]))
 	{
 		deliver->statusCode(code->status(4, 4), this->getFirstLine());

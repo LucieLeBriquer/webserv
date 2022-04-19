@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:59 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 14:20:18 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 14:50:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,8 @@ class HTTPRequest
 
 		HTTPRequest	&operator=(const HTTPRequest &request);
 		std::string		getFirstLine(void);
-		std::string		getMethod();
-		std::string		getUrl();
-
+		std::string		getMethod() const;
+		std::string		getUrl() const;
 };
 
 #endif
