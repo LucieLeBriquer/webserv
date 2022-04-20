@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 14:13:02 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:33:16 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 int		endRequest(std::string string, Socket &sock)
 {
-
 	if (strncmp(string.c_str(), "GET", 3) == 0)
 		sock.setMethod(GET);
 	else if (strncmp(string.c_str(), "POST", 4) == 0)
