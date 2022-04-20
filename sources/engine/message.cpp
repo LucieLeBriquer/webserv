@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 17:05:40 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/19 14:48:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,12 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
+
+	if (sock.isCgi(sockNbr, response.getUrl()))
+    {
+        header.setContentTypeResponse("text/html");
+        response.rendering(header);
+    }
 
 	// deliver header
 	if (sendHeader(fde, response))
