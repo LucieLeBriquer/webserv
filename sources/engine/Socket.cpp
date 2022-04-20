@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/20 17:29:54 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:43:11 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,11 +153,6 @@ const Location				Socket::getConfig(int nbr, int loc) const
 mapStr			Socket::getEnv( void ) const
 {	
 	return this->_env;
-}
-
-std::string			Socket::getEnvValue( std::string envp )
-{	
-	return this->_env[envp];
 }
 
 std::string			Socket::getEnvValue( std::string envp )

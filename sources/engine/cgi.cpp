@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/20 17:40:25 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:55:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 int		mallocEnv(char ***env, Socket &sock, char ***arg)
 {
-	std::map<std::string, std::string>::iterator it = (sock.getEnv()).begin();
+	std::map<std::string, std::string>::iterator it = sock.getEnv().begin();
 	std::string complete;
 	size_t	i = 0;
 	
@@ -56,8 +56,9 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	pid_t		pid;
 	int			status;
 	std::string	body;
-	
-	body = sock.getBody();
+
+	body = sock.getEnvValue("QUERY_STRING");
+//	body = sock.getBody();
 	body += "\n\0";
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
