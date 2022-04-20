@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:34:04 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:29:54 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,8 +109,14 @@ void		Socket::setAddress(int port, const char *ip)
 
 void		Socket::setEnv(std::string envp)
 {
-	this->_env.push_back(envp);
+	this->_env[envp];
 }
+
+void		Socket::setEnvValue(std::string envp, std::string value)
+{
+	this->_env[envp] = value;
+}
+
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
@@ -144,11 +150,19 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-std::string	const			Socket::getEnv(int nbr) const
-{
-	std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
-	
-	return *it;
+mapStr			Socket::getEnv( void ) const
+{	
+	return this->_env;
+}
+
+std::string			Socket::getEnvValue( std::string envp )
+{	
+	return this->_env[envp];
+}
+
+std::string			Socket::getEnvValue( std::string envp )
+{	
+	return this->_env[envp];
 }
 
 size_t						Socket::getEnvSize(void) const

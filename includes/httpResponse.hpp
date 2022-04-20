@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/19 16:35:54 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:34:10 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ class HTTPResponse
 		HTTPResponse	&operator=(const HTTPResponse &response);
 
 		std::string	getUrl(void) const;
+		std::string	getProtocol(void) const;
 		std::string	getContentLen(void) const;
 		std::string	getMethod(void) const;
 		std::string	getHeader(void) const;

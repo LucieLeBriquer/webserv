@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/19 13:26:34 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:35:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@
 # include <dirent.h>
 
 typedef std::vector<std::string>					vecStr;
+typedef std::map<std::string, std::string>			mapStr;
 typedef std::map<int, std::string>					mapErr;
 typedef	std::vector<int>							vecInt;
 typedef	std::map<int, int>							mapSock;
@@ -107,8 +108,8 @@ template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> ve
 std::ostream	&operator<<(std::ostream &o, mapErr map);
 std::string	mimeContentType(std::string accepted, std::string extension);
 
-static const int			nbMethods = 3;
-static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
+static const int			nbMethods = 4;
+static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE", "HEAD"};
 
 static const int			nbMime = 347;
 static const std::string	mimeExt[nbMime] = {"3gp", "jpm", "mp3", "rtf", "wav", "xml",

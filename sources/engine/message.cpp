@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:51:42 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:32:33 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
+		//header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}

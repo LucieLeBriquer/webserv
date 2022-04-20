@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:55:58 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:30:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 int		mallocEnv(char ***env, Socket &sock, char ***arg)
 {
+	std::map<std::string, std::string>::iterator it = (sock.getEnv()).begin();
 	size_t	i = 0;
 	
 	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
@@ -28,7 +29,7 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 		return ERR;
 	while (i < sock.getEnvSize())
 	{
-		(*env)[i] = (char *)malloc(sizeof(char) * ((sock.getEnv(i)).length() + 1));
+		(*env)[i] = (char *)malloc(sizeof(char) * (it->first).length() + (it->second).length() + 1));
 		if (!(*env)[i])
 			return ERR;
 		strcpy((*env)[i], (sock.getEnv(i)).c_str());
@@ -37,11 +38,11 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
 	if (!(*arg))
 		return ERR;
-	i = strlen("/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	i = strlen("./bin-cgi/script.sh");
 	(*arg)[0] = (char *)malloc(sizeof(char) * (i + 1));
 	if (!(*arg)[0])
 		return ERR;
-	strcpy((*arg)[0], "/home/user42/Documents/42/webserv/bin-cgi/script.sh");
+	strcpy((*arg)[0], "./bin-cgi/script.sh");
 	(*arg)[1] = NULL;
 	return OK;
 }

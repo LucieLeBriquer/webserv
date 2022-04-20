@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:33:57 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:41:00 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,16 @@ class Socket
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
 
-		std::string	const			getEnv(int nbr) const;
+		mapStr						getEnv(void ) const;
+		std::string					getEnvValue(std::string envp);
 		void						setEnv(std::string envp);
+		void						setEnvValue(std::string envp, std::string value);
 		size_t						getEnvSize(void) const;
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
 
-		const char*						getBody(void) const;
+		const char*					getBody(void) const;
 		void						setBody(const char* newBody);
 
 		// config getter
@@ -83,7 +85,7 @@ class Socket
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		vecStr							_env;
+		mapStr							_env;
 		int								_method;
 		const char*							_body;
 };
