@@ -212,16 +212,8 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 		pages = getConfig(nbr, nbConfig).getErrorPages();
 	it = pages.find(err);
 	if (it == pages.end())
-	{
-		if (err == 400)
-			return ("html/default/400.html");
-		if (err == 405)
-			return ("html/default/405.html");
-		if (err == 403)
-			return ("html/default/403.html");
-		return ("html/default/404.html");
-	}
-	return (getRoot(nbr, url) + "/" + it->second);
+		return ("");
+	return (it->second);
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const

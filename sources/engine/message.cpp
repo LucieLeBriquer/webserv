@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/20 14:32:33 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/21 14:24:44 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,23 +109,20 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
+	if (sock.isCgi(sockNbr, response.getUrl()))
+    {
+        header.setContentTypeResponse("text/html");
+        response.rendering(header);
+    }
+
 	// deliver header
 	if (sendHeader(fde, response))
 		return (ERR);
 
 	std::cout << "url after = " << response.getUrl() << std::endl;
-	if (sock.isCgi(sockNbr, response.getUrl()))
-	{
-		if (GetCGIfile(sock, fde) < 0)
-			return ERR;
-	}
-	else
-	{
-		// deliver data
-		if (sendData(fde, response))
-			return (ERR);
-	}
-	
+	// deliver data
+	if (sendData(fde, response))
+		return (ERR);	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
@@ -199,7 +196,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
-		//header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
+		header.setContentTypeResponse(mimeContentType(header.getContentType(), header.getUrl()));
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}

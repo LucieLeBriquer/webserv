@@ -1,4 +1,4 @@
-CC			= c++ -std=c++98
+CC			= c++ -std=c++98 #-Wall -Wextra -Werror 
 RM			= rm -rf
 NAME		= ./webserv
 NAME_SHORT	= webserv

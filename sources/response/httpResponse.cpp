@@ -111,24 +111,15 @@ bool		HTTPResponse::getNeedAutoindex(void) const
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
 {
 	std::stringstream ss;
-	std::map<int, std::string> getStatus;
 	int status;
 	
 	ss << code;
 	ss >> status;
 
-	getStatus[400] = "html/default/400.html";
-	getStatus[403] = "html/default/403.html";
-	getStatus[404] = "html/default/404.html";
-	getStatus[405] = "html/default/405.html";
-	getStatus[505] = "/505.html";
 
 	this->_statusCode = code + str;
 	if (status > 299)
-	{
-		this->_url = getStatus[status];
 		header.setContentTypeResponse("text/html");
-	}
 	setStatusNb(status);
 	return status;
 }
@@ -191,27 +182,27 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 {
 	std::string	pageErr;
-	int			fd;
 
 	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-		return ("");
-	close(fd);
-	return (pageErr);
+	if (pageErr != "") // error page precised
+	{
+		std::cout << "pageErr = " << pageErr << std::endl;
+		this->_location = pageErr;
+		this->_statusCode = "302 Moved Temporarily";
+		this->_redir = 1;
+		this->_statusNb = 302;
+		this->_contentLen = "154";
+	}
+	return ("");
 }
 
 std::string	HTTPResponse::_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 											std::string str, HTTPHeader &header)
 {
 	std::string	pageErr;
-	int			fd;
 
 	setStatus(code, str, header);
-	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-	if ((fd = open(pageErr.c_str(), O_RDWR)) == -1)
-		return ("");
-	close(fd);
-	return (pageErr);
+	return (_returnErrPage(sock, sockNbr));
 }
 
 std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header)

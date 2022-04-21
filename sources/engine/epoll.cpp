@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   epoll.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 14:12:22 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:38:04 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,10 +132,7 @@ int initEpoll(Socket *sock, const Config config)
 			else
 			{
 				if (requestReponse(epollfd, events[n].data.fd, sock))
-				{
-					std::cout << "here\n";
 					return (ERR);
-				}
 			}
 		}
 	}
