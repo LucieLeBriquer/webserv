@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/22 13:51:37 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,10 +107,12 @@ void		Socket::setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-void		Socket::setEnv(std::string envp)
+void		Socket::setEnv(char* envp)
 {
-	this->_env.push_back(envp);
+	this->_env += envp;
+	this->_env += "!\0";
 }
+
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
@@ -144,16 +146,26 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-std::string	const			Socket::getEnv(int nbr) const
+std::string					Socket::getEnv(void) const
 {
-	std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
+	// std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
 	
-	return *it;
+	// return *it;
+	return this->_env;
 }
 
 size_t						Socket::getEnvSize(void) const
 {
-	return this->_env.size();
+	// return this->_env.size();
+	size_t i = 0, size = 0;
+	
+	while (this->_env[i])
+	{
+		if (this->_env[i] == '!')
+			size++;
+		i++;
+	}
+	return size;
 }
 
 const socklen_t &			Socket::getAddrLen(int nbr) const

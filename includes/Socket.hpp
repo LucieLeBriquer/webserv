@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/14 16:35:25 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/22 13:11:44 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,8 @@ class Socket
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
 
-		std::string	const			getEnv(int nbr) const;
-		void						setEnv(std::string envp);
+		std::string					getEnv(void) const;
+		void						setEnv(char* envp);
 		size_t						getEnvSize(void) const;
 	
 		int							getMethod(void) const;
@@ -83,7 +83,8 @@ class Socket
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		vecStr							_env;
+		// vecStr							_env;
+		std::string						_env;
 		int								_method;
 		char*							_body;
 };

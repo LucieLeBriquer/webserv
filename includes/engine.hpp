@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:52 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/22 10:36:55 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
-int			GetCGIfile(Socket &sock, int sockNbr);
+int			GetCGIfile(Socket &sock, int sockNbr, std::string cgi, std::string file);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);

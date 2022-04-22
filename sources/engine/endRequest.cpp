@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 12:58:20 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/22 11:00:11 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@ int		endRequest(std::string string, Socket &sock)
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
 			if (sock.getMethod() == GET)
+			{
+				std::string tmp = "";
+				sock.setBody((char *)tmp.c_str());
 				return (ERR);
+			}
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
