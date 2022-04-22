@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/16 13:46:06 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:19:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,14 +109,20 @@ void		Socket::setAddress(int port, const char *ip)
 
 void		Socket::setEnv(std::string envp)
 {
-	this->_env.push_back(envp);
+	this->_env[envp];
 }
+
+void		Socket::setEnvValue(std::string envp, std::string value)
+{
+	this->_env[envp] = value;
+}
+
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
 }
 
-void		Socket::setBody(char* newBody)
+void		Socket::setBody(std::string newBody)
 {
 	this->_body = newBody;
 }
@@ -144,11 +150,14 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-std::string	const			Socket::getEnv(int nbr) const
-{
-	std::vector<std::string>::const_iterator	it = this->_env.begin() + nbr;
-	
-	return *it;
+mapStr			Socket::getEnv( void ) const
+{	
+	return this->_env;
+}
+
+std::string			Socket::getEnvValue( std::string envp )
+{	
+	return this->_env[envp];
 }
 
 size_t						Socket::getEnvSize(void) const
@@ -176,7 +185,7 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-char*						Socket::getBody(void) const
+std::string						Socket::getBody(void) const
 {
 	return this->_body;
 }

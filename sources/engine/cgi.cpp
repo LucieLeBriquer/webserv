@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:23:01 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 
 int		mallocEnv(char ***env, Socket &sock, char ***arg)
 {
+	std::map<std::string, std::string>::iterator it = sock.getEnv().begin();
+	std::string complete;
 	size_t	i = 0;
 	
 	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
@@ -28,10 +30,12 @@ int		mallocEnv(char ***env, Socket &sock, char ***arg)
 		return ERR;
 	while (i < sock.getEnvSize())
 	{
-		(*env)[i] = (char *)malloc(sizeof(char) * ((sock.getEnv(i)).length() + 1));
+		(*env)[i] = (char *)malloc(sizeof(char) * ((it->first).length() + (it->second).length() + 1));
 		if (!(*env)[i])
 			return ERR;
-		strcpy((*env)[i], (sock.getEnv(i)).c_str());
+		complete = it->first + it->second;
+		std::cout << "env = " << complete << std::endl;
+		strcpy((*env)[i], complete.c_str());
 		i++;
 	}
 	(*arg) = (char **)malloc(sizeof(char *) * 2);
@@ -52,7 +56,7 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	pid_t		pid;
 	int			status;
 	std::string	body;
-	
+
 	body = sock.getBody();
 	body += "\n\0";
 	if (mallocEnv(&env, sock, &arg) < 0)

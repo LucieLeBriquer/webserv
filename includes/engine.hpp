@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/12 16:06:52 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:05:00 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define	BAD_METHODE	-1
 # define	GET			1
 # define	POST		2
+# define	HEAD		3
 # define 	MAX_EVENTS	10
 # define 	BUFFER_SIZE	1024
 # define 	B_SIZE		5

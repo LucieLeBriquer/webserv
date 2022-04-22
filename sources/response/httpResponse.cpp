@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/19 17:08:49 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:22:32 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,11 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 std::string HTTPResponse::getMethod(void) const
 {
 	return this->_method;
+}
+
+std::string HTTPResponse::getContentLen(void) const
+{
+	return this->_contentLen;
 }
 
 std::string HTTPResponse::getStatus(void) const
@@ -134,6 +139,11 @@ void		HTTPResponse::setMethod(const std::string &method)
 	_method = method;
 }
 
+void		HTTPResponse::setUrl(const std::string &url)
+{
+	_url = url;
+}
+
 void		HTTPResponse::setRedir(int r)
 {
 	_redir = r;
@@ -144,16 +154,28 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
 	std::string filename;
+
+	if ( this->_method == "GET" )
+	{
+		if (this->_url.find('?') != std::string::npos )
+		{
+			sock.setEnvValue("QUERY_STRING=", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
+			sock.setBody( sock.getEnvValue("QUERY_STRING=") );
+			this->_url = this->_url.substr(0, this->_url.find('?'));
+		}
+	}
+	else if ( this->_method == "POST" )
+		sock.setEnvValue("QUERY_STRING=", sock.getBody());
+		
 	filename = sock.getRealUrl(sockNbr, this->_url);
 
-	if (sock.isRedir(sockNbr, _url))
+	if (sock.isRedir(sockNbr, this->_url))
 	{
 		this->_location = sock.getRedir(sockNbr, _url);
 		this->_statusCode = "301 Moved Permanently";
 		this->_redir = 1;
-		this->_statusNb = 301;
 		this->_contentLen = "178";
-		return ("");
+		return "";
 	}
 	return (this->checkUrl(sock, sockNbr, header));
 }
@@ -236,6 +258,7 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 		return (_returnSetErrPage(sock, sockNbr, "404", " Not Found", header));
 	
+	//filename = redirect(sock, sockNbr, _url);
 	close(fd);
 	return (filename);
 }
@@ -267,8 +290,7 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	this->_header += header.fillrender();
 	if (this->_redir)
         this->_header += "Location: " + this->_location + "\r\n";
-	this->_header += "Content-Length: " + this->_contentLen + "\r\n";
+	if (this->_contentLen != "")
+		this->_header += "Content-Length: " + this->_contentLen + "\r\n";
 	this->_header += "Date: " + timeStr;
-	if (this->_redir)
-		this->_header += "\r\n";
 }

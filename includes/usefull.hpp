@@ -59,8 +59,8 @@
 # include <sys/stat.h>
 # include <dirent.h>
 
-// typedefs
 typedef std::vector<std::string>					vecStr;
+typedef std::map<std::string, std::string>			mapStr;
 typedef std::map<int, std::string>					mapErr;
 typedef	std::vector<int>							vecInt;
 typedef	std::map<int, int>							mapSock;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/14 11:57:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:33:38 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ class HTTPHeader : public HTTPRequest
 		int 		parseProtocol(const std::string prot);
 		int			parseMethod(const std::string cmd, const std::string *methods);
 
-		int			header(void);
+		int			header(std::string str);
 		std::string	fillrender(void);
 		int			fillheader(std::string *buf);
 		int			getContext(void);
@@ -55,6 +55,7 @@ class HTTPHeader : public HTTPRequest
 		void		checkContext(void);
 
 		std::string	getHost(void) const;
+		std::string	getMethod(void) const;
 		std::string	getContentType(void) const;
 		std::string	getContentLen(void) const;
 		std::string	getAccept(void) const;
