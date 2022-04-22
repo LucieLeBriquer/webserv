@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/20 17:53:56 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:22:32 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,18 +154,19 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
 	std::string filename;
+
 	if ( this->_method == "GET" )
 	{
 		if (this->_url.find('?') != std::string::npos )
 		{
-			sock.setEnvValue("QUERY_STRING=", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));
+			sock.setEnvValue("QUERY_STRING=", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
+			sock.setBody( sock.getEnvValue("QUERY_STRING=") );
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
 	else if ( this->_method == "POST" )
 		sock.setEnvValue("QUERY_STRING=", sock.getBody());
 		
-	std::cout << "url = " << this->_url << std::endl;
 	filename = sock.getRealUrl(sockNbr, this->_url);
 
 	if (sock.isRedir(sockNbr, this->_url))

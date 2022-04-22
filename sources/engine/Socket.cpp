@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/20 17:43:11 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:19:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void		Socket::setMethod(int method)
 	this->_method = method;
 }
 
-void		Socket::setBody(const char* newBody)
+void		Socket::setBody(std::string newBody)
 {
 	this->_body = newBody;
 }
@@ -185,7 +185,7 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-const char*						Socket::getBody(void) const
+std::string						Socket::getBody(void) const
 {
 	return this->_body;
 }

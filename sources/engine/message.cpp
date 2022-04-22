@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/21 14:24:44 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:22:07 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,10 +119,17 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sendHeader(fde, response))
 		return (ERR);
 
-	std::cout << "url after = " << response.getUrl() << std::endl;
-	// deliver data
-	if (sendData(fde, response))
-		return (ERR);	
+	if (sock.isCgi(sockNbr, response.getUrl()))
+	{
+		if (GetCGIfile(sock, fde) < 0)
+			return ERR;
+	}
+	else
+	{
+		// deliver data
+		if (sendData(fde, response))
+			return (ERR);
+	}
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )

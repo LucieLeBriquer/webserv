@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/21 14:14:20 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:18:07 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,8 @@ class Socket
 		int							getMethod(void) const;
 		void						setMethod(int method);
 
-		const char*					getBody(void) const;
-		void						setBody(const char* newBody);
+		std::string					getBody(void) const;
+		void						setBody(std::string newBody);
 
 		// config getter
 		const Server	getConfig(int nbr) const;
@@ -87,7 +87,7 @@ class Socket
 		int								_check;
 		mapStr							_env;
 		int								_method;
-		const char*							_body;
+		std::string						_body;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

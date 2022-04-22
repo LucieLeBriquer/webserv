@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/20 17:55:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/22 12:23:01 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ int		GetCGIfile(Socket &sock, int sockNbr)
 	int			status;
 	std::string	body;
 
-	body = sock.getEnvValue("QUERY_STRING");
-//	body = sock.getBody();
+	body = sock.getBody();
 	body += "\n\0";
 	if (mallocEnv(&env, sock, &arg) < 0)
 		return ERR;
