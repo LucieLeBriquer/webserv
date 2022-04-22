@@ -22,10 +22,12 @@ static std::string	getSubtype(std::string str)
 	return (str.substr(str.find('/') + 1, str.find(';')));
 }
 
+
 static std::string	removeQuality(std::string str)
 {
 	return (str.substr(0, str.find(';')));
 }
+
 
 std::string	mimeContentType(std::string accepted, std::string file)
 {

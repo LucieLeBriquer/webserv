@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/14 14:24:13 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/19 16:27:15 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,11 @@ int HTTPHeader::getContext( void )
 	return this->_active;
 }
 
+std::string	HTTPHeader::getMethod(void) const
+{
+	return _method;
+}
+
 std::string	HTTPHeader::getHost(void) const
 {
 	return ("Host: " + _host + "\r\n");
@@ -195,12 +200,13 @@ std::string	getHead(std::string buf)
 
 	std::stringstream ssin(buf);
 	std::getline(ssin, firstLine, '\r');
+	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
 	return (firstLine);
 }
 
 int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 {
-	std::string methods[3] = {"GET", "POST", "DELETE"};
+	std::string methods[4] = {"GET", "POST", "DELETE", "HEAD"};
 	std::string line;
 	int i;
 
@@ -216,6 +222,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
 	this->_method = "NULL";
+	// std::cout << "[" <<line << "]" << std::endl;
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
@@ -224,8 +231,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		return 1;
 	}
 	else
-		_method = methods[i];
-	
+		this->_method = methods[i];
 	if (!this->parsePath(request[1]))
 	{
 		deliver->statusCode(code->status(4, 4), this->getFirstLine());
@@ -241,13 +247,16 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	deliver->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
+	deliver->setMethod(this->_method);
+	deliver->setUrl(this->_url);
 	return 1;
 }
 
-int HTTPHeader::header()
+int HTTPHeader::header(std::string str)
 {
 	if (this->_method == "POST")
 	{
+		std::cout << "POST["<< str << "]"<< std::endl;
 		if (this->_contentLen == "")
 			return -1;
 	}

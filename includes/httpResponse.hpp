@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/15 18:57:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:34:10 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,12 @@ class HTTPResponse
 		HTTPResponse	&operator=(const HTTPResponse &response);
 
 		std::string	getUrl(void) const;
+		std::string	getProtocol(void) const;
+		std::string	getContentLen(void) const;
 		std::string	getMethod(void) const;
 		std::string	getHeader(void) const;
 		std::string	getStatus(void) const;
 		std::string	getFileName(void) const;
-		std::string	getProtocol(void) const;
 		int			getStatusNb(void) const;
 		int			getMethodNbr(void) const;
 		int			getRedir(void) const;
@@ -62,6 +63,7 @@ class HTTPResponse
 		int			setStatus(std::string code, std::string str, HTTPHeader &header);
 		void		setFileName(const std::string &file);
 		void		setStatusNb(int nb);
+		void		setUrl(const std::string &url);
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
 
