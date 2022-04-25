@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/19 16:05:00 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/25 18:21:05 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,11 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
-int			GetCGIfile(Socket &sock, int sockNbr);
+void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr);
+int			GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file);
+void    	ft_free_env_arg(char ***env, char ***arg, Socket *sock);
+int     	mallocEnv(char ***env, Socket &sock);
+int     	mallocArg(char ***arg, std::string cgi, std::string file);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);

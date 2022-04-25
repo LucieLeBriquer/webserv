@@ -164,8 +164,6 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
-	else if ( this->_method == "POST" )
-		sock.setEnvValue("QUERY_STRING=", sock.getBody());
 		
 	filename = sock.getRealUrl(sockNbr, this->_url);
 

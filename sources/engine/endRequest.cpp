@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 11:33:43 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/25 08:12:22 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,17 @@ int		endRequest(std::string string, Socket &sock)
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
 			if (sock.getMethod() == GET || sock.getMethod() == HEAD)
+			{
+				std::string tmp = "";
+				sock.setBody(tmp);
 				return (ERR);
+			}
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
 				{
-					sock.setBody(&string[j]);
+					std::string tmp = &string[j];
+					sock.setBody(tmp);
 					return (ERR);
 				}
 			}
