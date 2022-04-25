@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 18:08:11 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/25 18:19:05 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,16 +45,16 @@ static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
 		while (header[i] && header[i] != '\n')
 			i++;
 		header.erase(find, (i + 1) - find);
-		// find = header.find("Host:");
-		// i = find;
-		// while (header[i] && header[i] != '\n')
-		// 	i++;
-		// header.erase(find, (i + 1) - find);
-		// find = header.find("Content-Length:");
-		// i = find;
-		// while (header[i] && header[i] != '\n')
-		// 	i++;
-		// header.erase(find, (i + 1) - find);
+		find = header.find("Host:");
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+		find = header.find("Content-Length:");
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
 		header += "\r\n";
 	}
 	else
@@ -144,7 +144,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
 		setEnvForCgi(sock, response, sockNbr);
-		if (GetCGIfile(sock, fde, CGI_PASS, FILE_ASKED) < 0)
+		if (GetCGIfile(sock, fde, sock.getCgiPass(sockNbr, response.getUrl()), sock.getRealUrl(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 18:07:54 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/25 18:21:05 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,6 @@
 # define 	MAX_EVENTS	10
 # define 	BUFFER_SIZE	1024
 # define 	B_SIZE		5
-
-# define    CGI_PASS    "sock.getCgiPass(sockNbr, response.getUrl())"
-# define    FILE_ASKED  "sock.getRealUrl(sockNbr, response.getUrl())"
-
 
 int			setsocknonblock(int sock);
 int			initSockets(Socket *sock, const Config config);
