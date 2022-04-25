@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 12:22:07 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/25 18:08:11 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,16 @@ static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
 		while (header[i] && header[i] != '\n')
 			i++;
 		header.erase(find, (i + 1) - find);
+		// find = header.find("Host:");
+		// i = find;
+		// while (header[i] && header[i] != '\n')
+		// 	i++;
+		// header.erase(find, (i + 1) - find);
+		// find = header.find("Content-Length:");
+		// i = find;
+		// while (header[i] && header[i] != '\n')
+		// 	i++;
+		// header.erase(find, (i + 1) - find);
 		header += "\r\n";
 	}
 	else
@@ -133,23 +143,8 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
-		std::string tmp;
-		// std::string header = "HTTP/1.1 200 OK\r\n";
-		// if (send(fde, header.c_str(), header.size(), 0) < 0)
-		// {
-		// 	perror("send()");
-		// 	return (ERR);
-		// }
-		tmp = "GATEWAY_INTERFACE=CGI/1.1";
-		sock.setEnv((char *)tmp.c_str());
-		tmp = "SERVER_PROTOCOL=HTTP/1.1";
-		sock.setEnv((char *)tmp.c_str());
-		tmp = "REDIRECT_STATUS=200";
-		sock.setEnv((char *)tmp.c_str());
-		tmp = "SCRIPT_FILENAME=";
-		tmp += sock.getRealUrl(sockNbr, response.getUrl());
-		sock.setEnv((char *)tmp.c_str());
-		if (GetCGIfile(sock, fde, sock.getCgiPass(sockNbr, response.getUrl()), sock.getRealUrl(sockNbr, response.getUrl())) < 0)
+		setEnvForCgi(sock, response, sockNbr);
+		if (GetCGIfile(sock, fde, CGI_PASS, FILE_ASKED) < 0)
 			return ERR;
 	}
 	else
