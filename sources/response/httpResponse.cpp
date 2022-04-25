@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/22 12:22:32 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/25 17:57:09 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,8 +164,6 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
-	else if ( this->_method == "POST" )
-		sock.setEnvValue("QUERY_STRING=", sock.getBody());
 		
 	filename = sock.getRealUrl(sockNbr, this->_url);
 
