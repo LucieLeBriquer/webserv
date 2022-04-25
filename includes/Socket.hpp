@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 13:11:44 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/22 12:18:07 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,17 @@ class Socket
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
 
-		std::string					getEnv(void) const;
-		void						setEnv(char* envp);
+		mapStr						getEnv(void ) const;
+		std::string					getEnvValue(std::string envp);
+		void						setEnv(std::string envp);
+		void						setEnvValue(std::string envp, std::string value);
 		size_t						getEnvSize(void) const;
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
 
-		char*						getBody(void) const;
-		void						setBody(char* newBody);
+		std::string					getBody(void) const;
+		void						setBody(std::string newBody);
 
 		// config getter
 		const Server	getConfig(int nbr) const;
@@ -83,10 +85,9 @@ class Socket
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		// vecStr							_env;
-		std::string						_env;
+		mapStr							_env;
 		int								_method;
-		char*							_body;
+		std::string						_body;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

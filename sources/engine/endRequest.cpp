@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 11:00:11 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/22 11:33:43 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+#include <csignal>
 
 int		endRequest(std::string string, Socket &sock)
 {
@@ -18,21 +19,20 @@ int		endRequest(std::string string, Socket &sock)
 		sock.setMethod(GET);
 	else if (strncmp(string.c_str(), "POST", 4) == 0)
 		sock.setMethod(POST);
+	else if (strncmp(string.c_str(), "HEAD", 4) == 0)
+		sock.setMethod(HEAD);
 	else
 		sock.setMethod(BAD_METHODE);
 	// if (sock.getMethod() == BAD_METHODE)
 	// 	return (ERR);
 	//std::cout << "methode = " << sock.getMethod() << std::endl;
+
 	for (size_t i = 0; i < string.length(); i++)
 	{
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
-			if (sock.getMethod() == GET)
-			{
-				std::string tmp = "";
-				sock.setBody((char *)tmp.c_str());
+			if (sock.getMethod() == GET || sock.getMethod() == HEAD)
 				return (ERR);
-			}
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)

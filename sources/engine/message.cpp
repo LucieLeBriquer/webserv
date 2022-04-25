@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 15:35:06 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/22 12:22:07 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,9 @@ static int	sendData(int fde, HTTPResponse &response)
 	char			buf[BUFFER_SIZE];
 	int				i;
 	char			c;
-	
+
+	if (response.getMethod() == "HEAD")
+		return (OK);
 	while (fileStream.get(c))
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -156,7 +158,6 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		if (sendData(fde, response))
 			return (ERR);
 	}
-	
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )
@@ -178,7 +179,7 @@ int		checkHeader(HTTPHeader &header, std::string string)
 		if (header.fillheader(&string) == -1)
 			break ; // a changer en fonction du retour d'err
 	}
-	if (header.header() == -1)
+	if (header.header(string) == -1)
 		return ERR;
 	return 1;
 }
@@ -200,6 +201,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		byteCount = recv(fde, buf, BUFFER_SIZE, 0);
 		if (byteCount == 0)
 		{
+			std::cout << "stops ??" << std::endl;
 			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
 			isBreak = 1;
 			break ;
