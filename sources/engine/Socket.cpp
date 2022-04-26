@@ -16,17 +16,17 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Socket::Socket() : _check(OK), _method(0)
+Socket::Socket() : _check(OK), _method(0), _isQuery(false)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(OK), _method(0)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0), _isQuery(false)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0), _isQuery(false)
 {
 	if (initSockets(this, config))
 		this->_check = ERR;
@@ -117,6 +117,16 @@ void		Socket::setEnvValue(std::string envp, std::string value)
 	this->_env[envp] = value;
 }
 
+void		Socket::unsetEnv(void)
+{
+	this->_env.clear();
+}
+
+void		Socket::setIsQueryString(bool set)
+{
+	this->_isQuery = set;
+}
+
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
@@ -163,6 +173,11 @@ std::string			Socket::getEnvValue( std::string envp )
 size_t						Socket::getEnvSize(void) const
 {
 	return this->_env.size();
+}
+
+bool						Socket::isQueryString(void) const
+{
+	return this->_isQuery;
 }
 
 const socklen_t &			Socket::getAddrLen(int nbr) const

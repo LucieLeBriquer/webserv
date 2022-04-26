@@ -6,13 +6,13 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/26 11:01:54 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/26 17:11:45 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+HTTPResponse::HTTPResponse(void) : _options("GET, HEAD, POST"), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
 									_statusNb(0), _redir(0), _needAutoindex(false)
 {
@@ -154,6 +154,7 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
 	std::string filename;
+	filename = sock.getRealUrl(sockNbr, this->_url);
 
 	if ( this->_method == "GET" )
 	{
@@ -164,30 +165,22 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
-	else if ( this->_method == "POST" )
-		sock.setEnvValue("QUERY_STRING=", sock.getBody());
-		
-	filename = sock.getRealUrl(sockNbr, this->_url);
-	if ( this->_method == "DELETE" )
+	if (this->_method == "DELETE" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("DELETE")))
 	{
-		if (sock.)// url = accepted mth delete
+		if (this->checkUrl(sock, sockNbr, header) != "")
 		{
-			// if (this->checkUrl(sock, sockNbr, header) == "")
-			// {
-			// 	this->_statusCode = "204 No Content";
-			// 	this->_url = "/html/204.html";
-			// }
-			// else
-			if (this->checkUrl(sock, sockNbr, header) != "")
-			{
-				this->_statusCode = "200 OK";
-				this->_url = "html/deleted.html"
-			}
-			
-			// vraiment supp le fichier ?
+			std::remove(filename.c_str());
+			this->setStatus("200", " OK", header);
+			return this->_url = "html/deleted.html";
 		}
+		this->setStatus("204", " No Content", header);
+		this->_url = "";
 		return this->_url;
-		
+	}
+	if (this->_method == "OPTIONS" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("OPTIONS")))
+	{
+		this->_options += ",OPTIONS";
+		// += get les options qui ne sont pas par defaut dans la config
 	}
 	if (sock.isRedir(sockNbr, this->_url))
 	{
@@ -307,6 +300,8 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	if (this->_method == "OPTIONS")
+		this->_header += "Allow: " + this->_options + "\r\n";
 	this->_header += header.fillrender();
 	if (this->_redir)
         this->_header += "Location: " + this->_location + "\r\n";

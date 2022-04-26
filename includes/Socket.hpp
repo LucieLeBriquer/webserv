@@ -50,6 +50,10 @@ class Socket
 		void						setEnv(std::string envp);
 		void						setEnvValue(std::string envp, std::string value);
 		size_t						getEnvSize(void) const;
+		void						unsetEnv(void);
+	
+		bool						isQueryString(void) const;
+		void						setIsQueryString(bool set);
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
@@ -88,6 +92,7 @@ class Socket
 		mapStr							_env;
 		int								_method;
 		std::string						_body;
+		bool							_isQuery;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);

@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 12:22:07 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/26 17:08:37 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,32 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	return (OK);
 }
 
-static int	sendHeader(int fde, HTTPResponse &response)
+static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
 {
-	std::string	header = response.getHeader() + "\r\n\r\n";
+	std::string	header = response.getHeader();
+	int			find, i;
+
+	if (isCgi && !redir)
+	{
+		find = header.find("Content-Type:");
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+		find = header.find("Host:");
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+		find = header.find("Content-Length:");
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+		header += "\r\n";
+	}
+	else
+		header += "\r\n\r\n";
 
 	std::cout << "====================================================" << std::endl;
 	std::cout << header;
@@ -90,14 +113,14 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		response.setStatus("405", " Method Not Allowed", header);
 
 	// fill header
-	std::cout << "url before = " << response.getUrl() << std::endl;
+	//pas de page avec un 204 no content
 	if (getRightFile(response, sock, sockNbr, header))
 	{
 		if (response.getRedir() == 1)
 		{
 			response.rendering(header);
 			response.setRedir(0);
-			if (sendHeader(fde, response))
+			if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), true))
 				return (ERR);
 			return (OK);
 		}
@@ -116,12 +139,13 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
     }
 
 	// deliver header
-	if (sendHeader(fde, response))
+	if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), false))
 		return (ERR);
 
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
-		if (GetCGIfile(sock, fde) < 0)
+		setEnvForCgi(sock, response, sockNbr);
+		if (GetCGIfile(sock, fde, sock.getCgiPass(sockNbr, response.getUrl()), sock.getRealUrl(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
 	else
