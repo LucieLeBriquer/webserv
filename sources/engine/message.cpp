@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 18:19:05 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/26 14:12:58 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,27 +36,9 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
 {
 	std::string	header = response.getHeader();
-	int			find, i;
 
 	if (isCgi && !redir)
-	{
-		find = header.find("Content-Type:");
-		i = find;
-		while (header[i] && header[i] != '\n')
-			i++;
-		header.erase(find, (i + 1) - find);
-		find = header.find("Host:");
-		i = find;
-		while (header[i] && header[i] != '\n')
-			i++;
-		header.erase(find, (i + 1) - find);
-		find = header.find("Content-Length:");
-		i = find;
-		while (header[i] && header[i] != '\n')
-			i++;
-		header.erase(find, (i + 1) - find);
-		header += "\r\n";
-	}
+		header = headerForCgi(header);
 	else
 		header += "\r\n\r\n";
 
