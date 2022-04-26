@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/22 12:22:32 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/26 11:01:54 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,27 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		sock.setEnvValue("QUERY_STRING=", sock.getBody());
 		
 	filename = sock.getRealUrl(sockNbr, this->_url);
-
+	if ( this->_method == "DELETE" )
+	{
+		if (sock.)// url = accepted mth delete
+		{
+			// if (this->checkUrl(sock, sockNbr, header) == "")
+			// {
+			// 	this->_statusCode = "204 No Content";
+			// 	this->_url = "/html/204.html";
+			// }
+			// else
+			if (this->checkUrl(sock, sockNbr, header) != "")
+			{
+				this->_statusCode = "200 OK";
+				this->_url = "html/deleted.html"
+			}
+			
+			// vraiment supp le fichier ?
+		}
+		return this->_url;
+		
+	}
 	if (sock.isRedir(sockNbr, this->_url))
 	{
 		this->_location = sock.getRedir(sockNbr, _url);
