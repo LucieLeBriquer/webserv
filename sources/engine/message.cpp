@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/26 14:12:58 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 15:21:15 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,38 +53,76 @@ static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
 	return (OK);
 }
 
-static int	sendData(int fde, HTTPResponse &response)
+static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
-	std::ifstream	fileStream(response.getFileName().c_str(), std::ios::in | std::ios::binary);
-	char			buf[BUFFER_SIZE];
-	int				i;
-	char			c;
-
-	if (response.getMethod() == "HEAD")
-		return (OK);
-	while (fileStream.get(c))
+	if (isCgi)
 	{
-		memset(buf, 0, BUFFER_SIZE);
-		buf[0] = c;
-		i = 1;
-		while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
+		std::stringstream	fileStream(sock.getCgiCoprs(), std::ios::in | std::ios::binary);
+		char				buf[BUFFER_SIZE];
+		int					i;
+		char				c;
+
+		if (response.getMethod() == "HEAD")
+			return (OK);
+		while (fileStream.get(c))
 		{
-			buf[i] = c;
-			i++;
+			memset(buf, 0, BUFFER_SIZE);
+			buf[0] = c;
+			i = 1;
+			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
+			{
+				buf[i] = c;
+				i++;
+			}
+			if (i + 1 == BUFFER_SIZE)
+			{
+				buf[i] = c;
+				i++;
+			}
+			if (send(fde, buf, i, 0) < 0)
+			{
+				perror("send()");
+				fileStream.str(std::string());
+				fileStream.clear();
+				return (ERR);
+			}
 		}
-		if (i + 1 == BUFFER_SIZE)
-		{
-			buf[i] = c;
-			i++;
-		}
-		if (send(fde, buf, i, 0) < 0)
-		{
-			perror("send()");
-			fileStream.close();
-			return (ERR);
-		}
+		fileStream.str(std::string());
+		fileStream.clear();
 	}
-	fileStream.close();
+	else
+	{
+		std::ifstream	fileStream(response.getFileName().c_str(), std::ios::in | std::ios::binary);
+		char			buf[BUFFER_SIZE];
+		int				i;
+		char			c;
+
+		if (response.getMethod() == "HEAD")
+			return (OK);
+		while (fileStream.get(c))
+		{
+			memset(buf, 0, BUFFER_SIZE);
+			buf[0] = c;
+			i = 1;
+			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
+			{
+				buf[i] = c;
+				i++;
+			}
+			if (i + 1 == BUFFER_SIZE)
+			{
+				buf[i] = c;
+				i++;
+			}
+			if (send(fde, buf, i, 0) < 0)
+			{
+				perror("send()");
+				fileStream.close();
+				return (ERR);
+			}
+		}
+		fileStream.close();
+	}
 	return (OK);
 }
 
@@ -119,22 +157,21 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
         response.rendering(header);
     }
 
-	// deliver header
-	if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), false))
-		return (ERR);
-
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
 		setEnvForCgi(sock, response, sockNbr);
 		if (GetCGIfile(sock, fde, sock.getCgiPass(sockNbr, response.getUrl()), sock.getRealUrl(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
-	else
-	{
-		// deliver data
-		if (sendData(fde, response))
-			return (ERR);
-	}
+	// else
+	// {
+	// deliver header
+	if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), false))
+		return (ERR);
+	// deliver data
+	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
+		return (ERR);
+	// }
 	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
 	// std::cout << "status ="<<response.getStatus()<<std::endl;
 	// if ((response.getStatus()).find("400") != std::string::npos )

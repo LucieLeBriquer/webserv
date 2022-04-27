@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 17:44:49 by user42            #+#    #+#             */
-/*   Updated: 2022/04/25 17:48:57 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 15:56:45 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 {
 	std::stringstream out;
     
+	sock.setEnvValue("SERVER_NAME", "webserv");
     sock.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
 	sock.setEnvValue("PATH_INFO", sock.getRealUrl(sockNbr, response.getUrl()));
 	sock.setEnvValue("REQUEST_METHOD", response.getMethod());
@@ -84,23 +85,28 @@ int 	mallocEnv(char ***env, Socket &sock)
 
 int 	mallocArg(char ***arg, std::string cgi, std::string file)
 {
-	(*arg) = (char **)malloc(sizeof(char *) * 3);
+	(*arg) = (char **)malloc(sizeof(char *) * 1);
 	if (!(*arg))
 		return ERR;
-		
-	/** Malloc executable **/
-	(*arg)[0] = (char *)malloc(sizeof(char) * (strlen(cgi.c_str()) + 1));
-	if (!(*arg)[0])
-		return ERR;
-	strcpy((*arg)[0], cgi.c_str());
 	
-	/** Malloc file asked **/
-	(*arg)[1] = (char *)malloc(sizeof(char) * (strlen(file.c_str()) + 1));
-	if (!(*arg)[1])
-		return ERR;
-	strcpy((*arg)[1], file.c_str());
+	(void)cgi;
+	(void)file;
+	// /** Malloc executable **/
+	// (*arg)[0] = (char *)malloc(sizeof(char) * (strlen(cgi.c_str()) + 1));
+	// if (!(*arg)[0])
+	// 	return ERR;
+	// strcpy((*arg)[0], cgi.c_str());
+	
+	// /** Malloc file asked **/
+	// (*arg)[1] = (char *)malloc(sizeof(char) * (strlen(file.c_str()) + 1));
+	// if (!(*arg)[1])
+	// 	return ERR;
+	// strcpy((*arg)[1], file.c_str());
 	
 	/** last arg NULL **/
-	(*arg)[2] = NULL;
+	// (*arg)[0] = (char *)malloc(sizeof(char) * 1);
+	// if (!(*arg)[0])
+	// 	return ERR;
+	(*arg)[0] = NULL;
 	return OK;
 }

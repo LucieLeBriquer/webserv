@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 14:58:41 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 14:47:46 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,12 @@ void		Socket::setBody(std::string newBody)
 {
 	this->_body = newBody;
 }
+
+void		Socket::setCgiCoprs(std::string str)
+{
+	this->_cgiCoprs = str;
+}
+
 /*
 **		GETTER FUNCTIONS
 */
@@ -203,6 +209,11 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 std::string						Socket::getBody(void) const
 {
 	return this->_body;
+}
+
+std::string						Socket::getCgiCoprs(void) const
+{
+	return this->_cgiCoprs;
 }
 
 /*
