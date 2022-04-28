@@ -14,23 +14,32 @@
 
 std::string	deletingUseless(std::string header)
 {
-	int			find, i;
+	int			find, i = 0;
 	
 	find = header.find("Content-Type:");
-	i = find;
-	while (header[i] && header[i] != '\n')
-		i++;
-	header.erase(find, (i + 1) - find);
+	if (find > 0)
+	{
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+	}
 	find = header.find("Host:");
-	i = find;
-	while (header[i] && header[i] != '\n')
-		i++;
-	header.erase(find, (i + 1) - find);
-	find = header.find("Content-Length:");
-	i = find;
-	while (header[i] && header[i] != '\n')
-		i++;
-	header.erase(find, (i + 1) - find);
+	if (find > 0)
+	{
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+	}
+	// find = header.find("Content-Length:");
+	// if (find > 0)
+	// {
+	// 	i = find;
+	// 	while (header[i] && header[i] != '\n')
+	// 		i++;
+	// 	header.erase(find, (i + 1) - find);
+	// }
 	header += "\r\n";
 	return header;
 }

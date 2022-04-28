@@ -14,7 +14,8 @@
 
 void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 {
-	std::stringstream out;
+	std::stringstream	out;
+	std::string			string;
     
 	sock.setEnvValue("SERVER_NAME", sock.getServerName(sockNbr));
     sock.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
@@ -26,6 +27,10 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 	sock.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
 	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
 	{
+		string = sock.getBody();
+		if (string[strlen(string.c_str()) - 1] == '\n' && string[strlen(string.c_str()) - 2] == '\r')
+			string.erase(strlen(string.c_str()) - 2, 2);
+		sock.setBody(string);
 		out << strlen(sock.getBody().c_str());
 		sock.setEnvValue("CONTENT_LENGTH", out.str());
 	}
