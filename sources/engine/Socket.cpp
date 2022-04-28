@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
 /*   Updated: 2022/04/27 14:47:46 by user42           ###   ########.fr       */
@@ -285,7 +285,7 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
 	{
 		if (!getConfig(nbr).isMethodsSet())
-			return (true);
+			return (method == getMethodNb("GET") || method == getMethodNb("HEAD") || method == getMethodNb("OPTIONS"));
 		methods = getConfig(nbr).getMethods();
 	}
 	else
@@ -294,6 +294,19 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 		return (true);
 	return (false);
 }
+
+vecInt		Socket::getAllowedMethods(int nbr, const std::string url) const
+{
+	vecInt	methods;
+
+	for (int i = 0; i < nbMethods; i++)
+	{
+		if (isAllowedMethod(nbr, url, i))
+			methods.push_back(i);
+	}
+	return (methods);
+}
+
 
 std::string	Socket::getHost(int nbr) const
 {

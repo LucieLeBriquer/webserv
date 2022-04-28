@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
 /*   Updated: 2022/04/27 14:46:55 by user42           ###   ########.fr       */
@@ -74,6 +74,7 @@ class Socket
 		std::string		addRoot(int nbr, const std::string url, const std::string path) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
+		vecInt			getAllowedMethods(int nbr, const std::string url) const;
 		std::string		getHost(int nbr) const;
 		vecStr			getIndex(int nbr, const std::string url) const;
 		bool			hasIndex(int nbr, const std::string url) const;
