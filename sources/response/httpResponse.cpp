@@ -6,13 +6,13 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 15:56:09 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 17:08:19 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-HTTPResponse::HTTPResponse(void) : _options("GET, HEAD, OPTIONS"), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
 									_statusNb(0), _redir(0), _needAutoindex(false)
 {
@@ -179,13 +179,14 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	}
 	if (this->_method == "OPTIONS" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("OPTIONS")))
 	{
-		this->_options += ", OPTIONS";
-		// std::cout << "there " << std::endl;
-		// std::cout << "allowed meth = " << sock.getAllowedMethods(4, this->_url) << std::endl;
-		// std::cout << "meth  = " << ::getMethod(4) << std::endl;
-		// std::cout << "meth  = " << ::getMethodNb("OPTIONS") << std::endl;
-		
-		// += get les options qui ne sont pas par defaut dans la config
+		vecInt	methods = sock.getAllowedMethods(sockNbr, this->_url);
+
+		for (int i = 0; i < methods.size() ; i++)
+		{
+			this->_options += ::getMethod(i);
+			if (i != methods.size() - 1)
+				this->_options += ", ";
+		}
 	}
 	if (sock.isRedir(sockNbr, this->_url))
 	{

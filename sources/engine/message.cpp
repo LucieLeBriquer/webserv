@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/28 15:55:46 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 17:08:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,6 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 	{
-		std::cout << " hey " << std::endl;
 		response.setStatus("405", " Method Not Allowed", header);
 	}
 	// fill header
