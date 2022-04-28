@@ -6,13 +6,13 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/26 17:11:45 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:26:38 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-HTTPResponse::HTTPResponse(void) : _options("GET, HEAD, POST"), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+HTTPResponse::HTTPResponse(void) : _options("GET, HEAD, OPTIONS"), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
 									_statusNb(0), _redir(0), _needAutoindex(false)
 {
@@ -179,7 +179,11 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	}
 	if (this->_method == "OPTIONS" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("OPTIONS")))
 	{
-		this->_options += ",OPTIONS";
+		this->_options += ", OPTIONS";
+		std::string << "allowed meth = " << sock.getAllowedMethods(4, this->_url) << std::endl;
+		std::string << "meth  = " << sock.getMethod(4) << std::endl;
+		std::string << "meth  = " << sock.getMethod("OPTIONS") << std::endl;
+		
 		// += get les options qui ne sont pas par defaut dans la config
 	}
 	if (sock.isRedir(sockNbr, this->_url))

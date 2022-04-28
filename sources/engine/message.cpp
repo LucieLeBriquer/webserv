@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/26 17:08:37 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:13:56 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static int	sendData(int fde, HTTPResponse &response)
 	int				i;
 	char			c;
 
-	if (response.getMethod() == "HEAD")
+	if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
 		return (OK);
 	while (fileStream.get(c))
 	{
@@ -92,8 +92,10 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 {
 	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
+	{
+		std::cout << " hey " << std::endl;
 		response.setStatus("405", " Method Not Allowed", header);
-
+	}
 	// fill header
 	//pas de page avec un 204 no content
 	if (getRightFile(response, sock, sockNbr, header))
