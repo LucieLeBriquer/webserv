@@ -33,12 +33,12 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	return (OK);
 }
 
-static int	sendHeader(int fde, HTTPResponse &response, bool isCgi, bool redir)
+static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir, int sockNbr)
 {
 	std::string	header = response.getHeader();
 
-	if (isCgi && !redir)
-		header = headerForCgi(header);
+	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
+		header = headerForCgi(header, sock, sockNbr);
 	else
 		header += "\r\n\r\n";
 
@@ -128,18 +128,16 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 
 int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
-	// check if method is allowed for the requested url
 	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
 
-	// fill header
 	if (getRightFile(response, sock, sockNbr, header))
 	{
 		if (response.getRedir() == 1)
 		{
 			response.rendering(header);
 			response.setRedir(0);
-			if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), true))
+			if (sendHeader(fde, response, sock, true, sockNbr))
 				return (ERR);
 			return (OK);
 		}
@@ -148,38 +146,27 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		return (sendDefaultPage(fde, response));
 	}
 
+	if (sock.isCgi(sockNbr, response.getUrl()))
+	{
+        header.setContentTypeResponse("text/html");
+        response.rendering(header);
+
+		setEnvForCgi(sock, response, sockNbr);
+		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
+			return ERR;
+	}
+
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
-	if (sock.isCgi(sockNbr, response.getUrl()))
-    {
-        header.setContentTypeResponse("text/html");
-        response.rendering(header);
-    }
-
-	if (sock.isCgi(sockNbr, response.getUrl()))
-	{
-		setEnvForCgi(sock, response, sockNbr);
-		if (GetCGIfile(sock, fde, sock.getCgiPass(sockNbr, response.getUrl()), sock.getRealUrl(sockNbr, response.getUrl())) < 0)
-			return ERR;
-	}
-	// else
-	// {
-	// deliver header
-	if (sendHeader(fde, response, sock.isCgi(sockNbr, response.getUrl()), false))
+	if (sendHeader(fde, response, sock, false, sockNbr))
 		return (ERR);
-	// deliver data
 	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
 		return (ERR);
-	// }
-	// si code erreur (bad request ou autre) -> close(fde), si code succes on ne close pas le fd
-	// std::cout << "status ="<<response.getStatus()<<std::endl;
-	// if ((response.getStatus()).find("400") != std::string::npos )
-	if (response.getStatusNb() != 200 && response.getStatusNb() != 0)
-	{
-		// remove from matching map
+
+	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
 		close(fde);
-	}
+
 	return (OK);
 }
 

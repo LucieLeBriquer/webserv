@@ -16,7 +16,7 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 {
 	std::stringstream out;
     
-	sock.setEnvValue("SERVER_NAME", "webserv");
+	sock.setEnvValue("SERVER_NAME", sock.getServerName(sockNbr));
     sock.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
 	sock.setEnvValue("PATH_INFO", sock.getRealUrl(sockNbr, response.getUrl()));
 	sock.setEnvValue("REQUEST_METHOD", response.getMethod());
@@ -36,7 +36,7 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 	}
 }
 
-void	ft_free_env_arg(char ***env, char ***arg, Socket *sock)
+void	ft_free_env_arg(char ***env, Socket *sock)
 {
 	size_t i = 0;
 
@@ -48,15 +48,6 @@ void	ft_free_env_arg(char ***env, char ***arg, Socket *sock)
 	}
 	free((*env));
 	(*env) = NULL;
-	i = 0;
-	while (i < 3)
-	{
-		free((*arg)[i]);
-		(*arg)[i] = NULL;
-		i++;
-	}
-	free((*arg));
-	(*arg) = NULL;
 }
 
 int 	mallocEnv(char ***env, Socket &sock)
@@ -68,6 +59,7 @@ int 	mallocEnv(char ***env, Socket &sock)
 	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
 	if (!(*env))
 		return ERR;
+	(*env)[sock.getEnvSize()] = NULL;
 	for (mapStr::iterator it = tmp.begin(); it != tmp.end(); it++)
 	{
 		val = it->first;
@@ -80,33 +72,5 @@ int 	mallocEnv(char ***env, Socket &sock)
 		(*env)[nbr][strlen(val.c_str())] = '\0';
 		nbr++;
 	}
-	return OK;
-}
-
-int 	mallocArg(char ***arg, std::string cgi, std::string file)
-{
-	(*arg) = (char **)malloc(sizeof(char *) * 1);
-	if (!(*arg))
-		return ERR;
-	
-	(void)cgi;
-	(void)file;
-	// /** Malloc executable **/
-	// (*arg)[0] = (char *)malloc(sizeof(char) * (strlen(cgi.c_str()) + 1));
-	// if (!(*arg)[0])
-	// 	return ERR;
-	// strcpy((*arg)[0], cgi.c_str());
-	
-	// /** Malloc file asked **/
-	// (*arg)[1] = (char *)malloc(sizeof(char) * (strlen(file.c_str()) + 1));
-	// if (!(*arg)[1])
-	// 	return ERR;
-	// strcpy((*arg)[1], file.c_str());
-	
-	/** last arg NULL **/
-	// (*arg)[0] = (char *)malloc(sizeof(char) * 1);
-	// if (!(*arg)[0])
-	// 	return ERR;
-	(*arg)[0] = NULL;
 	return OK;
 }
