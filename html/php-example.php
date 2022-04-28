@@ -1,15 +1,28 @@
 <?php
   // The global $_POST variable allows you to access the data sent with the POST method by name
   // To access the data sent with the GET method, you can use $_GET
-  if (isset($_POST['say']))
-    $say = htmlspecialchars($_POST['say']);
-  else
-    $say = 'say';
-  if (isset($_POST['to']))
-    $to = htmlspecialchars($_POST['to']);
-  else
-    $to = 'to';
-    
+  if (getenv("REQUEST_METHOD") == 'GET')
+  {
+    if (isset($_GET['say']))
+      $say = htmlspecialchars($_GET['say']);
+    else
+      $say = 'say';
+    if (isset($_GET['to']))
+      $to = htmlspecialchars($_GET['to']);
+    else
+      $to = 'to';
+  }
+  else if (getenv("REQUEST_METHOD") == 'POST')
+  {
+    if (isset($_POST['say']))
+      $say = htmlspecialchars($_POST['say']);
+    else
+      $say = 'say';
+    if (isset($_POST['to']))
+      $to = htmlspecialchars($_POST['to']);
+    else
+      $to = 'to';
+  } 
     echo "<!DOCTYPE html>";
     echo "<html>";
 

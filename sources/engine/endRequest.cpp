@@ -46,6 +46,7 @@ int		endRequest(std::string string, Socket &sock)
 				if (strncmp(&string[i], "\r\n", 2) == 0)
 				{
 					std::string tmp = &string[j];
+					tmp += '\0';
 					sock.setBody(tmp);
 					return (ERR);
 				}

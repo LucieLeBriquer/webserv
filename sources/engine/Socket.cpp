@@ -136,6 +136,12 @@ void		Socket::setBody(std::string newBody)
 {
 	this->_body = newBody;
 }
+
+void		Socket::setCgiCoprs(std::string str)
+{
+	this->_cgiCoprs = str;
+}
+
 /*
 **		GETTER FUNCTIONS
 */
@@ -203,6 +209,11 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 std::string						Socket::getBody(void) const
 {
 	return this->_body;
+}
+
+std::string						Socket::getCgiCoprs(void) const
+{
+	return this->_cgiCoprs;
 }
 
 /*
