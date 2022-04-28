@@ -274,7 +274,7 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
 	{
 		if (!getConfig(nbr).isMethodsSet())
-			return (method == getMethodNb("GET") || method == getMethodNb("HEAD"));
+			return (method == getMethodNb("GET") || method == getMethodNb("HEAD") || method == getMethodNb("OPTIONS"));
 		methods = getConfig(nbr).getMethods();
 	}
 	else
