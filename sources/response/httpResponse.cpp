@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/25 17:57:09 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/28 18:28:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-HTTPResponse::HTTPResponse(void) : _contentLen(""), _protocol(""), _statusCode(""), _url(""),
+HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
 									_statusNb(0), _redir(0), _needAutoindex(false)
 {
@@ -154,20 +154,39 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
 //
 	std::string filename;
+	filename = sock.getRealUrl(sockNbr, this->_url);
 
 	if ( this->_method == "GET" )
 	{
 		if (this->_url.find('?') != std::string::npos )
 		{
-			sock.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
-			sock.setIsQueryString(true);
-			sock.setBody( sock.getEnvValue("QUERY_STRING") );
+			sock.setEnvValue("QUERY_STRING=", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
+			sock.setBody( sock.getEnvValue("QUERY_STRING=") );
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
-		
-	filename = sock.getRealUrl(sockNbr, this->_url);
-
+	if (this->_method == "DELETE" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("DELETE")))
+	{
+		if (this->checkUrl(sock, sockNbr, header) != "")
+		{
+			std::remove(filename.c_str());
+			this->setStatus("200", " OK", header);
+			return this->_url = "html/deleted.html";
+		}
+		this->setStatus("204", " No Content", header);
+		this->_url = "";
+		return this->_url;
+	}
+	if (this->_method == "OPTIONS" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("OPTIONS")))
+	{
+		vecInt	methods = sock.getAllowedMethods(sockNbr, this->_url);
+		for (size_t i = 0; i < methods.size() ; i++)
+		{
+			this->_options += ::getMethod(i);
+			if (i != (methods.size() - 1))
+				this->_options += ", ";
+		}
+	}
 	if (sock.isRedir(sockNbr, this->_url))
 	{
 		this->_location = sock.getRedir(sockNbr, _url);
@@ -286,6 +305,8 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	std::string	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
 	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
+	if (this->_method == "OPTIONS")
+		this->_header += "Allow: " + this->_options + "\r\n";
 	this->_header += header.fillrender();
 	if (this->_redir)
         this->_header += "Location: " + this->_location + "\r\n";
