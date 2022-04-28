@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 15:26:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:56:09 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,9 +180,10 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	if (this->_method == "OPTIONS" && sock.isAllowedMethod(sockNbr, this->_url, getMethodNb("OPTIONS")))
 	{
 		this->_options += ", OPTIONS";
-		std::string << "allowed meth = " << sock.getAllowedMethods(4, this->_url) << std::endl;
-		std::string << "meth  = " << sock.getMethod(4) << std::endl;
-		std::string << "meth  = " << sock.getMethod("OPTIONS") << std::endl;
+		// std::cout << "there " << std::endl;
+		// std::cout << "allowed meth = " << sock.getAllowedMethods(4, this->_url) << std::endl;
+		// std::cout << "meth  = " << ::getMethod(4) << std::endl;
+		// std::cout << "meth  = " << ::getMethodNb("OPTIONS") << std::endl;
 		
 		// += get les options qui ne sont pas par defaut dans la config
 	}

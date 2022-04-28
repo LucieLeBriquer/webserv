@@ -274,7 +274,7 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
 	{
 		if (!getConfig(nbr).isMethodsSet())
-			return (true);
+			return (method == getMethodNb("GET") || method == getMethodNb("HEAD") || method == getMethodNb("OPTIONS"));
 		methods = getConfig(nbr).getMethods();
 	}
 	else
@@ -283,6 +283,19 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 		return (true);
 	return (false);
 }
+
+vecInt		Socket::getAllowedMethods(int nbr, const std::string url) const
+{
+	vecInt	methods;
+
+	for (int i = 0; i < nbMethods; i++)
+	{
+		if (isAllowedMethod(nbr, url, i))
+			methods.push_back(i);
+	}
+	return (methods);
+}
+
 
 std::string	Socket::getHost(int nbr) const
 {

@@ -71,6 +71,7 @@ class Socket
 		std::string		addRoot(int nbr, const std::string url, const std::string path) const;
 		std::string		getServerName(int nbr) const;
 		bool			isAllowedMethod(int nbr, const std::string url, int method) const;
+		vecInt			getAllowedMethods(int nbr, const std::string url) const;
 		std::string		getHost(int nbr) const;
 		vecStr			getIndex(int nbr, const std::string url) const;
 		bool			hasIndex(int nbr, const std::string url) const;

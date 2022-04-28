@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/26 17:15:36 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:54:30 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,11 @@ void HTTPHeader::setAccept(std::string value)
 /*
 **		GETTERS
 */
+
+std::string HTTPHeader::getAccept( void ) const
+{
+	return this->_accept;
+}
 
 int HTTPHeader::getContext( void )
 {
@@ -277,6 +282,7 @@ int HTTPHeader::fillheader(std::string *buf)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
+			
 	}
 	if (i == headerSize)
 		return (0);
