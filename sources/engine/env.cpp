@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 17:44:49 by user42            #+#    #+#             */
-/*   Updated: 2022/04/25 17:48:57 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 15:56:45 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 {
-	std::stringstream out;
+	std::stringstream	out;
+	std::string			string;
     
+	sock.setEnvValue("SERVER_NAME", sock.getServerName(sockNbr));
     sock.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
 	sock.setEnvValue("PATH_INFO", sock.getRealUrl(sockNbr, response.getUrl()));
 	sock.setEnvValue("REQUEST_METHOD", response.getMethod());
@@ -25,6 +27,10 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 	sock.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
 	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
 	{
+		string = sock.getBody();
+		if (string[strlen(string.c_str()) - 1] == '\n' && string[strlen(string.c_str()) - 2] == '\r')
+			string.erase(strlen(string.c_str()) - 2, 2);
+		sock.setBody(string);
 		out << strlen(sock.getBody().c_str());
 		sock.setEnvValue("CONTENT_LENGTH", out.str());
 	}
@@ -35,7 +41,7 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 	}
 }
 
-void	ft_free_env_arg(char ***env, char ***arg, Socket *sock)
+void	ft_free_env_arg(char ***env, Socket *sock)
 {
 	size_t i = 0;
 
@@ -47,15 +53,6 @@ void	ft_free_env_arg(char ***env, char ***arg, Socket *sock)
 	}
 	free((*env));
 	(*env) = NULL;
-	i = 0;
-	while (i < 3)
-	{
-		free((*arg)[i]);
-		(*arg)[i] = NULL;
-		i++;
-	}
-	free((*arg));
-	(*arg) = NULL;
 }
 
 int 	mallocEnv(char ***env, Socket &sock)
@@ -67,6 +64,7 @@ int 	mallocEnv(char ***env, Socket &sock)
 	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
 	if (!(*env))
 		return ERR;
+	(*env)[sock.getEnvSize()] = NULL;
 	for (mapStr::iterator it = tmp.begin(); it != tmp.end(); it++)
 	{
 		val = it->first;
@@ -79,28 +77,5 @@ int 	mallocEnv(char ***env, Socket &sock)
 		(*env)[nbr][strlen(val.c_str())] = '\0';
 		nbr++;
 	}
-	return OK;
-}
-
-int 	mallocArg(char ***arg, std::string cgi, std::string file)
-{
-	(*arg) = (char **)malloc(sizeof(char *) * 3);
-	if (!(*arg))
-		return ERR;
-		
-	/** Malloc executable **/
-	(*arg)[0] = (char *)malloc(sizeof(char) * (strlen(cgi.c_str()) + 1));
-	if (!(*arg)[0])
-		return ERR;
-	strcpy((*arg)[0], cgi.c_str());
-	
-	/** Malloc file asked **/
-	(*arg)[1] = (char *)malloc(sizeof(char) * (strlen(file.c_str()) + 1));
-	if (!(*arg)[1])
-		return ERR;
-	strcpy((*arg)[1], file.c_str());
-	
-	/** last arg NULL **/
-	(*arg)[2] = NULL;
 	return OK;
 }

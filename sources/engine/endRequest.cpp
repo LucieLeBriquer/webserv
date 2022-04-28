@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 08:12:22 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 11:24:34 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ int		endRequest(std::string string, Socket &sock)
 				if (strncmp(&string[i], "\r\n", 2) == 0)
 				{
 					std::string tmp = &string[j];
+					tmp += '\0';
 					sock.setBody(tmp);
 					return (ERR);
 				}

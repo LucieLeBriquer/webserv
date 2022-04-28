@@ -6,7 +6,7 @@
 /*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/25 14:57:57 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/27 14:46:55 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,9 @@ class Socket
 		std::string					getBody(void) const;
 		void						setBody(std::string newBody);
 
+		std::string					getCgiCoprs(void) const;
+		void						setCgiCoprs(std::string str);
+
 		// config getter
 		const Server	getConfig(int nbr) const;
 		const Location	getConfig(int nbr, int loc) const;
@@ -93,6 +96,7 @@ class Socket
 		int								_method;
 		std::string						_body;
 		bool							_isQuery;
+		std::string						_cgiCoprs;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
