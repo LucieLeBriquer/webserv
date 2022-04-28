@@ -38,6 +38,7 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
+std::string	headerForCgi(std::string header);
 void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr);
 int			GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file);
 void    	ft_free_env_arg(char ***env, char ***arg, Socket *sock);

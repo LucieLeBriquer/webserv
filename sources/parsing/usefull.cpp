@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/26 17:18:22 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 14:38:56 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -281,7 +281,7 @@ int	getMethodNb(std::string method)
 {
 	for (int i = 0; i < nbMethods; i++)
 	{
-		std::cout << "met "<< method[i] << std::endl;
+		//std::cout << "met "<< method[i] << std::endl;
 		if (methods[i] == method)
 			return (i);
 	}

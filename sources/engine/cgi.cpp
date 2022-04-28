@@ -3,14 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 12:23:01 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/26 14:15:16 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
+
+std::string	headerForCgi(std::string header)
+{
+	std::string	cgiHeader;
+	int			find, i;
+
+	cgiHeader = header;
+	// find = cgiHeader.find("Content-Type:");
+	// i = find;
+	// while (cgiHeader[i] && cgiHeader[i] != '\n')
+	// 	i++;
+	// cgiHeader.erase(find, (i + 1) - find);
+	find = cgiHeader.find("Host:");
+	i = find;
+	while (cgiHeader[i] && cgiHeader[i] != '\n')
+		i++;
+	cgiHeader.erase(find, (i + 1) - find);
+	find = cgiHeader.find("Content-Length:");
+	i = find;
+	while (cgiHeader[i] && cgiHeader[i] != '\n')
+		i++;
+	cgiHeader.erase(find, (i + 1) - find);
+	cgiHeader += "\r\n";
+	return cgiHeader;
+}
 
 /*******
  * RAPPEL *
@@ -21,11 +46,12 @@
 
 int 	GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file)
 {
-	char **env, **arg;
-	pid_t pid;
-	int status, fd[2];
-	std::string body;
+	char		**env, **arg;
+	pid_t		pid;
+	int			status, fd[2], fdf;
+	std::string	body;
 
+	fdf = fde;
 	body = sock.getBody();
 	body += "\n\0";
 	if (mallocEnv(&env, sock) < 0)
@@ -60,20 +86,20 @@ int 	GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file)
 			close(fd[1]);
 			dup2(fd[0], STDIN_FILENO);
 		}
-		dup2(fde, STDOUT_FILENO); // our connected socket become stdout
+		dup2(fdf, STDOUT_FILENO); // our connected socket become stdout
 		execve(arg[0], arg, env);
 	}
 	else
 	{
 		if (sock.getEnvValue("REQUEST_METHOD") == "POST")
 		{
-			close(fd[0]);
 			write(fd[1], sock.getBody().c_str(), strlen(sock.getBody().c_str()));
 		}
-		close(fde);
+		close(fd[0]);
+		close(fd[1]);
+		close(fdf);
+		waitpid(pid, &status, 0);
 	}
-	close(fd[1]);
-	waitpid(pid, &status, 0);
 	
 	/////////////////printing////////////////
 	std::cout << std::endl;
@@ -81,7 +107,7 @@ int 	GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file)
 	std::cout << std::endl;
 	std::cout << " - arg[0] = " << arg[0] << std::endl;
 	std::cout << " - arg[1] = " << arg[1] << std::endl;
-	std::cout << " - connected socket = " << fde << std::endl;
+	std::cout << " - connected socket = " << fdf << std::endl;
 	std::cout << " - body = " << sock.getBody() << std::endl;
 	std::cout << "====================================================" << std::endl;
 	std::cout << std::endl;
