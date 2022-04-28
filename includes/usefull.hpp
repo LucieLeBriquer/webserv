@@ -110,8 +110,8 @@ template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> ve
 
 std::ostream	&operator<<(std::ostream &o, mapErr map);
 
-static const int			nbMethods = 3;
-static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE"};
+static const int			nbMethods = 4;
+static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE", "HEAD"};
 
 
 // errors
