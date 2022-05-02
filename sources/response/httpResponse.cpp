@@ -160,8 +160,9 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 	{
 		if (this->_url.find('?') != std::string::npos )
 		{
-			sock.setEnvValue("QUERY_STRING=", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
-			sock.setBody( sock.getEnvValue("QUERY_STRING=") );
+			sock.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
+			sock.setIsQueryString(true);
+			sock.setBody( sock.getEnvValue("QUERY_STRING") );
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}
