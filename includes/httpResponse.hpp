@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/20 14:34:10 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/26 11:14:52 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ class HTTPHeader;
 class HTTPResponse
 {
 	protected:
+		std::string 	_options;
 		std::string 	_contentLen;
 		std::string 	_protocol;
 		std::string		_statusCode;

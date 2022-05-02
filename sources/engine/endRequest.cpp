@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/27 11:24:34 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/26 11:27:25 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,10 @@ int		endRequest(std::string string, Socket &sock)
 		sock.setMethod(POST);
 	else if (strncmp(string.c_str(), "HEAD", 4) == 0)
 		sock.setMethod(HEAD);
+	else if (strncmp(string.c_str(), "DELETE", 6) == 0)
+		sock.setMethod(DELETE);
+	else if (strncmp(string.c_str(), "OPTIONS", 7) == 0)
+		sock.setMethod(OPTIONS);
 	else
 		sock.setMethod(BAD_METHODE);
 	// if (sock.getMethod() == BAD_METHODE)
@@ -31,7 +35,7 @@ int		endRequest(std::string string, Socket &sock)
 	{
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
-			if (sock.getMethod() == GET || sock.getMethod() == HEAD)
+			if (sock.getMethod() != POST)
 			{
 				std::string tmp = "";
 				sock.setBody(tmp);

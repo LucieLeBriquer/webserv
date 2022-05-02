@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/19 16:27:15 by masboula         ###   ########.fr       */
+/*   Updated: 2022/04/28 15:54:30 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,11 @@ void HTTPHeader::setAccept(std::string value)
 **		GETTERS
 */
 
+std::string HTTPHeader::getAccept( void ) const
+{
+	return this->_accept;
+}
+
 int HTTPHeader::getContext( void )
 {
 	return this->_active;
@@ -163,7 +168,7 @@ int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 		if (!isupper(req[i]))
 			return (-1);
 	}
-	for (int j = 0; j < 4; j++)
+	for (int j = 0; j < 5; j++)
 	{
 		if (!strncmp(req.c_str(), methods[j].c_str(), i))
 		{
@@ -206,7 +211,7 @@ std::string	getHead(std::string buf)
 
 int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 {
-	std::string methods[4] = {"GET", "POST", "DELETE", "HEAD"};
+	std::string methods[5] = {"GET", "POST", "DELETE", "HEAD", "OPTIONS"};
 	std::string line;
 	int i;
 
@@ -222,7 +227,6 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
 	this->_method = "NULL";
-	// std::cout << "[" <<line << "]" << std::endl;
 	if ((i = this->parseMethod(request[0], methods)) == -1)
 	{
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
@@ -256,7 +260,7 @@ int HTTPHeader::header(std::string str)
 {
 	if (this->_method == "POST")
 	{
-		std::cout << "POST["<< str << "]"<< std::endl;
+		(void)str;
 		if (this->_contentLen == "")
 			return -1;
 	}
@@ -278,6 +282,7 @@ int HTTPHeader::fillheader(std::string *buf)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
+			
 	}
 	if (i == headerSize)
 		return (0);
