@@ -39,7 +39,7 @@ int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
 std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
-void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr);
+void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header);
 int			GetCGIfile(Socket &sock, std::string cgi);
 void    	ft_free_env_arg(char ***env, Socket *sock);
 int     	mallocEnv(char ***env, Socket &sock);

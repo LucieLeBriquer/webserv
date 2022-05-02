@@ -12,7 +12,7 @@
 
 #include "engine.hpp"
 
-void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
+void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header)
 {
 	std::stringstream	out;
 	std::string			string;
@@ -24,7 +24,7 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr)
 	sock.setEnvValue("SCRIPT_FILENAME", sock.getRealUrl(sockNbr, response.getUrl()));
 	sock.setEnvValue("SERVER_PROTOCOL", "HTTP/1.1");
 	sock.setEnvValue("REDIRECT_STATUS", "200");
-	sock.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
+	sock.setEnvValue("CONTENT_TYPE", header.getContentType());
 	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
 	{
 		string = sock.getBody();
