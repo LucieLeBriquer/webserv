@@ -39,9 +39,11 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, sock, sockNbr);
+	else if (redir)
+		header += "\r\n\r\n\r\n";
 	else
 		header += "\r\n\r\n";
-
+	
 	std::cout << "====================================================" << std::endl;
 	std::cout << header;
 	std::cout << "====================================================" << std::endl;

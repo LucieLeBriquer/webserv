@@ -299,19 +299,26 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_url = line[1];
 }
 
-void HTTPResponse::rendering( HTTPHeader &header )
+void HTTPResponse::rendering(HTTPHeader &header)
 {
-	time_t rawtime;
+	time_t 		rawtime;
+	std::string	timeStr;
+
 	time(&rawtime);
-	std::string	timeStr = ctime(&rawtime);
+	timeStr = ctime(&rawtime);
 	timeStr = timeStr.substr(0, timeStr.size() - 1);
-	this->_header = this->_protocol + ' ' + this->_statusCode + "\r\n";
-	if (this->_method == "OPTIONS")
-		this->_header += "Allow: " + this->_options + "\r\n";
-	this->_header += header.fillrender();
-	if (this->_redir)
-        this->_header += "Location: " + this->_location + "\r\n";
-	if (this->_contentLen != "")
-		this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-	this->_header += "Date: " + timeStr;
+
+	_header = _protocol + ' ' + _statusCode + "\r\n";
+	_header += header.getHost();
+	if (_method == "OPTIONS")
+		_header += "Allow: " + _options + "\r\n";
+	if (_redir)
+        _header += "Location: " + _location + "\r\n";
+	else
+	{
+		_header += header.getResponseContentType();
+		if (_contentLen != "")
+			_header += "Content-Length: " + _contentLen + "\r\n";
+	}
+	_header += "Date: " + timeStr;
 }
