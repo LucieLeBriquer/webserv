@@ -38,12 +38,11 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
-std::string	headerForCgi(std::string header);
+std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
 void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr);
-int			GetCGIfile(Socket &sock, int fde, std::string cgi, std::string file);
-void    	ft_free_env_arg(char ***env, char ***arg, Socket *sock);
+int			GetCGIfile(Socket &sock, std::string cgi);
+void    	ft_free_env_arg(char ***env, Socket *sock);
 int     	mallocEnv(char ***env, Socket &sock);
-int     	mallocArg(char ***arg, std::string cgi, std::string file);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);

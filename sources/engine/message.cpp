@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/27 15:21:15 by user42           ###   ########.fr       */
+/*   Updated: 2022/04/28 17:35:24 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		int					i;
 		char				c;
 
-		if (response.getMethod() == "HEAD")
+		if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
 			return (OK);
 		while (fileStream.get(c))
 		{
@@ -97,7 +97,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		int				i;
 		char			c;
 
-		if (response.getMethod() == "HEAD")
+		if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
 			return (OK);
 		while (fileStream.get(c))
 		{

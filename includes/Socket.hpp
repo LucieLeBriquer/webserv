@@ -61,6 +61,9 @@ class Socket
 		std::string					getBody(void) const;
 		void						setBody(std::string newBody);
 
+		std::string					getCgiCoprs(void) const;
+		void						setCgiCoprs(std::string str);
+
 		// config getter
 		const Server	getConfig(int nbr) const;
 		const Location	getConfig(int nbr, int loc) const;
@@ -94,6 +97,7 @@ class Socket
 		int								_method;
 		std::string						_body;
 		bool							_isQuery;
+		std::string						_cgiCoprs;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
