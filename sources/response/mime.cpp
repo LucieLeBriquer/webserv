@@ -19,7 +19,12 @@ static std::string	getType(std::string str)
 
 static std::string	getSubtype(std::string str)
 {
-	return (str.substr(str.find('/') + 1, str.find(';')));
+	size_t	quality = str.find(';');
+	size_t	start = str.find('/');
+	if (quality == std::string::npos)
+		return (str.substr(start + 1, str.size() - start));
+	else
+		return (str.substr(start + 1, quality - start - 1));
 }
 
 
@@ -27,7 +32,6 @@ static std::string	removeQuality(std::string str)
 {
 	return (str.substr(0, str.find(';')));
 }
-
 
 std::string	mimeContentType(std::string accepted, std::string file)
 {
@@ -57,7 +61,7 @@ std::string	mimeContentType(std::string accepted, std::string file)
 			break;
 		}
 	}
-	if (mime.empty())
+	if (mime.size() == 0)
 		return (removeQuality(accept[0]));
 	type = getType(mime);
 	subtype = getSubtype(mime);

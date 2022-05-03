@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/19 16:44:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/19 16:44:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/03 16:35:20 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define MIME_HPP
 # include <string>
 
-static const int			nbMime = 347;
+static const int			nbMime = 348;
 
 static const std::string	mimeExt[nbMime] = {"3gp", "jpm", "mp3", "rtf", "wav", "xml",
 	"3g2", "3gp", "3gpp", "ac", "adp", "ai", "apng", "appcache", "asc", "atom", "atomcat",
@@ -46,7 +46,8 @@ static const std::string	mimeExt[nbMime] = {"3gp", "jpm", "mp3", "rtf", "wav", "
 	"vtt", "vxml", "war", "wasm", "wav", "weba", "webm", "webmanifest", "webp", "wgt", "wmf",
 	"woff", "woff2", "wrl", "wsdl", "wspolicy", "x3d", "x3db", "x3dbz", "x3dv", "x3dvz",
 	"x3dz", "xaml", "xdf", "xdssc", "xenc", "xer", "xht", "xhtml", "xhvml", "xm", "xml", "xop",
-	"xpl", "xsd", "xsl", "xslt", "xspf", "xvm", "xvml", "yaml", "yang", "yin", "yml", "zip"
+	"xpl", "xsd", "xsl", "xslt", "xspf", "xvm", "xvml", "yaml", "yang", "yin", "yml", "zip",
+	"ico"
 };
 
 static const std::string	mimeType[nbMime] = { "audio/3gpp", "video/jpm", "audio/mp3",
@@ -133,7 +134,8 @@ static const std::string	mimeType[nbMime] = { "audio/3gpp", "video/jpm", "audio/
 	"application/xhtml+xml", "application/xv+xml", "audio/xm", "application/xml",
 	"application/xop+xml", "application/xproc+xml", "application/xml", "application/xml",
 	"application/xslt+xml", "application/xspf+xml", "application/xv+xml", "application/xv+xml",
-	"text/yaml", "application/yang", "application/yin+xml", "text/yaml", "application/zip"
+	"text/yaml", "application/yang", "application/yin+xml", "text/yaml", "application/zip",
+	"image/x-icon"
 };
 
 #endif
