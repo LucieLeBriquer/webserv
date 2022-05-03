@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 18:28:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/03 18:01:00 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
-									_statusNb(0), _redir(0), _needAutoindex(false)
+									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -106,6 +106,13 @@ int			HTTPResponse::getRedir(void) const
 bool		HTTPResponse::getNeedAutoindex(void) const
 {
 	return (_needAutoindex);
+}
+
+int			HTTPResponse::isChunked( void )
+{
+	if (this->_chunked)
+		return (1);
+	return (0);
 }
 
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
@@ -310,8 +317,13 @@ void HTTPResponse::rendering( HTTPHeader &header )
 		this->_header += "Allow: " + this->_options + "\r\n";
 	this->_header += header.fillrender();
 	if (this->_redir)
-        this->_header += "Location: " + this->_location + "\r\n";
-	if (this->_contentLen != "")
-		this->_header += "Content-Length: " + this->_contentLen + "\r\n";
-	this->_header += "Date: " + timeStr;
+        this->_header += "Location: " + this->_location + "\r\n";		
+	this->_header += "Date: " + timeStr + "\r\n";
+	if (header.isChunked())
+	{
+		this->_chunked = 1;
+		this->_header += "Transfer-Encoding: chunked\r\n";
+	}
+	else if (this->_contentLen != "")
+		this->_header += "Content-Length: " + this->_contentLen ;
 }

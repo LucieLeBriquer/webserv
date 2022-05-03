@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 15:54:30 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/03 18:06:12 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,13 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
+	this->setFct[4] = &HTTPHeader::setEncoding;
 
 	return ;
 }
@@ -92,6 +93,10 @@ void HTTPHeader::setAccept(std::string value)
 	this->_accept = value;
 }
 
+void HTTPHeader::setEncoding(std::string value)
+{
+	this->_encoding = value;
+}
 
 /*
 **		GETTERS
@@ -130,6 +135,13 @@ std::string	HTTPHeader::getContentType(void) const
 std::string	HTTPHeader::getResponseContentType(void) const
 {
 	return ("Content-Type: " + _contentTypeResponse + "\r\n");
+}
+
+int	HTTPHeader::isChunked( void )
+{
+	if (!strncasecmp("chunked", _encoding.c_str(), 7))
+		return (1);
+	return (0);
 }
 
 /*
@@ -256,11 +268,10 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	return 1;
 }
 
-int HTTPHeader::header(std::string str)
+int HTTPHeader::header(void )
 {
 	if (this->_method == "POST")
 	{
-		(void)str;
 		if (this->_contentLen == "")
 			return -1;
 	}
@@ -269,9 +280,9 @@ int HTTPHeader::header(std::string str)
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[4] = {"host:", "content-length:", "content-type:" ,"accept:"};
+	std::string header[5] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:"};
 	std::string line;
-	int			headerSize = 4;
+	int			headerSize = 5;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
@@ -282,7 +293,6 @@ int HTTPHeader::fillheader(std::string *buf)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
-			
 	}
 	if (i == headerSize)
 		return (0);

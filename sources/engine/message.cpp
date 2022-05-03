@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/28 17:35:24 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/03 18:15:32 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,18 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 
 static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
+	if (response.isChunked())
+	{
+		std::ofstream file;
+		std::ostringstream s;
+		std::string tos;
+
+		s << response.getContentLen();
+		tos = s.str();
+		file << tos.c_str() << std::endl;
+		file.open("myfile.txt", std::ios::app);
+		file << "0" << std::endl;
+	}
 	if (isCgi)
 	{
 		std::stringstream	fileStream(sock.getCgiCoprs(), std::ios::in | std::ios::binary);
@@ -123,6 +135,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
+
 	return (OK);
 }
 
@@ -180,7 +193,7 @@ int		checkHeader(HTTPHeader &header, std::string string)
 		if (header.fillheader(&string) == -1)
 			break ; // a changer en fonction du retour d'err
 	}
-	if (header.header(string) == -1)
+	if (header.header() == -1)
 		return ERR;
 	return 1;
 }

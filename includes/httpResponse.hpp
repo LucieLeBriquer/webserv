@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/26 11:14:52 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/03 17:45:42 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ class HTTPResponse
 		int				_statusNb;
 		int				_redir;
 		bool			_needAutoindex;
+		int				_chunked;
 
 		std::string		_returnErrPage(Socket &sock, int sockNbr);
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
@@ -68,6 +69,7 @@ class HTTPResponse
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
 
+		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
 		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
 		void		statusCode(std::string status, std::string firstLine);
