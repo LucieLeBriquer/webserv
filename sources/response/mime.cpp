@@ -27,7 +27,6 @@ static std::string	getSubtype(std::string str)
 		return (str.substr(start + 1, quality - start - 1));
 }
 
-
 static std::string	removeQuality(std::string str)
 {
 	return (str.substr(0, str.find(';')));
