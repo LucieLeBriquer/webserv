@@ -28,20 +28,21 @@ echo  '<span class="buttonTab">';
 echo    '<a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>';
 echo  '</span>';
 echo  '<span class="buttonTab">';
+echo    '<a href="download.html"><i class="fas fa-download"></i><span class="tabname">Download</span></a>';
+echo  '</span>';
+echo  '<span class="buttonTab">';
 echo    '<a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>';
 echo  '</span>';
 echo '</header>';
 
 echo '<body class="main">';
-echo  '<div class="vertical">';
-echo    "<center>";
 echo    "<h3>The list of environment variables with values are :</h3>";
 
 //Print all environment variable names with values
 
 foreach ($env_array as $key=>$value)
 {
-    echo "$key => $value <br />";
+    echo "$key => $value <br/>";
 }
 
 echo  '</div>';

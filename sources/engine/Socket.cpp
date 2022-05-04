@@ -225,6 +225,18 @@ int			Socket::getConfigFromUrl(int nbr, const std::string url) const
 	return (getConfig(nbr).configFromUrl(url));
 }
 
+static std::string	getRelativePath(const std::string url)
+{
+	vecStr		splitted;
+	std::string	relative = "";
+
+	std::cerr << url << std::endl;
+	splitPattern(splitted, url, "/");
+	for (size_t i = 0; i + 2 < splitted.size(); i++)
+		relative += "../";
+	return (relative);
+}
+
 std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 {
 	mapErr				pages;
@@ -239,7 +251,7 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 	it = pages.find(err);
 	if (it == pages.end())
 		return ("");
-	return (it->second);
+	return (getRelativePath(url) + it->second);
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const

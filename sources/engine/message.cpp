@@ -24,7 +24,7 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
-	
+
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
@@ -39,9 +39,11 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, sock, sockNbr);
+	else if (redir)
+		header += "\r\n\r\n\r\n";
 	else
 		header += "\r\n\r\n";
-
+	
 	std::cout << "====================================================" << std::endl;
 	std::cout << header;
 	std::cout << "====================================================" << std::endl;
@@ -198,7 +200,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
         header.setContentTypeResponse("text/html");
         response.rendering(header);
 
-		setEnvForCgi(sock, response, sockNbr);
+		setEnvForCgi(sock, response, sockNbr, header);
 		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
