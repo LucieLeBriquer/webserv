@@ -37,9 +37,9 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 {
 	std::string	header = response.getHeader();
 
-	if (strcmp(response.getUrl().c_str(), "/download/lama.jpg") == 0)
+	if (strncmp(response.getUrl().c_str(), "/download/", 10) == 0)
 	{
-		header += "\r\nContent-Disposition: attachment; filename=\"lama.jpeg\"";
+		header += "\r\nContent-Disposition: attachment; filename=\"image.jpg\"";
 	}
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)

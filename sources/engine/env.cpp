@@ -24,7 +24,10 @@ void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHead
 	sock.setEnvValue("SCRIPT_FILENAME", sock.getRealUrl(sockNbr, response.getUrl()));
 	sock.setEnvValue("SERVER_PROTOCOL", "HTTP/1.1");
 	sock.setEnvValue("REDIRECT_STATUS", "200");
-	sock.setEnvValue("CONTENT_TYPE", header.getContentType());
+	if (header.getContentType() == "")
+		sock.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
+	else
+		sock.setEnvValue("CONTENT_TYPE", header.getContentType());
 	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
 	{
 		string = sock.getBody();
