@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/03 18:15:32 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/04 15:32:26 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,19 +53,53 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	return (OK);
 }
 
+char	*toHex(std::string content)
+{
+	int dec;
+	int res, i = 0;
+	char *hex = (char *)malloc(50);
+
+	std::istringstream(content) >> dec;
+	while (dec != 0)
+	{
+		res = dec % 16;
+		if (res < 10)
+			res = res + 48;
+		else
+			res = res + 55;
+		hex[i] = res;
+		dec = dec/16;
+		i++;
+	}
+	hex[i] = '\0';
+	return hex;
+}
+
 static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
+	std::string		fileName(response.getFileName());
+	std::string		tmpname(fileName + "_");
 	if (response.isChunked())
 	{
-		std::ofstream file;
-		std::ostringstream s;
-		std::string tos;
+		std::ofstream	tmpfile(tmpname.c_str());
+		std::ifstream	fileStream(fileName.c_str());
+		std::string		line;
 
-		s << response.getContentLen();
-		tos = s.str();
-		file << tos.c_str() << std::endl;
-		file.open("myfile.txt", std::ios::app);
-		file << "0" << std::endl;
+		char *hex = strcpy(hex, toHex(response.getContentLen()));
+		std::cout << "hex = " << hex << std::endl;
+		tmpfile << hex << "\r\n";
+		std::cout << "lol"<< std::endl;
+		while (getline(fileStream, line))
+		{
+			tmpfile << line << "\r\n";
+		}
+		tmpfile << "0" << "\r\n";
+		std::cout << "lol2"<< std::endl;
+		tmpfile.close();
+		fileStream.close();
+		fileName = tmpname;
+		std::cout << "lol3"<< std::endl;
+		
 	}
 	if (isCgi)
 	{
@@ -104,7 +138,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 	}
 	else
 	{
-		std::ifstream	fileStream(response.getFileName().c_str(), std::ios::in | std::ios::binary);
+		std::ifstream	fileStream(fileName.c_str(), std::ios::in | std::ios::binary);
 		char			buf[BUFFER_SIZE];
 		int				i;
 		char			c;
@@ -135,7 +169,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
-
+		std::cout << "lol4"<< std::endl;
 	return (OK);
 }
 
@@ -176,7 +210,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		return (ERR);
 	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
 		return (ERR);
-
+		std::cout << "lol5"<< std::endl;
 	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
 		close(fde);
 

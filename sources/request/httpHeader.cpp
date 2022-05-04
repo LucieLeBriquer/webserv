@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/03 18:06:12 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/04 13:38:35 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ HTTPHeader::~HTTPHeader()
 {
 	return ;
 }
-
 
 /*
 **		OVERLOAD OPERATORS

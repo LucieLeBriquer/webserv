@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/03 18:01:00 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/04 13:48:30 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,7 +322,7 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	if (header.isChunked())
 	{
 		this->_chunked = 1;
-		this->_header += "Transfer-Encoding: chunked\r\n";
+		this->_header += "Transfer-Encoding: chunked";
 	}
 	else if (this->_contentLen != "")
 		this->_header += "Content-Length: " + this->_contentLen ;
