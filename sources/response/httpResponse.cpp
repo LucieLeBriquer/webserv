@@ -149,6 +149,11 @@ void		HTTPResponse::setRedir(int r)
 	_redir = r;
 }
 
+void		HTTPResponse::setHeader(std::string header)
+{
+	this->_header = header;
+}
+
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
 {
 //Verifier si la listen directive ne passe pas une requete à un autre serveur

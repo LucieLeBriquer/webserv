@@ -16,12 +16,14 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _secFetchDest(""), _secFetchMode("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
+	this->setFct[4] = &HTTPHeader::setSecFetchDest;
+	this->setFct[5] = &HTTPHeader::setSecFetchMode;
 
 	return ;
 }
@@ -92,6 +94,16 @@ void HTTPHeader::setAccept(std::string value)
 	this->_accept = value;
 }
 
+void HTTPHeader::setSecFetchDest(std::string value)
+{
+	this->_secFetchDest = value;
+}
+
+void HTTPHeader::setSecFetchMode(std::string value)
+{
+	this->_secFetchMode = value;
+}
+
 
 /*
 **		GETTERS
@@ -130,6 +142,16 @@ std::string	HTTPHeader::getContentType(void) const
 std::string	HTTPHeader::getResponseContentType(void) const
 {
 	return ("Content-Type: " + _contentTypeResponse + "\r\n");
+}
+
+std::string HTTPHeader::getSecFetchDest(void) const
+{
+	return (this->_secFetchDest);
+}
+
+std::string HTTPHeader::getSecFetchMode(void) const
+{
+	return (this->_secFetchMode);
 }
 
 /*
@@ -247,9 +269,9 @@ int HTTPHeader::header(std::string str)
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[4] = {"host:", "content-length:", "content-type:" ,"accept:"};
+	std::string header[6] = {"host:", "content-length:", "content-type:" ,"accept:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
-	int			headerSize = 4;
+	int			headerSize = 6;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')

@@ -67,6 +67,7 @@ class HTTPResponse
 		void		setUrl(const std::string &url);
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
+		void		setHeader(std::string header);
 
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
 		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
