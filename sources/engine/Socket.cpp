@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/28 15:12:26 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/03 17:17:28 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,18 @@ int			Socket::getConfigFromUrl(int nbr, const std::string url) const
 	return (getConfig(nbr).configFromUrl(url));
 }
 
+static std::string	getRelativePath(const std::string url)
+{
+	vecStr		splitted;
+	std::string	relative = "";
+
+	std::cerr << url << std::endl;
+	splitPattern(splitted, url, "/");
+	for (size_t i = 0; i + 2 < splitted.size(); i++)
+		relative += "../";
+	return (relative);
+}
+
 std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 {
 	mapErr				pages;
@@ -239,7 +251,7 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 	it = pages.find(err);
 	if (it == pages.end())
 		return ("");
-	return (it->second);
+	return (getRelativePath(url) + it->second);
 }
 
 std::string Socket::getRoot(int nbr, const std::string url) const

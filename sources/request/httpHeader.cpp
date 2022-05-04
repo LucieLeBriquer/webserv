@@ -136,28 +136,6 @@ std::string	HTTPHeader::getResponseContentType(void) const
 **		MEMBER FUNCTIONS
 */
 
-std::string HTTPHeader::fillrender()
-{
-	std::vector<std::string> headers(2);
-	std::vector<std::string> content(2);
-	std::vector<std::string>::iterator it;
-	std::vector<std::string>::iterator it2;
-	std::string render;
-
-	headers[0] = getHost();
-	headers[1] = getResponseContentType();
-
-	content[0] = _host;
-	content[1] = _accept;
-
-	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
-	{
-		if (*it2 != "")
-			render += *it;
-	}
-	return render;
-}
-
 int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 {
 	int i;
