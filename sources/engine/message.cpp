@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/04 15:32:26 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/04 17:52:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	response.setFileName(filename);
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
-
+	
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
@@ -78,28 +78,28 @@ char	*toHex(std::string content)
 static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
 	std::string		fileName(response.getFileName());
-	std::string		tmpname(fileName + "_");
+	std::string		tmpname("html/tmp.html");
+
 	if (response.isChunked())
 	{
+		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
 		std::ofstream	tmpfile(tmpname.c_str());
-		std::ifstream	fileStream(fileName.c_str());
 		std::string		line;
 
-		char *hex = strcpy(hex, toHex(response.getContentLen()));
-		std::cout << "hex = " << hex << std::endl;
-		tmpfile << hex << "\r\n";
-		std::cout << "lol"<< std::endl;
-		while (getline(fileStream, line))
-		{
-			tmpfile << line << "\r\n";
-		}
-		tmpfile << "0" << "\r\n";
-		std::cout << "lol2"<< std::endl;
-		tmpfile.close();
-		fileStream.close();
+		char *hex = toHex(response.getContentLen());
+		tmpfile << hex << "\n\r";
+		while (getline(fileS, line))
+			tmpfile << line << "\n\r";
+		tmpfile << "0" << "\n\r";
+	
+		fileS.seekg(0, std::ios::end);
+		int size = fileS.tellg();
+		response.setContentLen(size + (strlen(hex) + 1));
+		response.setUrl(tmpname);
+	
 		fileName = tmpname;
-		std::cout << "lol3"<< std::endl;
-		
+		tmpfile.close();
+		fileS.close();
 	}
 	if (isCgi)
 	{
@@ -153,6 +153,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
 			{
 				buf[i] = c;
+				if (i < )
 				i++;
 			}
 			if (i + 1 == BUFFER_SIZE)
@@ -169,7 +170,6 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
-		std::cout << "lol4"<< std::endl;
 	return (OK);
 }
 
@@ -210,10 +210,9 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 		return (ERR);
 	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
 		return (ERR);
-		std::cout << "lol5"<< std::endl;
 	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
 		close(fde);
-
+	remove("html/tmp.html");
 	return (OK);
 }
 
