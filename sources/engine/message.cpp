@@ -153,7 +153,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
         header.setContentTypeResponse("text/html");
         response.rendering(header);
 
-		setEnvForCgi(sock, response, sockNbr);
+		setEnvForCgi(sock, response, sockNbr, header);
 		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
