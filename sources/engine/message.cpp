@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/28 17:35:24 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:30:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@ static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPH
 	filename = response.redirect(sock, sockNbr, header);
 	if (filename == "")
 		return (ERR);
+
 	response.setFileName(filename);
+	header.setContentTypeResponse(mimeContentType(header.getAccept(), filename));
 
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
 
@@ -38,7 +40,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock, sockNbr);
+		header = headerForCgi(header, sock);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -130,7 +132,8 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 
 int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
 {
-	if (!sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
+	if (response.getStatusNb() == 0
+		&& !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
 
 	if (getRightFile(response, sock, sockNbr, header))
@@ -151,11 +154,11 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
         header.setContentTypeResponse("text/html");
-        response.rendering(header);
+    	response.rendering(header);
 
 		setEnvForCgi(sock, response, sockNbr, header);
-		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
-			return ERR;
+		if (getCgiFile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
+			return (ERR);
 	}
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
@@ -187,56 +190,89 @@ int		checkHeader(HTTPHeader &header, std::string string)
 	return 1;
 }
 
+static bool	onlySpaces(const std::string str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (str[i] != '\n' && str[i] != '\r')
+			return (false);
+	}
+	return (true);
+}
+
+static bool	onlySpaces(const char *str)
+{
+	for (size_t i = 0; str[i]; i++)
+	{
+		if (str[i] != '\n' && str[i] != '\r')
+			return (false);
+	}
+	return (true);
+}
+
 int		requestReponse(int epollfd, int fde, Socket *sock)
 {
-	char			buf[BUFFER_SIZE] = {0};
-	int				byteCount, recv_len = 0;
-	std::string		string;
 	HTTPResponse	response;
 	HTTPHeader		header;
 	Status			status;
-	int				line(0), isBreak = 0;
+	std::string		string;
+	char			buf[BUFFER_SIZE];
+	int				byteCount = 0;
+	int				recvLen = 0;
+	int				line = 0;
+	int				isBreak = 0;
 	int				sockNbr = sock->getConnection(fde);
 
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
 		byteCount = recv(fde, buf, BUFFER_SIZE, 0);
-		if (byteCount == 0)
+
+		if (byteCount == 0 || (byteCount == 1 && (int)buf[0] == 4))
 		{
-			std::cout << "stops ??" << std::endl;
-			epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
 			isBreak = 1;
 			break ;
 		}
 		else if (byteCount < 0)
 		{
-			if (line == 0)
+			if (line == 0 && !onlySpaces(string))
 			{
+				line++;
 				if (header.method(string, &status, &response) == -1)
+				{
+					isBreak = 2;
 					break ;
+				}
 			}
-			if (endRequest(string, *sock))
+			if (!onlySpaces(string) && endRequest(string, *sock))
 				break ;
-			line++;
 		}
 		else
 		{
-			recv_len += byteCount;
-			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
-			std::cout << "====================================================" << std::endl;
-			std::cout << buf ;
-			std::cout << "\n====================================================" << std::endl << std::endl;
+			if (!onlySpaces(buf) || line > 0)
+			{
+				recvLen += byteCount;
+				std::cout << GREEN << "[Received] " << END << recvLen << " bytes from " << fde << std::endl;
+				std::cout << "====================================================" << std::endl;
+				std::cout << buf ;
+				std::cout << "\n====================================================" << std::endl << std::endl;
+				string += buf;
+			}
 		}
-		string += buf;
 	}
-	if (isBreak == 0)
+	if (isBreak != 1)
 	{
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
+		response.setServerName(sock->getServerName(sockNbr));
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
+	}
+	if (isBreak > 0)
+	{
+		epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
+		close(fde);
 	}
 	return (OK);
 }

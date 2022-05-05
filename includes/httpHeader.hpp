@@ -36,10 +36,10 @@ class HTTPHeader : public HTTPRequest
 
 		HTTPHeader	&operator=(const HTTPHeader &header);
 
-		int			method(std::string buf, Status *code, HTTPResponse *deliver);
+		int			method(std::string buf, Status *code, HTTPResponse *response);
 		int			parsePath(const std::string url);
 		int 		parseProtocol(const std::string prot);
-		int			parseMethod(const std::string cmd, const std::string *methods);
+		int			parseMethod(const std::string cmd);
 
 		int			header(std::string str);
 		int			fillheader(std::string *buf);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/26 12:02:23 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:21:12 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 
-std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
+std::string	headerForCgi(std::string header, Socket &sock);
 void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header);
-int			GetCGIfile(Socket &sock, std::string cgi);
+int			getCgiFile(Socket &sock, std::string cgi);
 void    	ft_free_env_arg(char ***env, Socket *sock);
 int     	mallocEnv(char ***env, Socket &sock);
 

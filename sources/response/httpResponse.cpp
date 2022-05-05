@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 18:28:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:46:16 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName(""), _location(""), 
+									_header(""), _method(""), _fileName(""), _location(""), _serverName(""),
 									_statusNb(0), _redir(0), _needAutoindex(false)
 {
 	if (LOG)
@@ -46,6 +46,7 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 		_method = response._method;
 		_fileName = response._fileName;
 		_location = response._location;
+		_serverName = response._serverName;
 		_statusNb = response._statusNb;
 		_redir = response._redir;
 		_needAutoindex = response._needAutoindex;
@@ -149,12 +150,14 @@ void		HTTPResponse::setRedir(int r)
 	_redir = r;
 }
 
+void		HTTPResponse::setServerName(const std::string serv)
+{
+	_serverName = serv;
+}
+
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
 {
-//Verifier si la listen directive ne passe pas une requete à un autre serveur
-//
-	std::string filename;
-	filename = sock.getRealUrl(sockNbr, this->_url);
+	std::string filename = sock.getRealUrl(sockNbr, this->_url);
 
 	if ( this->_method == "GET" )
 	{
@@ -204,14 +207,13 @@ std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 	std::string	pageErr;
 
 	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
-	if (pageErr != "") // error page precised
+	if (pageErr != "")
 	{
-		std::cout << "pageErr = " << pageErr << std::endl;
 		this->_location = pageErr;
 		this->_statusCode = "302 Moved Temporarily";
 		this->_redir = 1;
 		this->_statusNb = 302;
-		this->_contentLen = "154";
+		//this->_contentLen = "154";
 	}
 	return ("");
 }
@@ -258,7 +260,7 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	int			fd;
 
 	// check if there was an error before (method not allowed etc)
-	if (_statusNb != 0)
+	if (_statusNb != 0 && _statusNb != 200)
 		return (_returnErrPage(sock, sockNbr));
 
 	filename = sock.getRealUrl(sockNbr, _url);
@@ -277,7 +279,6 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 		return (_returnSetErrPage(sock, sockNbr, "404", " Not Found", header));
 	
-	//filename = redirect(sock, sockNbr, _url);
 	close(fd);
 	return (filename);
 }
@@ -293,8 +294,14 @@ void	HTTPResponse::setContentLen(int len)
 void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
 	std::vector<std::string> line = splitThis(firstLine);
+	std::stringstream	ss;
+	int					statusNb;
+
+	ss << status;
+	ss >> statusNb;
 
 	this->_statusCode = status;
+	this->_statusNb = statusNb;
 	this->_protocol = line[2];
 	this->_url = line[1];
 }
@@ -303,15 +310,26 @@ void HTTPResponse::rendering(HTTPHeader &header)
 {
 	time_t 		rawtime;
 	std::string	timeStr;
+	size_t		len;
+	char		buf[100];
+	struct tm 	*timeinfo;
 
 	time(&rawtime);
-	timeStr = ctime(&rawtime);
-	timeStr = timeStr.substr(0, timeStr.size() - 1);
+  	timeinfo = gmtime(&rawtime);
+	len = strftime(buf,80,"%a, %d %h %Y %T %Z",timeinfo);
+	buf[len] = '\0';
+	timeStr = buf;
 
 	_header = _protocol + ' ' + _statusCode + "\r\n";
-	_header += header.getHost();
+
+	if (_serverName != "")
+		_header += "Server: " + _serverName + "\r\n";
+
+
+	_header += "Date: " + timeStr + "\r\n";
 	if (_method == "OPTIONS")
 		_header += "Allow: " + _options + "\r\n";
+
 	if (_redir)
         _header += "Location: " + _location + "\r\n";
 	else
@@ -320,5 +338,10 @@ void HTTPResponse::rendering(HTTPHeader &header)
 		if (_contentLen != "")
 			_header += "Content-Length: " + _contentLen + "\r\n";
 	}
-	_header += "Date: " + timeStr;
+	
+
+	if (_statusNb != 0 && _statusNb != 200)
+		_header += "Connection: close";
+	else
+		_header += "Connection: keep-alive";
 }

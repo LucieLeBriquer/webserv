@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/26 11:14:52 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:28:52 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class HTTPResponse
 		std::string		_method;
 		std::string		_fileName;
 		std::string		_location;
+		std::string		_serverName;
 		int				_statusNb;
 		int				_redir;
 		bool			_needAutoindex;
@@ -36,7 +37,6 @@ class HTTPResponse
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 										std::string str, HTTPHeader &header);
 		std::string		_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header);
-		//std::string		_manageRegularFile(Socket &sock, int sockNbr, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);
@@ -67,6 +67,7 @@ class HTTPResponse
 		void		setUrl(const std::string &url);
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
+		void		setServerName(const std::string serv);
 
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
 		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
