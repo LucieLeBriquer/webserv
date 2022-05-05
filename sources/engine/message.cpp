@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/04 14:46:31 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/05 15:32:42 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,6 +237,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
+		isUpload(response, *sock, header, string);
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}

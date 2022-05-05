@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   usefull.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/26 12:02:35 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/05 11:00:58 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # include <iostream>
 # include <sstream>
 # include <fstream>
+# include <ostream>
 
 # include <vector>
 # include <map>
