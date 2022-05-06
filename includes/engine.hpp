@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/05 15:32:51 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/06 15:59:35 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,6 @@ int     	mallocEnv(char ***env, Socket &sock);
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);
 
-void		isUpload(HTTPResponse &response, Socket &sock, HTTPHeader &header, std::string string);
 void		isDownloading(HTTPHeader &header, HTTPResponse &response);
 
 #endif
