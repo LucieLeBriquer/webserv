@@ -27,9 +27,6 @@ int		endRequest(std::string string, Socket &sock)
 		sock.setMethod(OPTIONS);
 	else
 		sock.setMethod(BAD_METHODE);
-	// if (sock.getMethod() == BAD_METHODE)
-	// 	return (ERR);
-	//std::cout << "methode = " << sock.getMethod() << std::endl;
 
 	for (size_t i = 0; i < string.length(); i++)
 	{

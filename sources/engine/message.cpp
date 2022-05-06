@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 15:25:50 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:33:27 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock, sockNbr);
+		header = headerForCgi(header, sock);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -202,7 +202,7 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
         response.rendering(header);
 
 		setEnvForCgi(sock, response, sockNbr, header);
-		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
+		if (getCgiFile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
 			return ERR;
 	}
 

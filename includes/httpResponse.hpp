@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/06 14:39:48 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:38:17 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ class HTTPResponse
 		std::string		_method;
 		std::string		_fileName;
 		std::string		_location;
+		std::string		_serverName;
 		int				_statusNb;
 		int				_redir;
 		bool			_needAutoindex;
@@ -71,6 +72,7 @@ class HTTPResponse
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
 		void		setMaxSizeC(size_t value);
+		void		setServerName(const std::string serv);
 
 		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);

@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/04 18:15:07 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:34:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,12 @@ class HTTPHeader : public HTTPRequest
 
 		HTTPHeader	&operator=(const HTTPHeader &header);
 
-		int			method(std::string buf, Status *code, HTTPResponse *deliver);
+		int			method(std::string buf, Status *code, HTTPResponse *response);
 		int			parsePath(const std::string url);
 		int 		parseProtocol(const std::string prot);
-		int			parseMethod(const std::string cmd, const std::string *methods);
+		int			parseMethod(const std::string cmd);
 
-		int			header(void);
-		std::string	fillrender(void);
+		int			header( void );
 		int			fillheader(std::string *buf);
 		int			getContext(void);
 

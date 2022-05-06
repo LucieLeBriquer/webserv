@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/27 15:57:09 by user42           ###   ########.fr       */
+/*   Updated: 2022/05/05 16:16:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,6 @@ std::string	deletingUseless(std::string header)
 	int			find, i = 0;
 	
 	find = header.find("Content-Type:");
-	if (find > 0)
-	{
-		i = find;
-		while (header[i] && header[i] != '\n')
-			i++;
-		header.erase(find, (i + 1) - find);
-	}
-	find = header.find("Host:");
 	if (find > 0)
 	{
 		i = find;
@@ -44,7 +36,7 @@ std::string	deletingUseless(std::string header)
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
+std::string	headerForCgi(std::string header, Socket &sock)
 {
 	std::string	cgiHeader;
 	std::string	cgiCorps = sock.getCgiCoprs();
@@ -52,10 +44,6 @@ std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
 	int			i = 0;
 
 	cgiHeader = deletingUseless(header);
-
-	cgiHeader += "Server: ";
-	cgiHeader += sock.getServerName(socknbr);
-	cgiHeader += "\r\n";
 	while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
 		i++;
 	tmp = &cgiCorps[i + 6];
@@ -92,7 +80,7 @@ void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
 	sock.setCgiCoprs(string);
 }
 
-int 	GetCGIfile(Socket &sock, std::string cgi)
+int 	getCgiFile(Socket &sock, std::string cgi)
 {
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};

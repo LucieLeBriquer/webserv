@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/04 13:38:35 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:35:45 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,29 +147,7 @@ int	HTTPHeader::isChunked( void )
 **		MEMBER FUNCTIONS
 */
 
-std::string HTTPHeader::fillrender()
-{
-	std::vector<std::string> headers(2);
-	std::vector<std::string> content(2);
-	std::vector<std::string>::iterator it;
-	std::vector<std::string>::iterator it2;
-	std::string render;
-
-	headers[0] = getHost();
-	headers[1] = getResponseContentType();
-
-	content[0] = _host;
-	content[1] = _accept;
-
-	for (it = headers.begin(), it2 = content.begin(); it != headers.end(); it++, it2++)
-	{
-		if (*it2 != "")
-			render += *it;
-	}
-	return render;
-}
-
-int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
+int HTTPHeader::parseMethod(const std::string req)
 {
 	int i;
 	if (req == "")
@@ -179,7 +157,7 @@ int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 		if (!isupper(req[i]))
 			return (-1);
 	}
-	for (int j = 0; j < 5; j++)
+	for (int j = 0; j < nbMethods; j++)
 	{
 		if (!strncmp(req.c_str(), methods[j].c_str(), i))
 		{
@@ -238,7 +216,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
 	this->_method = "NULL";
-	if ((i = this->parseMethod(request[0], methods)) == -1)
+	if ((i = this->parseMethod(request[0])) == -1)
 	{
 		deliver->statusCode(code->status(4, 5), this->getFirstLine());
 		if (arg != 3)
@@ -267,7 +245,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	return 1;
 }
 
-int HTTPHeader::header(void )
+int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
