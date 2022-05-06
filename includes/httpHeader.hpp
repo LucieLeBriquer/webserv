@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/20 14:33:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:34:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ class HTTPHeader : public HTTPRequest
 		std::string	_contentType;
 		std::string	_contentTypeResponse;
 		std::string	_accept;
-		ptr			setFct[4];
+		std::string _encoding;
+		ptr			setFct[5];
 		
 	public:
 		HTTPHeader();
@@ -41,7 +42,7 @@ class HTTPHeader : public HTTPRequest
 		int 		parseProtocol(const std::string prot);
 		int			parseMethod(const std::string cmd);
 
-		int			header(std::string str);
+		int			header( void );
 		int			fillheader(std::string *buf);
 		int			getContext(void);
 
@@ -50,8 +51,10 @@ class HTTPHeader : public HTTPRequest
 		void		setContentType(std::string value);
 		void		setContentTypeResponse(std::string value);
 		void		setAccept(std::string value);
+		void		setEncoding(std::string value);
 
 		void		checkContext(void);
+		int			isChunked(void);
 
 		std::string	getHost(void) const;
 		std::string	getMethod(void) const;

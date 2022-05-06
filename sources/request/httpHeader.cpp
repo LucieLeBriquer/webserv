@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/05 15:28:07 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:55:36 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,7 +208,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		response->statusCode(code->status(4, 0), this->getFirstLine());
+		response->statusCode(code->status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -235,11 +235,10 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
 	return 1;
 }
 
-int HTTPHeader::header(std::string str)
+int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
-		(void)str;
 		if (this->_contentLen == "")
 			return -1;
 	}

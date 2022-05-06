@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/05 15:46:16 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:47:37 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
 HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
-									_header(""), _method(""), _fileName(""), _location(""), _serverName(""),
-									_statusNb(0), _redir(0), _needAutoindex(false)
+									_header(""), _method(""), _fileName(""), _location(""), 
+									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0), _max_size_c(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -104,9 +104,21 @@ int			HTTPResponse::getRedir(void) const
 	return (_redir);
 }
 
+size_t		HTTPResponse::getMaxSizeC(void) const
+{
+	return (_max_size_c);
+}
+
 bool		HTTPResponse::getNeedAutoindex(void) const
 {
 	return (_needAutoindex);
+}
+
+int			HTTPResponse::isChunked( void )
+{
+	if (this->_chunked)
+		return (1);
+	return (0);
 }
 
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
@@ -150,13 +162,19 @@ void		HTTPResponse::setRedir(int r)
 	_redir = r;
 }
 
-void		HTTPResponse::setServerName(const std::string serv)
-{
+void           HTTPResponse::setServerName(const std::string serv)
+{     
 	_serverName = serv;
+}
+void	HTTPResponse::setMaxSizeC(size_t value)
+{
+	_max_size_c = value;
 }
 
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
 {
+//Verifier si la listen directive ne passe pas une requete à un autre serveur
+//
 	std::string filename = sock.getRealUrl(sockNbr, this->_url);
 
 	if ( this->_method == "GET" )
@@ -299,23 +317,21 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 
 	ss << status;
 	ss >> statusNb;
-
 	this->_statusCode = status;
 	this->_statusNb = statusNb;
 	this->_protocol = line[2];
 	this->_url = line[1];
 }
 
-void HTTPResponse::rendering(HTTPHeader &header)
+void HTTPResponse::rendering( HTTPHeader &header )
 {
-	time_t 		rawtime;
-	std::string	timeStr;
-	size_t		len;
-	char		buf[100];
-	struct tm 	*timeinfo;
+	time_t          rawtime;
+	std::string     timeStr;
+	size_t          len;
+	char            buf[100];
+	struct tm       *timeinfo;	time(&rawtime);
 
-	time(&rawtime);
-  	timeinfo = gmtime(&rawtime);
+	timeinfo = gmtime(&rawtime);
 	len = strftime(buf,80,"%a, %d %h %Y %T %Z",timeinfo);
 	buf[len] = '\0';
 	timeStr = buf;
@@ -323,25 +339,25 @@ void HTTPResponse::rendering(HTTPHeader &header)
 	_header = _protocol + ' ' + _statusCode + "\r\n";
 
 	if (_serverName != "")
-		_header += "Server: " + _serverName + "\r\n";
-
+			_header += "Server: " + _serverName + "\r\n";
 
 	_header += "Date: " + timeStr + "\r\n";
 	if (_method == "OPTIONS")
-		_header += "Allow: " + _options + "\r\n";
+			_header += "Allow: " + _options + "\r\n";
 
 	if (_redir)
-        _header += "Location: " + _location + "\r\n";
-	else
-	{
-		_header += header.getResponseContentType();
-		if (_contentLen != "")
-			_header += "Content-Length: " + _contentLen + "\r\n";
-	}
-	
-
+        _header += "Location: " + _location + "\r\n";		
 	if (_statusNb != 0 && _statusNb != 200)
 		_header += "Connection: close";
-	else
-		_header += "Connection: keep-alive";
+    else
+		_header += "Connection: keep-alive";	
+	if (header.isChunked())
+	{
+		_chunked = 1;
+		_header += "\r\nTransfer-Encoding: chunked";
+	}
+	else if (_contentLen != "")
+		_header += "\r\nContent-Length: " + _contentLen ;
 }
+// GET / HTTP/1.1
+// Transfer-Encoding: chunked

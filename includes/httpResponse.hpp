@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/05 15:28:52 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:38:17 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,14 @@ class HTTPResponse
 		int				_statusNb;
 		int				_redir;
 		bool			_needAutoindex;
+		int				_chunked;
+		size_t			_max_size_c;
 
 		std::string		_returnErrPage(Socket &sock, int sockNbr);
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 										std::string str, HTTPHeader &header);
 		std::string		_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header);
+		//std::string		_manageRegularFile(Socket &sock, int sockNbr, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);
@@ -55,6 +58,7 @@ class HTTPResponse
 		int			getStatusNb(void) const;
 		int			getMethodNbr(void) const;
 		int			getRedir(void) const;
+		size_t		getMaxSizeC(void) const;
 		bool		getNeedAutoindex(void) const;
 
 		void		rendering(HTTPHeader &header);
@@ -67,8 +71,10 @@ class HTTPResponse
 		void		setUrl(const std::string &url);
 		void		setMethod(const std::string &method);
 		void		setRedir(int r);
+		void		setMaxSizeC(size_t value);
 		void		setServerName(const std::string serv);
 
+		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
 		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
 		void		statusCode(std::string status, std::string firstLine);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/05 15:21:12 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/06 16:58:05 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,7 @@ int     	mallocEnv(char ***env, Socket &sock);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);
+
+static size_t chunk_size = 0;
 
 #endif
