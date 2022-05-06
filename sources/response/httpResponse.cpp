@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/04 13:48:30 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 11:40:24 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
-									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0)
+									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0), _max_size_c(200)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -101,6 +101,11 @@ int			HTTPResponse::getMethodNbr(void) const
 int			HTTPResponse::getRedir(void) const
 {
 	return (_redir);
+}
+
+int			HTTPResponse::getMaxSizeC(void) const
+{
+	return (_max_size_c);
 }
 
 bool		HTTPResponse::getNeedAutoindex(void) const

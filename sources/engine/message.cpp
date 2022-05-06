@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/04 17:52:31 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 13:00:41 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,22 +81,39 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
 	std::string		fileName(response.getFileName());
 	std::string		tmpname("html/tmp.html");
+	std::stringstream ss;
+	int				size;
+	ss << response.getContentLen();
+	ss >> size;
 
 	if (response.isChunked())
 	{
 		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
 		std::ofstream	tmpfile(tmpname.c_str());
 		std::string		line;
+		int				i;
+
+		char *buff = new char [response.getMaxSizeC() + 1];
+		for (i = 0; i < chunk_size; i += response.getMaxSizeC() )
+			fileS.read(buff, response.getMaxSizeC());
 
 		char *hex = toHex(response.getContentLen());
 		tmpfile << hex << "\n\r";
-		while (getline(fileS, line))
-			tmpfile << line << "\n\r";
-		tmpfile << "0" << "\n\r";
+		free(hex);
 	
-		fileS.seekg(0, std::ios::end);
-		int size = fileS.tellg();
-		response.setContentLen(size + (strlen(hex) + 1));
+		fileS.read(buff, response.getMaxSizeC());
+		buff[response.getMaxSizeC()] = '\0';
+
+		tmpfile << buff << "\n\r";
+		i += response.getMaxSizeC();
+		chunk_size += i;
+
+		if (chunk_size >= size)
+		{
+			tmpfile << "0" << "\n\r";
+		}
+		free(buff);
+
 		response.setUrl(tmpname);
 	
 		fileName = tmpname;
@@ -155,7 +172,6 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
 			{
 				buf[i] = c;
-				if (i < )
 				i++;
 			}
 			if (i + 1 == BUFFER_SIZE)
@@ -172,6 +188,8 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
+	if (response.isChunked() && chunk_size < size)
+		sendData(fde, response, isCgi, sock);
 	return (OK);
 }
 
