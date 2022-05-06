@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 14:25:05 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 15:25:50 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,10 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		std::ofstream	tmpfile(tmpname.c_str());
 		std::string		line;
 		int				i;
-		int				size_of_chunk;
+		size_t			size_of_chunk;
 
+		// std::cout << "max size = " << response.getMaxSizeC() << std::endl;
+		// std::cout << "size = " << size << std::endl;
 		if (response.getMaxSizeC() < size)
 			size_of_chunk = response.getMaxSizeC();
 		else
@@ -81,21 +83,24 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		for (i = 0; i < chunk_size; i += size_of_chunk )
 			fileS.read(buff, size_of_chunk);
 
-		tmpfile << std::hex << size_of_chunk << "\n\r";
+		tmpfile << std::hex << size_of_chunk << "\r\n";
 
 		fileS.read(buff, size_of_chunk);
 		buff[size_of_chunk] = '\0';
-		tmpfile << buff << "\n\r";
+		
+		tmpfile << buff << "\r\n";
+		
 		free(buff);
 		chunk_size += size_of_chunk;
 
 		if (chunk_size >= size)
-			tmpfile << "0" << "\n\r";
+			tmpfile << "0" << "\r\n";
 
 		fileName = tmpname;
 		response.setUrl(tmpname);
 		tmpfile.close();
-		fileS.close();
+		fileS.close();		
+		// seg fault when max = 1
 	}
 	if (isCgi)
 	{
@@ -165,6 +170,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
+	
 	if (response.isChunked() && chunk_size < size)
 		sendData(fde, response, isCgi, sock);
 	return (OK);
@@ -276,6 +282,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
+		response.setMaxSizeC(sock->getMaxClientBodySize(sockNbr, response.getUrl()));
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}

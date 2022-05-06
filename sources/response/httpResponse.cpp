@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/06 11:40:24 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 15:07:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 HTTPResponse::HTTPResponse(void) : _options(""), _contentLen(""), _protocol(""), _statusCode(""), _url(""),
 									_header(""), _method(""), _fileName(""), _location(""), 
-									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0), _max_size_c(200)
+									_statusNb(0), _redir(0), _needAutoindex(false), _chunked(0), _max_size_c(0)
 {
 	if (LOG)
 		std::cout << YELLOW << "[HTTPResponse]" << END << " default constructor" << std::endl;
@@ -103,7 +103,7 @@ int			HTTPResponse::getRedir(void) const
 	return (_redir);
 }
 
-int			HTTPResponse::getMaxSizeC(void) const
+size_t		HTTPResponse::getMaxSizeC(void) const
 {
 	return (_max_size_c);
 }
@@ -159,6 +159,11 @@ void		HTTPResponse::setUrl(const std::string &url)
 void		HTTPResponse::setRedir(int r)
 {
 	_redir = r;
+}
+
+void	HTTPResponse::setMaxSizeC(size_t value)
+{
+	_max_size_c = value;
 }
 
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
@@ -332,3 +337,5 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	else if (this->_contentLen != "")
 		this->_header += "Content-Length: " + this->_contentLen ;
 }
+// GET / HTTP/1.1
+// Transfer-Encoding: chunked
