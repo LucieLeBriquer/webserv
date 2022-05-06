@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 13:00:41 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/06 14:25:05 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,28 +55,6 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	return (OK);
 }
 
-char	*toHex(std::string content)
-{
-	int dec;
-	int res, i = 0;
-	char *hex = (char *)malloc(50);
-
-	std::istringstream(content) >> dec;
-	while (dec != 0)
-	{
-		res = dec % 16;
-		if (res < 10)
-			res = res + 48;
-		else
-			res = res + 55;
-		hex[i] = res;
-		dec = dec/16;
-		i++;
-	}
-	hex[i] = '\0';
-	return hex;
-}
-
 static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
 	std::string		fileName(response.getFileName());
@@ -92,31 +70,30 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		std::ofstream	tmpfile(tmpname.c_str());
 		std::string		line;
 		int				i;
+		int				size_of_chunk;
 
-		char *buff = new char [response.getMaxSizeC() + 1];
-		for (i = 0; i < chunk_size; i += response.getMaxSizeC() )
-			fileS.read(buff, response.getMaxSizeC());
+		if (response.getMaxSizeC() < size)
+			size_of_chunk = response.getMaxSizeC();
+		else
+			size_of_chunk = size;
 
-		char *hex = toHex(response.getContentLen());
-		tmpfile << hex << "\n\r";
-		free(hex);
-	
-		fileS.read(buff, response.getMaxSizeC());
-		buff[response.getMaxSizeC()] = '\0';
+		char *buff = new char [size_of_chunk + 1];
+		for (i = 0; i < chunk_size; i += size_of_chunk )
+			fileS.read(buff, size_of_chunk);
 
+		tmpfile << std::hex << size_of_chunk << "\n\r";
+
+		fileS.read(buff, size_of_chunk);
+		buff[size_of_chunk] = '\0';
 		tmpfile << buff << "\n\r";
-		i += response.getMaxSizeC();
-		chunk_size += i;
+		free(buff);
+		chunk_size += size_of_chunk;
 
 		if (chunk_size >= size)
-		{
 			tmpfile << "0" << "\n\r";
-		}
-		free(buff);
 
-		response.setUrl(tmpname);
-	
 		fileName = tmpname;
+		response.setUrl(tmpname);
 		tmpfile.close();
 		fileS.close();
 	}
