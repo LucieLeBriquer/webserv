@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/05 15:32:42 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/09 14:07:01 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,11 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	Status			status;
 	int				line(0), isBreak = 0;
 	int				sockNbr = sock->getConnection(fde);
+	FILE			*tmpFile = tmpfile();
+	int				fdTmp = fileno(tmpFile);
 
+	sock->setBody(tmpfile());
+	sock->setFdBody(fileno(sock->getBody()));
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -218,13 +222,14 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 				if (header.method(string, &status, &response) == -1)
 					break ;
 			}
-			if (endRequest(string, *sock))
+			if (endRequest(string, *sock, fdTmp, tmpFile))
 				break ;
 			line++;
 		}
 		else
 		{
 			recv_len += byteCount;
+			write(fdTmp, buf, byteCount);
 			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << buf ;
@@ -237,7 +242,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
-		isUpload(response, *sock, header, string);
 		if (sendResponse(fde, response, header, *sock, sockNbr))
 			return (ERR);
 	}

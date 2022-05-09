@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 15:59:35 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/09 10:14:53 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ int			initEpoll(Socket *sock, const Config config);
 int			socketMatch(int fde, Socket *sock);
 Socket		*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);
 int			requestReponse(int epollfd, int fde, Socket *sock);
-int			endRequest(std::string string, Socket &sock);
+int			endRequest(std::string string, Socket &sock, int fdTmp, FILE *tmpFile);
 std::string	getHead(std::string buf);
+size_t		getFdSize(int fd);
 
 std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
 void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header);

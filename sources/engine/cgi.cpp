@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/27 15:57:09 by user42           ###   ########.fr       */
+/*   Updated: 2022/05/09 13:32:38 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
 	pid_t		pid;
-	int			status, fd[2], m = 0;
+	int			status, m = 0;
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
 	
@@ -123,11 +123,9 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	/////////////////////////////////////////
 
 	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
-	{
 		m = POST;
-		pipe(fd);
-	}
 	
+	std::rewind(sock.getBody());
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
@@ -135,13 +133,11 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	{
 		if (m == POST)
 		{
-			close(fd[1]);
-			if (dup2(fd[0], STDIN_FILENO) < 0)
+			if (dup2(sock.getFdBody(), STDIN_FILENO) < 0)
 			{
 				perror("dup2()");
 				exit(EXIT_FAILURE);
 			}
-			close(fd[0]);
 		}
 		if (dup2(fdtemp, STDOUT_FILENO) < 0)
 		{
@@ -153,19 +149,13 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 		exit(EXIT_FAILURE);
 	}
 	else
-	{
-		if (m == POST)
-		{
-			close(fd[0]);
-			write(fd[1], sock.getBody().c_str(), strlen(sock.getBody().c_str()));
-			close(fd[1]);
-		}
 		waitpid(pid, &status, 0);
-	}
 
 	setCgiString(temp, fdtemp, sock);
 	ft_free_env_arg(&env, &sock);
 	sock.unsetEnv();
 	sock.setIsQueryString(false);
+	sock.unsetBody(sock.getBody());
+	sock.unsetFdBody(sock.getFdBody());
 	return OK;
 }

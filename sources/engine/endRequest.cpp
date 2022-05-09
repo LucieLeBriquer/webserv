@@ -3,18 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   endRequest.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/26 11:27:25 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/09 14:33:46 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 #include <csignal>
 
-int		endRequest(std::string string, Socket &sock)
+size_t	getFdSize(int fd)
 {
+	struct stat	info;
+	
+	fstat(fd, &info);
+	return info.st_size;
+}
+
+int		endRequest(std::string string, Socket &sock, int fdTmp, FILE *tmpFile)
+{
+	std::rewind(tmpFile);
+	
 	if (strncmp(string.c_str(), "GET", 3) == 0)
 		sock.setMethod(GET);
 	else if (strncmp(string.c_str(), "POST", 4) == 0)
@@ -27,27 +37,22 @@ int		endRequest(std::string string, Socket &sock)
 		sock.setMethod(OPTIONS);
 	else
 		sock.setMethod(BAD_METHODE);
-	// if (sock.getMethod() == BAD_METHODE)
-	// 	return (ERR);
-	//std::cout << "methode = " << sock.getMethod() << std::endl;
 
 	for (size_t i = 0; i < string.length(); i++)
 	{
 		if (strncmp(&string[i], "\r\n\r\n", 4) == 0)
 		{
 			if (sock.getMethod() != POST)
-			{
-				std::string tmp = "";
-				sock.setBody(tmp);
 				return (ERR);
-			}
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
 				{
-					std::string tmp = &string[j];
-					tmp += '\0';
-					sock.setBody(tmp);
+					if (dup2(fdTmp, sock.getFdBody()) < 0)
+					{
+						perror("dup2()");
+						exit(EXIT_FAILURE);
+					}
 					return (ERR);
 				}
 			}

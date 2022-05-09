@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 18:28:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/09 10:34:05 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,7 +167,8 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		{
 			sock.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
 			sock.setIsQueryString(true);
-			sock.setBody( sock.getEnvValue("QUERY_STRING") );
+			std::rewind(sock.getBody());
+			write(sock.getFdBody(), sock.getEnvValue("QUERY_STRING").c_str(), strlen(sock.getEnvValue("QUERY_STRING").c_str()));
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}

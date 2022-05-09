@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/03 17:17:28 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/09 13:32:04 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,9 +132,24 @@ void		Socket::setMethod(int method)
 	this->_method = method;
 }
 
-void		Socket::setBody(std::string newBody)
+void		Socket::setBody(FILE *newBody)
 {
 	this->_body = newBody;
+}
+
+void		Socket::setFdBody(int newFdBody)
+{
+	this->_fdBody = newFdBody;
+}
+
+void		Socket::unsetBody(FILE *oldBody)
+{
+	std::fclose(oldBody);
+}
+
+void		Socket::unsetFdBody(int oldFdBody)
+{
+	close(oldFdBody);
 }
 
 void		Socket::setCgiCoprs(std::string str)
@@ -206,9 +221,14 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-std::string						Socket::getBody(void) const
+FILE *						Socket::getBody(void) const
 {
 	return this->_body;
+}
+
+int							Socket::getFdBody(void) const
+{
+	return this->_fdBody;
 }
 
 std::string						Socket::getCgiCoprs(void) const
