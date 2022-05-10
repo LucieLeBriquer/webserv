@@ -36,19 +36,25 @@
 			<img src="./download/lama.jpg"><br>
 			<a href="./download/lama.jpg" download="lama.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
 		</div>
-		<div>
+		<!-- <div>
 			<img src="./download/lamaNB.jpg"><br>
 			<a href="./download/lamaNB.jpg" download="lamaNB.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
 		</div>
 		<div>
 			<img src="./download/lamaFat.jpg"><br>
 			<a href="./download/lamaFat.jpg" download="lamaFat.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div> -->
+		<div>
+			<img src="./download/icon_pdf.png" width="390"><br>
+			<a href="./download/subject.pdf" download="subject.pdf"><span class="button"><i class="fas fa-download"></i> Download</span></a>
 		</div>
 	</div>
 	<h2>Upload</h2>
-	<form action="/action_page.php" class="upload">
-		<input type="file" name="filename">
-		<button>Start upload</button>
+
+	<form action="upload.php" class="upload" method="post" enctype="multipart/form-data">
+		Select image to upload:
+		<input type="file" name="fileToUpload" id="fileToUpload">
+		<input type="submit" value="Upload" name="submit">
 	</form>
 
 </body>
