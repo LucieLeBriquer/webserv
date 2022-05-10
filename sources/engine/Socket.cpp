@@ -249,8 +249,7 @@ static std::string	getRelativePath(const std::string url)
 {
 	vecStr		splitted;
 	std::string	relative = "";
-
-	std::cerr << url << std::endl;
+	
 	splitPattern(splitted, url, "/");
 	for (size_t i = 0; i + 2 < splitted.size(); i++)
 		relative += "../";
@@ -305,7 +304,7 @@ std::string Socket::getServerName(int nbr) const
 {
 	if (getConfig(nbr).isServerNamesSet())
 		return (getConfig(nbr).getServerNames()[0]);
-	return ("webserv");
+	return ("");
 }
 
 bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const

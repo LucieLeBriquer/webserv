@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 13:53:28 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/10 16:59:06 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,7 @@ int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);
 
 void		isDownloading(HTTPHeader &header, HTTPResponse &response);
+
+static size_t chunk_size = 0;
 
 #endif

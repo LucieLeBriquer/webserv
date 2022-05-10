@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/09 13:32:38 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:29:58 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ std::string	deletingUseless(std::string header)
 			i++;
 		header.erase(find, (i + 1) - find);
 	}
-	header += "\r\n";
 	return header;
 }
 

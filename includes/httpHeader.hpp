@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/20 14:33:38 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:13:21 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,10 @@ class HTTPHeader : public HTTPRequest
 		std::string	_contentType;
 		std::string	_contentTypeResponse;
 		std::string	_accept;
+		std::string _encoding;
 		std::string	_secFetchDest;
 		std::string	_secFetchMode;
-		ptr			setFct[6];
+		ptr			setFct[7];
 		
 	public:
 		HTTPHeader();
@@ -41,9 +42,9 @@ class HTTPHeader : public HTTPRequest
 		int			method(std::string buf, Status *code, HTTPResponse *deliver);
 		int			parsePath(const std::string url);
 		int 		parseProtocol(const std::string prot);
-		int			parseMethod(const std::string cmd, const std::string *methods);
+		int			parseMethod(const std::string cmd);
 
-		int			header(std::string str);
+		int			header(void);
 		int			fillheader(std::string *buf);
 		int			getContext(void);
 
@@ -52,10 +53,12 @@ class HTTPHeader : public HTTPRequest
 		void		setContentType(std::string value);
 		void		setContentTypeResponse(std::string value);
 		void		setAccept(std::string value);
+		void		setEncoding(std::string value);
 		void		setSecFetchDest(std::string value);
 		void		setSecFetchMode(std::string value);
 
 		void		checkContext(void);
+		int			isChunked(void);
 
 		std::string	getHost(void) const;
 		std::string	getMethod(void) const;

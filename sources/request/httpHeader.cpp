@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/04/28 15:54:30 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:13:36 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,15 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _secFetchDest(""), _secFetchMode("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding(""), _secFetchDest(""), _secFetchMode("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
-	this->setFct[4] = &HTTPHeader::setSecFetchDest;
-	this->setFct[5] = &HTTPHeader::setSecFetchMode;
+	this->setFct[4] = &HTTPHeader::setEncoding;
+	this->setFct[5] = &HTTPHeader::setSecFetchDest;
+	this->setFct[6] = &HTTPHeader::setSecFetchMode;
 
 	return ;
 }
@@ -94,6 +95,11 @@ void HTTPHeader::setAccept(std::string value)
 	this->_accept = value;
 }
 
+void HTTPHeader::setEncoding(std::string value)
+{
+	this->_encoding = value;
+}
+
 void HTTPHeader::setSecFetchDest(std::string value)
 {
 	this->_secFetchDest = value;
@@ -103,6 +109,7 @@ void HTTPHeader::setSecFetchMode(std::string value)
 {
 	this->_secFetchMode = value;
 }
+
 
 
 /*
@@ -126,7 +133,9 @@ std::string	HTTPHeader::getMethod(void) const
 
 std::string	HTTPHeader::getHost(void) const
 {
-	return ("Host: " + _host + "\r\n");
+	if (_host != "")
+		return ("Host: " + _host + "\r\n");
+	return ("");
 }
 
 std::string	HTTPHeader::getContentLen(void) const
@@ -158,7 +167,14 @@ std::string HTTPHeader::getSecFetchMode(void) const
 **		MEMBER FUNCTIONS
 */
 
-int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
+int	HTTPHeader::isChunked( void )
+{
+	if (!strncasecmp("chunked", _encoding.c_str(), 7))
+		return (1);
+	return (0);
+}
+
+int HTTPHeader::parseMethod(const std::string req)
 {
 	int i;
 	if (req == "")
@@ -168,7 +184,7 @@ int HTTPHeader::parseMethod(const std::string req, const std::string *methods)
 		if (!isupper(req[i]))
 			return (-1);
 	}
-	for (int j = 0; j < 5; j++)
+	for (int j = 0; j < nbMethods; j++)
 	{
 		if (!strncmp(req.c_str(), methods[j].c_str(), i))
 		{
@@ -209,11 +225,10 @@ std::string	getHead(std::string buf)
 	return (firstLine);
 }
 
-int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
+int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
 {
-	std::string methods[5] = {"GET", "POST", "DELETE", "HEAD", "OPTIONS"};
 	std::string line;
-	int i;
+	int 		i;
 
 	line = getHead(buf);
 	std::vector<std::string> request = splitThis(line);
@@ -227,9 +242,9 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_httpv = "HTTP/1.0";
 	this->_url = "/";
 	this->_method = "NULL";
-	if ((i = this->parseMethod(request[0], methods)) == -1)
+	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		deliver->statusCode(code->status(4, 5), this->getFirstLine());
+		response->statusCode(code->status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -238,29 +253,28 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		this->_method = methods[i];
 	if (!this->parsePath(request[1]))
 	{
-		deliver->statusCode(code->status(4, 4), this->getFirstLine());
+		response->statusCode(code->status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	if (!this->parseProtocol(request[2]))
 	{
-		deliver->statusCode(code->status(4, 0), this->getFirstLine());
+		response->statusCode(code->status(4, 0), this->getFirstLine());
 		return -1;
 	}
-	deliver->statusCode(code->status(2, 0), this->getFirstLine());
+	response->statusCode(code->status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
-	deliver->setMethod(this->_method);
-	deliver->setUrl(this->_url);
+	response->setMethod(this->_method);
+	response->setUrl(this->_url);
 	return 1;
 }
 
-int HTTPHeader::header(std::string str)
+int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
-		(void)str;
 		if (this->_contentLen == "")
 			return -1;
 	}
@@ -269,9 +283,9 @@ int HTTPHeader::header(std::string str)
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[6] = {"host:", "content-length:", "content-type:" ,"accept:", "sec-fetch-dest:", "sec-fetch-mode:"};
+	std::string header[7] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
-	int			headerSize = 6;
+	int			headerSize = 7;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
@@ -282,7 +296,6 @@ int HTTPHeader::fillheader(std::string *buf)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
 			break;
-			
 	}
 	if (i == headerSize)
 		return (0);
