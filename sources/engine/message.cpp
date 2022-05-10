@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 15:12:16 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:17:06 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock);
+		header = headerForCgi(header, sock, sockNbr);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -200,23 +200,28 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
         header.setContentTypeResponse("text/html");
-    	response.rendering(header);
+        response.rendering(header);
 
 		setEnvForCgi(sock, response, sockNbr, header);
-		if (getCgiFile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
-			return (ERR);
+		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
+			return ERR;
 	}
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
 	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
 
+	isDownloading(header, response);
+
 	if (sendHeader(fde, response, sock, false, sockNbr))
 		return (ERR);
 	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
 		return (ERR);
+
 	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
 		close(fde);
+
 	remove("html/tmp.html");
+
 	return (OK);
 }
 
@@ -268,6 +273,8 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	int				isBreak = 0;
 	int				sockNbr = sock->getConnection(fde);
 
+	sock->setBody(tmpfile());
+	sock->setFdBody(fileno(sock->getBody()));
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -297,6 +304,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			if (!onlySpaces(buf) || line > 0)
 			{
 				recvLen += byteCount;
+				write(sock->getFdBody(), buf, byteCount);
 				std::cout << GREEN << "[Received] " << END << recvLen << " bytes from " << fde << std::endl;
 				std::cout << "====================================================" << std::endl;
 				std::cout << buf ;

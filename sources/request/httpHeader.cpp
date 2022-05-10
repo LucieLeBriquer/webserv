@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/10 13:12:02 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:13:36 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,15 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding(""), _secFetchDest(""), _secFetchMode("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
 	this->setFct[4] = &HTTPHeader::setEncoding;
+	this->setFct[5] = &HTTPHeader::setSecFetchDest;
+	this->setFct[6] = &HTTPHeader::setSecFetchMode;
 
 	return ;
 }
@@ -98,6 +100,17 @@ void HTTPHeader::setEncoding(std::string value)
 	this->_encoding = value;
 }
 
+void HTTPHeader::setSecFetchDest(std::string value)
+{
+	this->_secFetchDest = value;
+}
+
+void HTTPHeader::setSecFetchMode(std::string value)
+{
+	this->_secFetchMode = value;
+}
+
+
 
 /*
 **		GETTERS
@@ -138,6 +151,16 @@ std::string	HTTPHeader::getContentType(void) const
 std::string	HTTPHeader::getResponseContentType(void) const
 {
 	return ("Content-Type: " + _contentTypeResponse + "\r\n");
+}
+
+std::string HTTPHeader::getSecFetchDest(void) const
+{
+	return (this->_secFetchDest);
+}
+
+std::string HTTPHeader::getSecFetchMode(void) const
+{
+	return (this->_secFetchMode);
 }
 
 /*
@@ -260,9 +283,9 @@ int HTTPHeader::header( void )
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[5] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:"};
+	std::string header[7] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
-	int			headerSize = 5;
+	int			headerSize = 7;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')

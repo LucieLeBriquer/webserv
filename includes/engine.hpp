@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 16:58:05 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 16:59:06 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,18 @@ Socket		*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i)
 int			requestReponse(int epollfd, int fde, Socket *sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
+size_t		getFdSize(int fd);
 
-std::string	headerForCgi(std::string header, Socket &sock);
+std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
 void        setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header);
-int			getCgiFile(Socket &sock, std::string cgi);
+int			GetCGIfile(Socket &sock, std::string cgi);
 void    	ft_free_env_arg(char ***env, Socket *sock);
 int     	mallocEnv(char ***env, Socket &sock);
 
 int			sendDefaultPage(int fde, HTTPResponse &response);
 int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::string root);
+
+void		isDownloading(HTTPHeader &header, HTTPResponse &response);
 
 static size_t chunk_size = 0;
 

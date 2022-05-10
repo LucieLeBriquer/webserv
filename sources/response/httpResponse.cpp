@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/10 15:12:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:20:08 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,11 @@ void	HTTPResponse::setMaxSizeC(size_t value)
 	_max_size_c = value;
 }
 
+void	HTTPResponse::setHeader(std::string header)
+{
+	this->_header = header;
+}
+
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
 {
 //Verifier si la listen directive ne passe pas une requete à un autre serveur
@@ -183,7 +188,8 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		{
 			sock.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
 			sock.setIsQueryString(true);
-			sock.setBody( sock.getEnvValue("QUERY_STRING") );
+			std::rewind(sock.getBody());
+			write(sock.getFdBody(), sock.getEnvValue("QUERY_STRING").c_str(), strlen(sock.getEnvValue("QUERY_STRING").c_str()));
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}

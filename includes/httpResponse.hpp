@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/06 16:38:17 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:02:39 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ class HTTPResponse
 		void		setRedir(int r);
 		void		setMaxSizeC(size_t value);
 		void		setServerName(const std::string serv);
+		void		setHeader(std::string header);
 
 		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);

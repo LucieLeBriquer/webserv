@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/04/22 12:18:07 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/09 13:30:02 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,13 @@ class Socket
 		int							getMethod(void) const;
 		void						setMethod(int method);
 
-		std::string					getBody(void) const;
-		void						setBody(std::string newBody);
+		FILE *						getBody(void) const;
+		void						setBody(FILE *newBody);
+		void						unsetBody(FILE *oldBody);
+
+		int							getFdBody(void) const;
+		void						setFdBody(int newFdBody);
+		void						unsetFdBody(int oldFdBody);
 
 		std::string					getCgiCoprs(void) const;
 		void						setCgiCoprs(std::string str);
@@ -95,9 +100,10 @@ class Socket
 		int								_check;
 		mapStr							_env;
 		int								_method;
-		std::string						_body;
 		bool							_isQuery;
 		std::string						_cgiCoprs;
+		FILE*							_body;
+		int								_fdBody;
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
