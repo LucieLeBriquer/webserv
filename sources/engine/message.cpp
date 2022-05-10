@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/09 14:07:01 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/10 14:36:01 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,8 +199,6 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	Status			status;
 	int				line(0), isBreak = 0;
 	int				sockNbr = sock->getConnection(fde);
-	FILE			*tmpFile = tmpfile();
-	int				fdTmp = fileno(tmpFile);
 
 	sock->setBody(tmpfile());
 	sock->setFdBody(fileno(sock->getBody()));
@@ -222,14 +220,14 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 				if (header.method(string, &status, &response) == -1)
 					break ;
 			}
-			if (endRequest(string, *sock, fdTmp, tmpFile))
+			if (endRequest(string, *sock))
 				break ;
 			line++;
 		}
 		else
 		{
 			recv_len += byteCount;
-			write(fdTmp, buf, byteCount);
+			write(sock->getFdBody(), buf, byteCount);
 			std::cout << GREEN << "[Received] " << END << recv_len << " bytes from " << fde << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << buf ;

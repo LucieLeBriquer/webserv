@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/09 14:33:46 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/10 13:53:42 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,8 @@ size_t	getFdSize(int fd)
 	return info.st_size;
 }
 
-int		endRequest(std::string string, Socket &sock, int fdTmp, FILE *tmpFile)
+int		endRequest(std::string string, Socket &sock)
 {
-	std::rewind(tmpFile);
-	
 	if (strncmp(string.c_str(), "GET", 3) == 0)
 		sock.setMethod(GET);
 	else if (strncmp(string.c_str(), "POST", 4) == 0)
@@ -47,14 +45,7 @@ int		endRequest(std::string string, Socket &sock, int fdTmp, FILE *tmpFile)
 			for (size_t j = i + 4; j < string.length() && sock.getMethod() == POST; j++)
 			{
 				if (strncmp(&string[i], "\r\n", 2) == 0)
-				{
-					if (dup2(fdTmp, sock.getFdBody()) < 0)
-					{
-						perror("dup2()");
-						exit(EXIT_FAILURE);
-					}
 					return (ERR);
-				}
 			}
 		}
 	}
