@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/06 16:58:16 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 15:12:16 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,17 +65,18 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 	size_t			size;
 	ss << response.getContentLen();
 	ss >> size;
-
 	if (response.isChunked())
 	{
+		// std::cout << "ok 1.0" << std::endl;
 		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
 		std::ofstream	tmpfile(tmpname.c_str());
 		std::string		line;
-		size_t				i;
+		size_t			i;
 		size_t			size_of_chunk;
 
 		// std::cout << "max size = " << response.getMaxSizeC() << std::endl;
 		// std::cout << "size = " << size << std::endl;
+		// std::cout << "chunk size = " << chunk_size << std::endl;
 		if (response.getMaxSizeC() < size)
 			size_of_chunk = response.getMaxSizeC();
 		else
@@ -85,19 +86,18 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		for (i = 0; i < chunk_size; i += size_of_chunk )
 			fileS.read(buff, size_of_chunk);
 
+		if (size - chunk_size < size_of_chunk)
+			size_of_chunk = size - chunk_size;
 		tmpfile << std::hex << size_of_chunk << "\r\n";
-
 		fileS.read(buff, size_of_chunk);
 		buff[size_of_chunk] = '\0';
-		
+
 		tmpfile << buff << "\r\n";
-		
 		free(buff);
+
 		chunk_size += size_of_chunk;
-
-		if (chunk_size >= size)
+		if (chunk_size >=  size)
 			tmpfile << "0" << "\r\n";
-
 		fileName = tmpname;
 		response.setUrl(tmpname);
 		tmpfile.close();
@@ -171,6 +171,8 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		}
 		fileStream.close();
 	}
+	if (response.isChunked() && chunk_size < size)
+		sendData(fde, response, isCgi, sock);
 	return (OK);
 }
 
