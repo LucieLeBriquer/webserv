@@ -3,32 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/09 13:32:04 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 13:26:02 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Socket.hpp"
+#include "Socket.hpp"
 
 /*
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Socket::Socket() : _check(OK), _method(0), _isQuery(false)
+Socket::Socket() : _check(OK), _method(0), _isQuery(false),  _cgiCoprs(""), _epollfd(-1)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(OK), _method(0), _isQuery(false)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0), _isQuery(false), _cgiCoprs(""), _epollfd(-1)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0), _isQuery(false)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0), _isQuery(false), _epollfd(-1)
 {
-	if (initSockets(this, config))
+	if (_initSockets())
 		this->_check = ERR;
 }
 
@@ -59,6 +59,11 @@ Socket	&Socket::operator=(const Socket &socket)
 		_check = socket._check;
 		_env = socket._env;
 		_method = socket._method;
+		_isQuery = socket._isQuery;
+		_cgiCoprs = socket._cgiCoprs;
+		_body = socket._body;
+		_fdBody= socket._fdBody;
+		_epollfd = socket._epollfd;
 	}
 	return (*this);
 }
@@ -74,7 +79,53 @@ std::ostream &	operator<<(std::ostream &o, Socket const &obj)
 **		MEMBER FUNCTIONS AND SETTERS
 */
 
-void		Socket::setSocket(int newSocket)
+int 	Socket::socketMatch(int fde) const
+{
+	for (int i = 0; i < getSocketNbr(); i++)
+	{
+		if (fde == getSocket(i))
+			return (i);
+	}
+	return (ERR);
+}
+
+int		Socket::_initSockets(void)
+{
+	int			listenSock;
+	int			yes = 1;
+	vecSrv		servers = _config;
+
+	for (size_t i = 0; i < servers.size(); i++)
+	{
+		if ((listenSock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		{
+			perror("socket()");
+			return (ERR);
+		}
+		_setSocket(listenSock);
+		if (setsockopt(getSocket(i), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)))
+		{
+			perror("setsockopt()");
+			return (ERR);
+		}
+		_setAddress(servers[i].getPort(), servers[i].getHost().c_str());
+		if (bind(getSocket(i), (struct sockaddr *)&getAddress(i), (int)getAddrLen(i)) < 0)
+		{
+			perror("bind()");
+			return (ERR);
+		}
+		if (setsocknonblock(getSocket(i)))
+			return (ERR);
+		if (listen(getSocket(i), MAX_EVENTS) < 0)
+		{
+			perror("listen()");
+			return (ERR);
+		}
+	}
+	return (OK);
+}
+
+void		Socket::_setSocket(int newSocket)
 {
 	_socket.push_back(newSocket);
 }
@@ -94,7 +145,7 @@ const mapSock	Socket::getAllConnections(void) const
 	return (_connected);
 }
 
-void		Socket::setAddress(int port, const char *ip)
+void		Socket::_setAddress(int port, const char *ip)
 {
 	struct sockaddr_in	address;
 	
@@ -140,6 +191,11 @@ void		Socket::setBody(FILE *newBody)
 void		Socket::setFdBody(int newFdBody)
 {
 	this->_fdBody = newFdBody;
+}
+
+void		Socket::setEpollFd(int epollfd)
+{
+	_epollfd = epollfd;
 }
 
 void		Socket::unsetBody(FILE *oldBody)
@@ -234,6 +290,16 @@ int							Socket::getFdBody(void) const
 std::string						Socket::getCgiCoprs(void) const
 {
 	return this->_cgiCoprs;
+}
+
+size_t							Socket::getNumberListen(void) const
+{
+	return (_config.size());
+}
+
+int								Socket::getEpollFd(void) const
+{
+	return (_epollfd);
 }
 
 /*
@@ -442,4 +508,26 @@ bool		Socket::isRootPath(int nbr, const std::string url) const
 	if (loc.getPath() == path)
 		return (true);
 	return (false);
+}
+
+/*	
+**		USEFULL
+*/
+
+int		setsocknonblock(int sock)
+{
+	int flag;
+
+	flag = fcntl(sock, F_GETFL, 0);
+	if (flag < 0)
+	{
+		perror("Fcntl (F_GETFL) failed");
+		return (ERR);
+	}
+	if (fcntl(sock, F_SETFL, flag | O_NONBLOCK) < 0)
+	{
+		perror("Fcntl (F_SETFL) failed");
+		return (ERR);
+	}
+	return (OK);
 }

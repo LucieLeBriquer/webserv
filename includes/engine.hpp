@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   engine.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 16:59:06 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 13:26:14 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,12 @@
 # define	HEAD		3
 # define	DELETE		4
 # define	OPTIONS		5
-# define 	MAX_EVENTS	10
 # define 	BUFFER_SIZE	1024
 # define 	B_SIZE		5
 
-int			setsocknonblock(int sock);
-int			initSockets(Socket *sock, const Config config);
-int			initEpoll(Socket *sock, const Config config);
-int			socketMatch(int fde, Socket *sock);
-Socket		*initConnection(Socket *sock, struct epoll_event ev, int epollfd, int i);
-int			requestReponse(int epollfd, int fde, Socket *sock);
+int			initEpoll(Socket &sock);
+int			initConnection(Socket &sock, int i);
+int			requestReponse(int fde, Socket &sock);
 int			endRequest(std::string string, Socket &sock);
 std::string	getHead(std::string buf);
 size_t		getFdSize(int fd);
