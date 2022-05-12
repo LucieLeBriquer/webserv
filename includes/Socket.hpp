@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Socket.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/09 13:30:02 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 12:49:58 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <arpa/inet.h>
 # include <cstring>
 # include "Config.hpp"
+# define MAX_EVENTS 10
 
 class Socket
 {
@@ -31,21 +32,21 @@ class Socket
 		Socket	&operator=(const Socket &socket);
 
 		const int &					getSocket(int nbr) const;
-		void						setSocket(int newSocket);
 
 		void						addConnection(int connSock, int sockNb);
 		int							getConnection(int connSock);
 		const mapSock				getAllConnections(void) const;
 		
 		const struct sockaddr_in &	getAddress(int nbr) const;
-		void						setAddress(int port, const char *ip);
-
 		const socklen_t &			getAddrLen(int nbr) const;
-
 		int							getSocketNbr(void) const;
 		int							getCheck(void) const;
 
-		mapStr						getEnv(void ) const;
+		int							getEpollFd(void) const;
+		void						setEpollFd(int epollfd);
+		int							socketMatch(int fde) const;
+		
+		mapStr						getEnv(void) const;
 		std::string					getEnvValue(std::string envp);
 		void						setEnv(std::string envp);
 		void						setEnvValue(std::string envp, std::string value);
@@ -90,6 +91,7 @@ class Socket
 		bool			isCgi(int nbr, const std::string url) const;
 		bool			isRedir(int nbr, const std::string url) const;
 		bool			isRootPath(int nbr, const std::string url) const;
+		size_t			getNumberListen(void) const;
 		
 	private:
 		vecSrv							_config;
@@ -104,9 +106,14 @@ class Socket
 		std::string						_cgiCoprs;
 		FILE*							_body;
 		int								_fdBody;
+		int								_epollfd;
+
+		int								_initSockets(void);
+		void							_setSocket(int newSocket);
+		void							_setAddress(int port, const char *ip);
 };
 
 std::ostream &	operator<<(std::ostream &o, Socket const &obj);
-int				initSockets(Socket *sock, const Config &config);
+int				setsocknonblock(int sock);
 
 #endif

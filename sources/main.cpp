@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:12 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/27 14:51:16 by user42           ###   ########.fr       */
+/*   Updated: 2022/05/12 13:08:36 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,7 @@ int	main(int argc, char **argv)
 	if (sock.getCheck() < 0)
 		exit(EXIT_FAILURE);
 	
-	sock.setCgiCoprs("");
-	if (!initEpoll(&sock, config))
+	if (!initEpoll(sock))
 		exit(EXIT_FAILURE);
 	return (0);
 }

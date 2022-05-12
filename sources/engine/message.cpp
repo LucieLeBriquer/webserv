@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 17:17:06 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 13:08:21 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,7 @@ static bool	onlySpaces(const char *str)
 	return (true);
 }
 
-int		requestReponse(int epollfd, int fde, Socket *sock)
+int		requestReponse(int fde, Socket &sock)
 {
 	HTTPResponse	response;
 	HTTPHeader		header;
@@ -271,10 +271,10 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 	int				recvLen = 0;
 	int				line = 0;
 	int				isBreak = 0;
-	int				sockNbr = sock->getConnection(fde);
+	int				sockNbr = sock.getConnection(fde);
 
-	sock->setBody(tmpfile());
-	sock->setFdBody(fileno(sock->getBody()));
+	sock.setBody(tmpfile());
+	sock.setFdBody(fileno(sock.getBody()));
 	while (1)
 	{
 		memset(buf, 0, BUFFER_SIZE);
@@ -296,7 +296,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 					break ;
 				}
 			}
-			if (!onlySpaces(string) && endRequest(string, *sock))
+			if (!onlySpaces(string) && endRequest(string, sock))
 				break ;
 		}
 		else
@@ -304,7 +304,7 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 			if (!onlySpaces(buf) || line > 0)
 			{
 				recvLen += byteCount;
-				write(sock->getFdBody(), buf, byteCount);
+				write(sock.getFdBody(), buf, byteCount);
 				std::cout << GREEN << "[Received] " << END << recvLen << " bytes from " << fde << std::endl;
 				std::cout << "====================================================" << std::endl;
 				std::cout << buf ;
@@ -318,14 +318,14 @@ int		requestReponse(int epollfd, int fde, Socket *sock)
 		if (checkHeader(header, string) == -1)
 			status.statusCode(status.status(4, 0), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
-		response.setServerName(sock->getServerName(sockNbr));
-		response.setMaxSizeC(sock->getMaxClientBodySize(sockNbr, response.getUrl()));
-		if (sendResponse(fde, response, header, *sock, sockNbr))
+		response.setServerName(sock.getServerName(sockNbr));
+		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
+		if (sendResponse(fde, response, header, sock, sockNbr))
 			return (ERR);
 	}
 	if (isBreak > 0)
 	{
-		epoll_ctl(epollfd, EPOLL_CTL_DEL, fde, NULL);
+		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
 		close(fde);
 	}
 	return (OK);
