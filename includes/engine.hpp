@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 13:07:25 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/12 13:26:14 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 # define	HEAD		3
 # define	DELETE		4
 # define	OPTIONS		5
-# define 	MAX_EVENTS	10
 # define 	BUFFER_SIZE	1024
 # define 	B_SIZE		5
 
