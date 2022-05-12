@@ -16,6 +16,7 @@
 
 class Socket;
 class HTTPHeader;
+class Client;
 class HTTPResponse
 {
 	protected:
@@ -39,7 +40,6 @@ class HTTPResponse
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 										std::string str, HTTPHeader &header);
 		std::string		_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header);
-		//std::string		_manageRegularFile(Socket &sock, int sockNbr, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);
@@ -77,8 +77,10 @@ class HTTPResponse
 
 		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
-		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
+		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header, Client &client);
 		void		statusCode(std::string status, std::string firstLine);
+
+		void		clear(void);
 };
 
 #endif

@@ -33,6 +33,8 @@ class Status : public HTTPResponse
 		void        err4xx(int type);
 		void        status2xx(int type);
 		void        err5xx( int type);
+
+		void		clear(void);
 };
 
 #endif

@@ -34,6 +34,7 @@ class HTTPRequest
 		std::string		getFirstLine(void);
 		std::string		getMethod() const;
 		std::string		getUrl() const;
+		void			clear(void);
 };
 
 #endif

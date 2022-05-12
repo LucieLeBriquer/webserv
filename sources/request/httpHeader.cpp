@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/10 17:13:36 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:01:56 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,19 @@ HTTPHeader::~HTTPHeader()
 	return ;
 }
 
+void	HTTPHeader::clear(void)
+{
+	(*this).HTTPRequest::clear();
+
+	_host  ="";
+	_contentLen = "";
+	_contentType = "";
+	_contentTypeResponse = "text/html";
+	_accept = "";
+	_encoding = "";
+	_secFetchDest = "";
+	_secFetchMode = "";
+}
 
 /*
 **		OVERLOAD OPERATORS
@@ -48,20 +61,12 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 {
 	if (this != &header)
 	{
+		(*this).HTTPRequest::operator=(header);
 		_host = header._host;
 		_contentLen = header._contentLen;
 		_contentType = header._contentType;
 		_contentTypeResponse = header._contentTypeResponse;
 		_accept = header._accept;
-		
-		// http request parameters
-		_META = header._META;
-		_OPTION = header._OPTION;
-		_method = header._method;
-		_httpv = header._httpv;
-		_url = header._url;
-		_active = header._active;
-		_fLine = header._fLine;
 	}
 	return (*this);
 }
@@ -225,7 +230,7 @@ std::string	getHead(std::string buf)
 	return (firstLine);
 }
 
-int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
+int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 {
 	std::string line;
 	int 		i;
@@ -244,7 +249,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		response->statusCode(code->status(4, 4), this->getFirstLine());
+		response.statusCode(code.status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -253,21 +258,21 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *response)
 		this->_method = methods[i];
 	if (!this->parsePath(request[1]))
 	{
-		response->statusCode(code->status(4, 4), this->getFirstLine());
+		response.statusCode(code.status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	if (!this->parseProtocol(request[2]))
 	{
-		response->statusCode(code->status(4, 0), this->getFirstLine());
+		response.statusCode(code.status(4, 0), this->getFirstLine());
 		return -1;
 	}
-	response->statusCode(code->status(2, 0), this->getFirstLine());
+	response.statusCode(code.status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
-	response->setMethod(this->_method);
-	response->setUrl(this->_url);
+	response.setMethod(this->_method);
+	response.setUrl(this->_url);
 	return 1;
 }
 

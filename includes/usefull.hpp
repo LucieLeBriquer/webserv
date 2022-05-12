@@ -51,11 +51,14 @@
 
 # include <cstdlib>
 # include <cstdio>
+# include <cstring>
 
 # include <arpa/inet.h>
+# include <netinet/in.h>
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <sys/epoll.h>
+# include <sys/socket.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 # include <dirent.h>

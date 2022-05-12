@@ -79,7 +79,6 @@ int	waitEpoll(Socket &sock)
 		perror("epoll_wait()");
 		return (ERR);
 	}
-	std::cerr << "event[0] fd = " << events[0].data.fd << std::endl;
 
 	for (int n = 0; n < nfds; n++)
 	{

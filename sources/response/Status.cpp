@@ -33,6 +33,12 @@ Status::~Status()
 	return ;
 }
 
+void	Status::clear(void)
+{
+	(*this).HTTPResponse::clear();
+	_code = "";
+}
+
 /*
 **		OVERLOAD OPERATOR
 */
@@ -41,6 +47,7 @@ Status	&Status::operator=(const Status &status)
 {
 	if (this != &status)
 	{
+		(*this).HTTPResponse::operator=(status);
 		_code = status._code;
 		for (int i = 0; i < 3; i++)
 			getStatus[i] = status.getStatus[i];
