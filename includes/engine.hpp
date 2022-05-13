@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 13:26:14 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/13 14:29:49 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 # include "Socket.hpp"
  
 # define	BAD_METHODE	-1
-# define	GET			1
-# define	POST		2
+# define	GET			0
+# define	POST		1
+# define	DELETE		2
 # define	HEAD		3
-# define	DELETE		4
-# define	OPTIONS		5
+# define	OPTIONS		4
 # define 	BUFFER_SIZE	1024
 # define 	B_SIZE		5
 
@@ -30,7 +30,9 @@
 int			initEpoll(Socket &sock);
 int			initConnection(Socket &sock, int i);
 int			requestReponse(int fde, Socket &sock);
-int			endRequest(std::string string, Socket &sock);
+
+int			endRequest(FILE *file, Socket &sock, std::string string);
+
 std::string	getHead(std::string buf);
 size_t		getFdSize(int fd);
 

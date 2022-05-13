@@ -19,7 +19,6 @@ static int	getRightFile(Socket &sock, int sockNbr, Client &client)
 	HTTPResponse		&response = client.getResponse();
 	HTTPHeader			&header = client.getHeader();
 
-	size = 0;
 	filename = response.redirect(sock, sockNbr, header, client);
 	if (filename == "")
 		return (ERR);
@@ -27,11 +26,13 @@ static int	getRightFile(Socket &sock, int sockNbr, Client &client)
 	response.setFileName(filename);
 	header.setContentTypeResponse(mimeContentType(header.getAccept(), filename));
 
+	//---
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
 
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
+	//---> replace by fdSize()
 	response.setContentLen(size);
 	response.rendering(header);
 	return (OK);
@@ -281,14 +282,14 @@ static void	checkFirstAndEnd(int &end, Client &client, Socket &sock)
 			if (header.method(client.getRequest(), status, response) == -1)
 				end = BAD_REQUEST;
 		}
-		if (endRequest(client.getRequest(), sock) && end == 0)
+		if (endRequest(client.getTmp(), sock, client.getRequest()) && end == 0)
 			end = END_REQUEST;
 	}
 }
 
 int		requestReponse(int fde, Socket &sock)
 {
-	char			buf[BUFFER_SIZE];
+	char			buf[BUFFER_SIZE + 1];
 	int				byteCount = 0;
 	int				end = 0;
 	int				sockNbr = sock.getConnection(fde);
@@ -302,8 +303,10 @@ int		requestReponse(int fde, Socket &sock)
 	
 	memset(buf, 0, BUFFER_SIZE);
 	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
+	if (byteCount > 0)
+		buf[byteCount] = 0;
 
-	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
+	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl << std::endl;
 
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
@@ -311,9 +314,6 @@ int		requestReponse(int fde, Socket &sock)
 		checkFirstAndEnd(end, client, sock);
 	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
-		std::cout << "====================================================" << std::endl;
-		std::cout << buf;
-		std::cout << "\n====================================================" << std::endl << std::endl;
 		client.addRecv(buf, byteCount);
 		checkFirstAndEnd(end, client, sock);
 	}
@@ -333,6 +333,7 @@ int		requestReponse(int fde, Socket &sock)
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{
+		std::cerr << "closing connection with " << fde << std::endl;
 		client.clear();
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);

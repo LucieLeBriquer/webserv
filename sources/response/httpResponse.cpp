@@ -198,13 +198,11 @@ void	HTTPResponse::setHeader(std::string header)
 
 std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header, Client &client)
 {
-//Verifier si la listen directive ne passe pas une requete à un autre serveur
-//
 	std::string filename = sock.getRealUrl(sockNbr, this->_url);
 
-	if ( this->_method == "GET" )
+	if (this->_method == "GET")
 	{
-		if (this->_url.find('?') != std::string::npos )
+		if (this->_url.find('?') != std::string::npos)
 		{
 			client.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
 			client.setIsQueryString(true);
