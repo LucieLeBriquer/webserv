@@ -50,8 +50,28 @@ HTTPResponse	&HTTPResponse::operator=(const HTTPResponse &response)
 		_statusNb = response._statusNb;
 		_redir = response._redir;
 		_needAutoindex = response._needAutoindex;
+		_chunked = response._chunked;
+		_max_size_c = response._max_size_c;
 	}
 	return (*this);
+}
+
+void		HTTPResponse::clear(void)
+{
+	_contentLen = "";
+	_protocol = "";
+	_statusCode = "";
+	_url = "";
+	_header = "";
+	_method = "";
+	_fileName = "";
+	_location = "";
+	_serverName = "";
+	_statusNb = 0;
+	_redir = 0;
+	_needAutoindex = false;
+	_chunked = 0;
+	_max_size_c = 0;
 }
 
 std::string HTTPResponse::getMethod(void) const
@@ -176,20 +196,18 @@ void	HTTPResponse::setHeader(std::string header)
 	this->_header = header;
 }
 
-std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header)
+std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header, Client &client)
 {
-//Verifier si la listen directive ne passe pas une requete à un autre serveur
-//
 	std::string filename = sock.getRealUrl(sockNbr, this->_url);
 
-	if ( this->_method == "GET" )
+	if (this->_method == "GET")
 	{
-		if (this->_url.find('?') != std::string::npos )
+		if (this->_url.find('?') != std::string::npos)
 		{
-			sock.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
-			sock.setIsQueryString(true);
-			std::rewind(sock.getBody());
-			write(sock.getFdBody(), sock.getEnvValue("QUERY_STRING").c_str(), strlen(sock.getEnvValue("QUERY_STRING").c_str()));
+			client.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
+			client.setIsQueryString(true);
+			std::rewind(client.getTmp());
+			write(client.getFdTmp(), client.getEnvValue("QUERY_STRING").c_str(), strlen(client.getEnvValue("QUERY_STRING").c_str()));
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}
 	}

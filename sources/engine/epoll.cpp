@@ -31,9 +31,11 @@ int	initConnection(Socket &sock, int i)
 	}
 	if (setsocknonblock(newFd) < 0)
 		return (ERR);
-	ev.events = EPOLLIN | EPOLLET;
+	ev.events = EPOLLIN;
 	ev.data.fd = newFd;
 	sock.addConnection(newFd, i);
+
+	std::cout << YELLOW << "[Init connection]" << END << " with " << newFd << " from socket " << i << std::endl;
 	if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, newFd, &ev) < 0)
 	{
 		perror("epoll_ctl: sock.getConnSock(i)");
@@ -55,7 +57,7 @@ int addCreateSocketEpoll(Socket &sock)
 
 	for (size_t i = 0; i < sock.getNumberListen(); i++)
 	{
-		ev.events = EPOLLIN | EPOLLET;
+		ev.events = EPOLLIN;
 		ev.data.fd = sock.getSocket(i);
 		if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, sock.getSocket(i), &ev) < 0)
 		{
@@ -79,8 +81,7 @@ int	waitEpoll(Socket &sock)
 		perror("epoll_wait()");
 		return (ERR);
 	}
-	std::cerr << "event[0] fd = " << events[0].data.fd << std::endl;
-
+	
 	for (int n = 0; n < nfds; n++)
 	{
 		if ((events[n].events & EPOLLERR) || (events[n].events & EPOLLHUP) || (!(events[n].events & EPOLLIN)))

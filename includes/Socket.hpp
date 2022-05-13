@@ -12,14 +12,16 @@
 
 #ifndef SOCKET_HPP
 # define SOCKET_HPP
-# include <vector>
-# include <iostream>
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
-# include <cstring>
 # include "Config.hpp"
+# include "httpResponse.hpp"
+# include "httpRequest.hpp"
+# include "httpHeader.hpp"
+# include "Client.hpp"
 # define MAX_EVENTS 10
+
+class Client;
+
+typedef std::map<int, Client>		mapClient;
 
 class Socket
 {
@@ -45,27 +47,15 @@ class Socket
 		int							getEpollFd(void) const;
 		void						setEpollFd(int epollfd);
 		int							socketMatch(int fde) const;
-		
-		mapStr						getEnv(void) const;
-		std::string					getEnvValue(std::string envp);
-		void						setEnv(std::string envp);
-		void						setEnvValue(std::string envp, std::string value);
-		size_t						getEnvSize(void) const;
-		void						unsetEnv(void);
-	
-		bool						isQueryString(void) const;
-		void						setIsQueryString(bool set);
+
+		mapClient					getClients(void) const;
+		Client						&getClient(int fd);
+		bool						isConnectedClient(int fd) const;
+		void						addClient(int fd);
+		void						removeClient(int fd);
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
-
-		FILE *						getBody(void) const;
-		void						setBody(FILE *newBody);
-		void						unsetBody(FILE *oldBody);
-
-		int							getFdBody(void) const;
-		void						setFdBody(int newFdBody);
-		void						unsetFdBody(int oldFdBody);
 
 		std::string					getCgiCoprs(void) const;
 		void						setCgiCoprs(std::string str);
@@ -97,15 +87,12 @@ class Socket
 		vecSrv							_config;
 		vecInt							_socket;
 		mapSock							_connected;
+		mapClient						_clients;
 		std::vector<struct sockaddr_in>	_address;
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
-		mapStr							_env;
 		int								_method;
-		bool							_isQuery;
 		std::string						_cgiCoprs;
-		FILE*							_body;
-		int								_fdBody;
 		int								_epollfd;
 
 		int								_initSockets(void);

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:33:30 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 13:26:02 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:48:45 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,17 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Socket::Socket() : _check(OK), _method(0), _isQuery(false),  _cgiCoprs(""), _epollfd(-1)
+Socket::Socket() : _check(OK), _method(0), _cgiCoprs(""), _epollfd(-1)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(OK), _method(0), _isQuery(false), _cgiCoprs(""), _epollfd(-1)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0), _cgiCoprs(""), _epollfd(-1)
 {
 	*this = socket;
 }
 
-Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0), _isQuery(false), _epollfd(-1)
+Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK), _method(0), _epollfd(-1)
 {
 	if (_initSockets())
 		this->_check = ERR;
@@ -34,7 +34,12 @@ Socket::Socket(const Config &config) : _config(config.getServers()), _check(OK),
 
 Socket::~Socket()
 {
-	return ;
+	_config.clear();
+	_socket.clear();
+	_connected.clear();
+	_address.clear();
+	_addrLen.clear();
+	_clients.clear();
 }
 
 /*
@@ -50,19 +55,17 @@ Socket	&Socket::operator=(const Socket &socket)
 		_connected.clear();
 		_address.clear();
 		_addrLen.clear();
+		_clients.clear();
 
 		_config = socket._config;
 		_socket = socket._socket;
 		_connected = socket._connected;
+		_clients = socket._clients;
 		_address = socket._address;
 		_addrLen = socket._addrLen;
 		_check = socket._check;
-		_env = socket._env;
 		_method = socket._method;
-		_isQuery = socket._isQuery;
 		_cgiCoprs = socket._cgiCoprs;
-		_body = socket._body;
-		_fdBody= socket._fdBody;
 		_epollfd = socket._epollfd;
 	}
 	return (*this);
@@ -158,54 +161,14 @@ void		Socket::_setAddress(int port, const char *ip)
 	this->_addrLen.push_back(sizeof(address));
 }
 
-void		Socket::setEnv(std::string envp)
-{
-	this->_env[envp];
-}
-
-void		Socket::setEnvValue(std::string envp, std::string value)
-{
-	this->_env[envp] = value;
-}
-
-void		Socket::unsetEnv(void)
-{
-	this->_env.clear();
-}
-
-void		Socket::setIsQueryString(bool set)
-{
-	this->_isQuery = set;
-}
-
 void		Socket::setMethod(int method)
 {
 	this->_method = method;
 }
 
-void		Socket::setBody(FILE *newBody)
-{
-	this->_body = newBody;
-}
-
-void		Socket::setFdBody(int newFdBody)
-{
-	this->_fdBody = newFdBody;
-}
-
 void		Socket::setEpollFd(int epollfd)
 {
 	_epollfd = epollfd;
-}
-
-void		Socket::unsetBody(FILE *oldBody)
-{
-	std::fclose(oldBody);
-}
-
-void		Socket::unsetFdBody(int oldFdBody)
-{
-	close(oldFdBody);
 }
 
 void		Socket::setCgiCoprs(std::string str)
@@ -237,26 +200,6 @@ const Location				Socket::getConfig(int nbr, int loc) const
 	return (_config[nbr].getLocations()[loc]);
 }
 
-mapStr			Socket::getEnv( void ) const
-{	
-	return this->_env;
-}
-
-std::string			Socket::getEnvValue( std::string envp )
-{	
-	return this->_env[envp];
-}
-
-size_t						Socket::getEnvSize(void) const
-{
-	return this->_env.size();
-}
-
-bool						Socket::isQueryString(void) const
-{
-	return this->_isQuery;
-}
-
 const socklen_t &			Socket::getAddrLen(int nbr) const
 {
 	return (_addrLen[nbr]);
@@ -277,27 +220,17 @@ const struct sockaddr_in &	Socket::getAddress(int nbr) const
 	return (_address[nbr]);
 }
 
-FILE *						Socket::getBody(void) const
-{
-	return this->_body;
-}
-
-int							Socket::getFdBody(void) const
-{
-	return this->_fdBody;
-}
-
-std::string						Socket::getCgiCoprs(void) const
+std::string					Socket::getCgiCoprs(void) const
 {
 	return this->_cgiCoprs;
 }
 
-size_t							Socket::getNumberListen(void) const
+size_t						Socket::getNumberListen(void) const
 {
 	return (_config.size());
 }
 
-int								Socket::getEpollFd(void) const
+int							Socket::getEpollFd(void) const
 {
 	return (_epollfd);
 }
@@ -508,6 +441,39 @@ bool		Socket::isRootPath(int nbr, const std::string url) const
 	if (loc.getPath() == path)
 		return (true);
 	return (false);
+}
+
+/*	
+**		CLIENT FUNCTIONS
+*/
+
+mapClient	Socket::getClients(void) const
+{
+	return (_clients);
+}
+
+Client		&Socket::getClient(int fd)
+{
+	return ((_clients.find(fd))->second);
+}
+
+bool		Socket::isConnectedClient(int fd) const
+{
+  	if (_clients.find(fd) != _clients.end())
+	  	return (true);
+	return (false);
+}
+
+void		Socket::addClient(int fd)
+{
+	if (!isConnectedClient(fd))
+		_clients[fd] = Client(fd);
+}
+
+void		Socket::removeClient(int fd)
+{
+	if (isConnectedClient(fd))
+		_clients.erase(fd);
 }
 
 /*	

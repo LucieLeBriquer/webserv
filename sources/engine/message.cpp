@@ -6,30 +6,33 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 13:08:21 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/12 17:11:44 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-static int	getRightFile(HTTPResponse &response, Socket &sock, int sockNbr, HTTPHeader &header)
+static int	getRightFile(Socket &sock, int sockNbr, Client &client)
 {
 	std::string 		filename;
 	size_t				size;
+	HTTPResponse		&response = client.getResponse();
+	HTTPHeader			&header = client.getHeader();
 
-	size = 0;
-	filename = response.redirect(sock, sockNbr, header);
+	filename = response.redirect(sock, sockNbr, header, client);
 	if (filename == "")
 		return (ERR);
 
 	response.setFileName(filename);
 	header.setContentTypeResponse(mimeContentType(header.getAccept(), filename));
 
+	//---
 	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
 
 	fileStream.seekg(0, std::ios::end);
 	size = fileStream.tellg();
 	fileStream.close();
+	//---> replace by fdSize()
 	response.setContentLen(size);
 	response.rendering(header);
 	return (OK);
@@ -56,6 +59,8 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	}
 	return (OK);
 }
+
+static size_t chunk_size = 0;
 
 static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 {
@@ -176,17 +181,21 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 	return (OK);
 }
 
-int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &sock, int sockNbr)
+int		sendResponse(Client &client, Socket &sock, int sockNbr)
 {
+	HTTPHeader		&header = client.getHeader();
+	HTTPResponse	&response = client.getResponse();
+	int				fde = client.getFd();
+
 	if (response.getStatusNb() == 0
 		&& !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
 
-	if (getRightFile(response, sock, sockNbr, header))
+	if (getRightFile(sock, sockNbr, client))
 	{
 		if (response.getRedir() == 1)
 		{
-			response.rendering(header);
+			response.rendering(client.getHeader());
 			response.setRedir(0);
 			if (sendHeader(fde, response, sock, true, sockNbr))
 				return (ERR);
@@ -201,9 +210,8 @@ int		sendResponse(int fde, HTTPResponse &response, HTTPHeader &header, Socket &s
 	{
         header.setContentTypeResponse("text/html");
         response.rendering(header);
-
-		setEnvForCgi(sock, response, sockNbr, header);
-		if (GetCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl())) < 0)
+		setEnvForCgi(sock, sockNbr, client);
+		if (getCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
 			return ERR;
 	}
 
@@ -260,71 +268,74 @@ static bool	onlySpaces(const char *str)
 	return (true);
 }
 
+static void	checkFirstAndEnd(int &end, Client &client, Socket &sock)
+{
+	HTTPResponse	&response = client.getResponse();
+	HTTPHeader		&header = client.getHeader();
+	Status			&status = client.getStatus();
+
+	if (!onlySpaces(client.getRequest()))
+	{
+		if (client.isFirstLine())
+		{
+			client.changeFirstLine();
+			if (header.method(client.getRequest(), status, response) == -1)
+				end = BAD_REQUEST;
+		}
+		if (endRequest(client.getTmp(), sock, client.getRequest()) && end == 0)
+			end = END_REQUEST;
+	}
+}
+
 int		requestReponse(int fde, Socket &sock)
 {
-	HTTPResponse	response;
-	HTTPHeader		header;
-	Status			status;
-	std::string		string;
-	char			buf[BUFFER_SIZE];
+	char			buf[BUFFER_SIZE + 1];
 	int				byteCount = 0;
-	int				recvLen = 0;
-	int				line = 0;
-	int				isBreak = 0;
+	int				end = 0;
 	int				sockNbr = sock.getConnection(fde);
 
-	sock.setBody(tmpfile());
-	sock.setFdBody(fileno(sock.getBody()));
-	while (1)
-	{
-		memset(buf, 0, BUFFER_SIZE);
-		byteCount = recv(fde, buf, BUFFER_SIZE, 0);
+	if (!sock.isConnectedClient(fde))
+		sock.addClient(fde);
+	Client			&client = sock.getClient(fde);
+	HTTPResponse	&response = client.getResponse();
+	HTTPHeader		&header = client.getHeader();
+	Status			&status = client.getStatus();
+	
+	memset(buf, 0, BUFFER_SIZE);
+	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
+	if (byteCount > 0)
+		buf[byteCount] = 0;
 
-		if (byteCount == 0 || (byteCount == 1 && (int)buf[0] == 4))
-		{
-			isBreak = 1;
-			break ;
-		}
-		else if (byteCount < 0)
-		{
-			if (line == 0 && !onlySpaces(string))
-			{
-				line++;
-				if (header.method(string, &status, &response) == -1)
-				{
-					isBreak = 2;
-					break ;
-				}
-			}
-			if (!onlySpaces(string) && endRequest(string, sock))
-				break ;
-		}
-		else
-		{
-			if (!onlySpaces(buf) || line > 0)
-			{
-				recvLen += byteCount;
-				write(sock.getFdBody(), buf, byteCount);
-				std::cout << GREEN << "[Received] " << END << recvLen << " bytes from " << fde << std::endl;
-				std::cout << "====================================================" << std::endl;
-				std::cout << buf ;
-				std::cout << "\n====================================================" << std::endl << std::endl;
-				string += buf;
-			}
-		}
-	}
-	if (isBreak != 1)
+	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl << std::endl;
+
+	if (byteCount == 0)
+		end = CLOSE_CONNECTION;
+	else if (byteCount < 0)
+		checkFirstAndEnd(end, client, sock);
+	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
-		if (checkHeader(header, string) == -1)
-			status.statusCode(status.status(4, 0), header.getFirstLine());
-		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
-		response.setServerName(sock.getServerName(sockNbr));
-		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
-		if (sendResponse(fde, response, header, sock, sockNbr))
-			return (ERR);
+		client.addRecv(buf, byteCount);
+		checkFirstAndEnd(end, client, sock);
 	}
-	if (isBreak > 0)
+
+	if (end == BAD_REQUEST)
+		status.statusCode(status.status(4, 0), header.getFirstLine());
+	if (end == BAD_REQUEST || end == END_REQUEST)
 	{
+			if (checkHeader(header, client.getRequest()) == -1)
+				status.statusCode(status.status(4, 0), header.getFirstLine());
+			header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
+			response.setServerName(sock.getServerName(sockNbr));
+			response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
+			if (sendResponse(client, sock, sockNbr))
+				return (ERR);
+			client.clear();
+	}
+	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
+	{
+		std::cerr << "closing connection with " << fde << std::endl;
+		client.clear();
+		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
 		close(fde);
 	}

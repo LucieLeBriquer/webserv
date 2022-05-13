@@ -91,7 +91,7 @@ void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
 	sock.setCgiCoprs(string);
 }
 
-int 	GetCGIfile(Socket &sock, std::string cgi)
+int 	getCGIfile(Socket &sock, std::string cgi, Client &client)
 {
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
@@ -100,20 +100,19 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
 	
-	if (mallocEnv(&env, sock) < 0)
+	if (mallocEnv(&env, client) < 0)
 		return ERR;
 
 	/////////////////printing////////////////
 	std::cout << "======================= ENV ========================" << std::endl;
 	std::cout << std::endl;
-	mapStr	tmp = sock.getEnv();
+	mapStr	tmp = client.getEnv();
 	mapStr::iterator it = tmp.begin();
 	for (size_t i = 0; env[i]; i++)
 	{
 		if (it == tmp.end())
 			break ;
 		std::cout << env[i] << std::endl;
-		// std::cout << "s = " << sock.getEnvSize() << "  " << it->first << "=" << it->second << std::endl;
 		it++;
 	}
 	std::cout << std::endl;
@@ -121,10 +120,10 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	std::cout << std::endl;
 	/////////////////////////////////////////
 
-	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
+	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 		m = POST;
 	
-	std::rewind(sock.getBody());
+	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
@@ -132,7 +131,7 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 	{
 		if (m == POST)
 		{
-			if (dup2(sock.getFdBody(), STDIN_FILENO) < 0)
+			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
 			{
 				perror("dup2()");
 				exit(EXIT_FAILURE);
@@ -151,10 +150,6 @@ int 	GetCGIfile(Socket &sock, std::string cgi)
 		waitpid(pid, &status, 0);
 
 	setCgiString(temp, fdtemp, sock);
-	ft_free_env_arg(&env, &sock);
-	sock.unsetEnv();
-	sock.setIsQueryString(false);
-	sock.unsetBody(sock.getBody());
-	sock.unsetFdBody(sock.getFdBody());
+	freeEnv(&env, client);
 	return OK;
 }

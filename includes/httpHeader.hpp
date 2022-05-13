@@ -39,7 +39,7 @@ class HTTPHeader : public HTTPRequest
 
 		HTTPHeader	&operator=(const HTTPHeader &header);
 
-		int			method(std::string buf, Status *code, HTTPResponse *deliver);
+		int			method(std::string buf, Status &code, HTTPResponse &deliver);
 		int			parsePath(const std::string url);
 		int 		parseProtocol(const std::string prot);
 		int			parseMethod(const std::string cmd);
@@ -68,6 +68,8 @@ class HTTPHeader : public HTTPRequest
 		std::string	getResponseContentType(void) const;
 		std::string	getSecFetchDest(void) const;
 		std::string getSecFetchMode(void) const;
+
+		void		clear(void);
 };
 
 #endif

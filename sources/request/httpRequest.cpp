@@ -70,3 +70,14 @@ std::string	HTTPRequest::getMethod(void) const
 {
 	return (_method);
 }
+
+void		HTTPRequest::clear(void)
+{
+	_META = "";
+	_OPTION = "";
+	_method = "";
+	_httpv = "";
+	_url = "";
+	_active = 0;
+	_fLine = "";
+}
