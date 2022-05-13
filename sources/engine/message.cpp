@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 17:11:44 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:55:09 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock, sockNbr);
+		header = headerForCgi(header, sock);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else

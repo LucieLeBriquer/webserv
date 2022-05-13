@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 17:29:58 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:54:54 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ std::string	deletingUseless(std::string header)
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
+std::string	headerForCgi(std::string header, Socket &sock)
 {
 	std::string	cgiHeader;
 	std::string	cgiCorps = sock.getCgiCoprs();
@@ -52,9 +52,6 @@ std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
 
 	cgiHeader = deletingUseless(header);
 
-	cgiHeader += "Server: ";
-	cgiHeader += sock.getServerName(socknbr);
-	cgiHeader += "\r\n";
 	while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
 		i++;
 	tmp = &cgiCorps[i + 6];
