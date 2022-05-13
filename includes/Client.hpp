@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/12 16:45:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:56:56 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ class Client
 		bool			_isFirstLine;
 		mapStr			_env;
 		bool			_isQuery;
+		bool			_recvHeader;
+		int				_method;
 		
 	public:
 		Client(void);
@@ -47,6 +49,8 @@ class Client
 		HTTPHeader		&getHeader(void);
 		Status			&getStatus(void);
 		bool			isFirstLine(void) const;
+		bool			hasRecvHeader(void) const;
+		int				getMethod(void) const;
 
 		mapStr			getEnv(void) const;
 		std::string		getEnvValue(std::string envp);
@@ -60,6 +64,8 @@ class Client
 
 		void			addRecv(char *buf, int len);
 		void			changeFirstLine(void);
+		void			changeRecvHeader(void);
+		void			setMethod(int method);
 		void			clear();
 };
 

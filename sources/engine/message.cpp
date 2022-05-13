@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/13 15:55:09 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/12 17:11:44 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static int	getRightFile(Socket &sock, int sockNbr, Client &client)
 {
 	std::string 		filename;
-	size_t				size;
 	HTTPResponse		&response = client.getResponse();
 	HTTPHeader			&header = client.getHeader();
 
@@ -25,15 +24,7 @@ static int	getRightFile(Socket &sock, int sockNbr, Client &client)
 
 	response.setFileName(filename);
 	header.setContentTypeResponse(mimeContentType(header.getAccept(), filename));
-
-	//---
-	std::ifstream		fileStream(filename.c_str(), std::ios::in | std::ios::binary);
-
-	fileStream.seekg(0, std::ios::end);
-	size = fileStream.tellg();
-	fileStream.close();
-	//---> replace by fdSize()
-	response.setContentLen(size);
+	response.setContentLen(getFileSize(filename));
 	response.rendering(header);
 	return (OK);
 }
@@ -43,7 +34,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock);
+		header = headerForCgi(header, sock, sockNbr);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -268,7 +259,7 @@ static bool	onlySpaces(const char *str)
 	return (true);
 }
 
-static void	checkFirstAndEnd(int &end, Client &client, Socket &sock)
+static void	checkFirstAndEnd(int &end, Client &client)
 {
 	HTTPResponse	&response = client.getResponse();
 	HTTPHeader		&header = client.getHeader();
@@ -282,7 +273,7 @@ static void	checkFirstAndEnd(int &end, Client &client, Socket &sock)
 			if (header.method(client.getRequest(), status, response) == -1)
 				end = BAD_REQUEST;
 		}
-		if (endRequest(client.getTmp(), sock, client.getRequest()) && end == 0)
+		if (endRequest(client) && end == 0)
 			end = END_REQUEST;
 	}
 }
@@ -311,11 +302,11 @@ int		requestReponse(int fde, Socket &sock)
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
 	else if (byteCount < 0)
-		checkFirstAndEnd(end, client, sock);
+		checkFirstAndEnd(end, client);
 	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
 		client.addRecv(buf, byteCount);
-		checkFirstAndEnd(end, client, sock);
+		checkFirstAndEnd(end, client);
 	}
 
 	if (end == BAD_REQUEST)
@@ -333,7 +324,7 @@ int		requestReponse(int fde, Socket &sock)
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{
-		std::cerr << "closing connection with " << fde << std::endl;
+		std::cerr << RED << "[Closing]" << END << " connection with " << fde << std::endl;
 		client.clear();
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);

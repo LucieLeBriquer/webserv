@@ -27,6 +27,12 @@
 # define LOG 0
 # define DIRECTORY 0
 # define REGFILE 1
+# define BAD_METHOD -1
+# define GET 0
+# define POST 1
+# define DELETE 2
+# define HEAD 3
+# define OPTIONS 4
 
 // librairies
 # include <iostream>
@@ -103,6 +109,9 @@ bool			isDirectory(std::string path);
 bool			isRegFile(std::string path);
 
 std::string		mimeContentType(std::string accepted, std::string extension);
+
+size_t			getFileSize(const int fd);
+size_t			getFileSize(const std::string filenqme);
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {

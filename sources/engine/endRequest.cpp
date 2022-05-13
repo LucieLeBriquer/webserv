@@ -6,55 +6,60 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 15:10:02 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/13 14:15:42 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/13 16:53:45 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-size_t	getFdSize(int fd)
+int		endRequest(Client &client)
 {
-	struct stat	info;
-	
-	fstat(fd, &info);
-	return (info.st_size);
-}
+	FILE		*file = client.getTmp();
+	int 		lastChar[4];
 
-int		endRequest(FILE *file, Socket &sock, std::string string)
-{
-	int lastChar[4];
-
-	if (strncmp(string.c_str(), "GET", 3) == 0)
-		sock.setMethod(GET);
-	else if (strncmp(string.c_str(), "POST", 4) == 0)
-		sock.setMethod(POST);
-	else if (strncmp(string.c_str(), "HEAD", 4) == 0)
-		sock.setMethod(HEAD);
-	else if (strncmp(string.c_str(), "DELETE", 6) == 0)
-		sock.setMethod(DELETE);
-	else if (strncmp(string.c_str(), "OPTIONS", 7) == 0)
-		sock.setMethod(OPTIONS);
-	else
-		sock.setMethod(BAD_METHODE);
-
-	if (sock.getMethod() == POST)
+	if (client.getMethod() == BAD_METHOD)
 	{
-		std::fseek(file, -2, SEEK_END);
-		lastChar[0] = std::fgetc(file);
-		lastChar[1] = std::fgetc(file);
-		if (lastChar[0] == '\r' && lastChar[1] == '\n')
-			return (ERR);
+		for (int i = 0; i < nbMethods; i++)
+		{
+			if (strncmp(client.getRequest().c_str(), methods[i].c_str(), methods[i].size()) == 0)
+				client.setMethod(getMethodNb(methods[i]));
+		}
 	}
-	else
+
+	if (!client.hasRecvHeader())
 	{
-		std::fseek(file, -4, SEEK_END);
-		lastChar[0] = std::fgetc(file);
-		lastChar[1] = std::fgetc(file);
-		lastChar[2] = std::fgetc(file);
-		lastChar[3] = std::fgetc(file);
-		if (lastChar[0] == '\r' && lastChar[1] == '\n'
-			&& lastChar[2] == '\r' && lastChar[3] == '\n')
+		std::rewind(file);
+		while (!std::feof(file))
+		{
+			std::fseek(file, -3, SEEK_CUR);
+			lastChar[0] = std::fgetc(file);
+			lastChar[1] = std::fgetc(file);
+			lastChar[2] = std::fgetc(file);
+			lastChar[3] = std::fgetc(file);
+
+			if (lastChar[0] == '\r' && lastChar[1] == '\n'
+				&& lastChar[2] == '\r' && lastChar[3] == '\n')
+			{
+				client.changeRecvHeader();
+				if (client.getMethod() == POST)
+					return (OK);
+				break;
+			}
+		}
+	}
+
+	if (client.hasRecvHeader())
+	{
+		if (client.getMethod() != POST)
 			return (ERR);
+		else
+		{
+			std::fseek(file, -2, SEEK_END);
+			lastChar[0] = std::fgetc(file);
+			lastChar[1] = std::fgetc(file);
+			if (lastChar[0] == '\r' && lastChar[1] == '\n')
+				return (ERR);
+		}
 	}
 	std::fseek(file, 0, SEEK_END);
 	return (OK);

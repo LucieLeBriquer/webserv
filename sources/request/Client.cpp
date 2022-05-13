@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/12 16:44:07 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/13 15:58:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD)
 {
 	return ;
 }
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD)
 {
 	return ;
 }
@@ -59,6 +59,8 @@ Client	&Client::operator=(const Client &client)
 		_isFirstLine = client._isFirstLine;
 		_env = client._env;
 		_isQuery = client._isQuery;
+		_recvHeader = client._recvHeader;
+		_method = client._method;
 	}
 	return (*this);
 }
@@ -107,6 +109,16 @@ bool			Client::isFirstLine(void) const
 	return (_isFirstLine);
 }
 
+bool			Client::hasRecvHeader(void) const
+{
+	return (_recvHeader);
+}
+
+int				Client::getMethod(void) const
+{
+	return (_method);
+}
+
 void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);
@@ -118,6 +130,16 @@ void			Client::changeFirstLine(void)
 	_isFirstLine = false;
 }
 
+void			Client::changeRecvHeader(void)
+{
+	_recvHeader = true;
+}
+
+void			Client::setMethod(int method)
+{
+	_method = method;
+}
+
 void			Client::clear(void)
 {
 	std::fclose(_tmp);
@@ -126,6 +148,8 @@ void			Client::clear(void)
 	
 	_isFirstLine = true;	
 	_isQuery = false;
+	_recvHeader = false;
+	_method = BAD_METHOD;
 
 	_request.clear();
 	_env.clear();
@@ -166,7 +190,7 @@ mapStr			Client::getEnv( void ) const
 	return (_env);
 }
 
-std::string		Client::getEnvValue( std::string envp )
+std::string		Client::getEnvValue(std::string envp)
 {	
 	return (_env[envp]);
 }

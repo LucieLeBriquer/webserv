@@ -34,7 +34,7 @@ void    setEnvForCgi(Socket &sock, int sockNbr, Client &client)
 	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 	{
 		std::rewind(client.getTmp());
-		out << getFdSize(client.getFdTmp());
+		out << getFileSize(client.getFdTmp());
 		client.setEnvValue("CONTENT_LENGTH", out.str());
 	}
 	else

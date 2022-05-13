@@ -387,3 +387,23 @@ bool	isRegFile(std::string path)
 		return (false);
 	return (true);
 }
+
+/*
+**		SIZE FILE
+*/
+
+size_t	getFileSize(const int fd)
+{
+	struct stat	info;
+	
+	fstat(fd, &info);
+	return (info.st_size);
+}
+
+size_t	getFileSize(const std::string file)
+{
+	struct stat info;
+
+    stat(file.c_str(), &info);
+	return (info.st_size);
+}
