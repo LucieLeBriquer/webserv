@@ -130,6 +130,19 @@ void	splitPattern(vecStr &splitted, std::string str, std::string pattern)
 	splitted.push_back(removeInsideSpaces(toAdd));
 }
 
+std::vector<std::string> splitThis(std::string str)
+{
+    std::vector<std::string> splited(3);
+
+    int i = 0;
+    std::stringstream ssin(str);
+    while (ssin.good() && i < 3)
+    {
+        ssin >> splited[i];
+        i++;
+    }
+    return splited;
+}
 
 /*
 **		PRINT ERRORS AND HELP
@@ -358,6 +371,44 @@ std::string		toString(long nb)
 	return (ss.str());
 }
 
+std::string	getHead(std::string buf)
+{
+	std::string firstLine;
+
+	std::stringstream ssin(buf);
+	std::getline(ssin, firstLine, '\r');
+	return (firstLine);
+}
+
+bool	onlySpaces(const std::string str)
+{
+	for (size_t i = 0; i < str.size(); i++)
+	{
+		if (str[i] != '\n' && str[i] != '\r')
+			return (false);
+	}
+	return (true);
+}
+
+bool	onlySpaces(const char *str)
+{
+	for (size_t i = 0; str[i]; i++)
+	{
+		if (str[i] != '\n' && str[i] != '\r')
+			return (false);
+	}
+	return (true);
+}
+
+std::string copystr(std::string str, int start)
+{
+    std::string dest;
+
+    for (int j = 0; str[start] ; start++, j++)
+        dest[j] = str[start];
+    return dest;
+}
+
 /*
 **		FILE AND DIRECTORY FUNCTIONS
 */
@@ -387,6 +438,7 @@ bool	isRegFile(std::string path)
 		return (false);
 	return (true);
 }
+
 
 /*
 **		SIZE FILE

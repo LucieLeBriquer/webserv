@@ -39,6 +39,7 @@
 # include <sstream>
 # include <fstream>
 # include <ostream>
+# include <iomanip>
 
 # include <vector>
 # include <map>
@@ -80,18 +81,18 @@ typedef std::pair<std::string, std::string> 		pairStr;
 typedef struct dirent fileInfo;
 typedef DIR	directory;
 
-bool	splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
-void	splitPattern(vecStr &splitted, std::string str, std::string pattern);
+bool			splitBlocks(vecStr &splitted, std::string str, std::string pattern, std::string &otherInfo);
+void			splitPattern(vecStr &splitted, std::string str, std::string pattern);
 
-void	printFormatError(void);
-void	printFormatError(std::string);
-void	printFileError(std::string file);
+void			printFormatError(void);
+void			printFormatError(std::string);
+void			printFileError(std::string file);
 
-bool	checkHostFormat(std::string str);
-bool	checkWordFormat(std::string str);
+bool			checkHostFormat(std::string str);
+bool			checkWordFormat(std::string str);
 
-size_t	myAtoi(std::string str);
-size_t	myAtoi(std::string str, bool &success);
+size_t			myAtoi(std::string str);
+size_t			myAtoi(std::string str, bool &success);
 
 int				getMethodNb(std::string method);
 std::string		getMethod(int methodNm);
@@ -101,9 +102,13 @@ std::string		fileName(int argc, char **argv);
 std::string 	copystr(std::string str, int start);
 vecStr			splitThis(std::string str);
 std::string		removeSlash(const std::string &str);
+
 std::string		toString(int nb);
 std::string		toString(size_t nb);
 std::string		toString(long nb);
+std::string		getHead(std::string buf);
+bool			onlySpaces(const std::string str);
+bool			onlySpaces(const char *str);
 
 bool			isDirectory(std::string path);
 bool			isRegFile(std::string path);
@@ -112,6 +117,7 @@ std::string		mimeContentType(std::string accepted, std::string extension);
 
 size_t			getFileSize(const int fd);
 size_t			getFileSize(const std::string filenqme);
+
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {
@@ -126,7 +132,6 @@ std::ostream	&operator<<(std::ostream &o, mapErr map);
 
 static const int			nbMethods = 5;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE", "HEAD", "OPTIONS"};
-
 
 // errors
 static const int			nbError = 4;

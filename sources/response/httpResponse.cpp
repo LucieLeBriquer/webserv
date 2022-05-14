@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/10 17:20:08 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/14 15:22:50 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 {
 	std::string	pageErr;
-
+	
 	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
 	if (pageErr != "")
 	{
@@ -255,7 +255,6 @@ std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 		this->_statusCode = "302 Moved Temporarily";
 		this->_redir = 1;
 		this->_statusNb = 302;
-		//this->_contentLen = "154";
 	}
 	return ("");
 }
@@ -281,7 +280,6 @@ std::string	HTTPResponse::_manageDirectory(Socket &sock, int sockNbr, HTTPHeader
 		for (size_t i = 0; i < index.size(); i++)
 		{
 			indexStr = sock.addRoot(sockNbr, _url, index[i]);
-			std::cout << indexStr << std::endl;
 			if ((fd = open(indexStr.c_str(), O_RDWR)) != -1)
 			{
 				close(fd);
@@ -301,23 +299,20 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	std::string	pageErr;
 	int			fd;
 
-	// check if there was an error before (method not allowed etc)
 	if (_statusNb != 0 && _statusNb != 200)
 		return (_returnErrPage(sock, sockNbr));
 
 	filename = sock.getRealUrl(sockNbr, _url);
-	std::cout << PURPLE << "[Trying to get]" << END ;
+	std::cout << PURPLE << "[Getting]" << END ;
 	if (isDirectory(filename))
-		std::cout << " directory ";
+		std::cout << " directory " << PURPLE << "/";
 	else
 		std::cout << " file ";
-	std::cout << PURPLE << "\"" << filename << "\"" << END << std::endl << std::endl;
+	std::cout << PURPLE << filename << END << std::endl;
 
-	// if it's a directory
 	if (isDirectory(filename))
 		return (_manageDirectory(sock, sockNbr, header));
-
-	// if it's a file
+	
 	if ((fd = open(filename.c_str(), O_RDWR)) == -1)
 		return (_returnSetErrPage(sock, sockNbr, "404", " Not Found", header));
 	
@@ -383,5 +378,3 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	else if (_contentLen != "")
 		_header += "\r\nContent-Length: " + _contentLen ;
 }
-// GET / HTTP/1.1
-// Transfer-Encoding: chunked

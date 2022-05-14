@@ -337,10 +337,14 @@ vecInt		Socket::getAllowedMethods(int nbr, const std::string url) const
 	return (methods);
 }
 
-
 std::string	Socket::getHost(int nbr) const
 {
 	return (getConfig(nbr).getHost());
+}
+
+std::string	Socket::getPort(int nbr) const
+{
+	return (toString(getConfig(nbr).getPort()));
 }
 
 vecStr		Socket::getIndex(int nbr, const std::string url) const

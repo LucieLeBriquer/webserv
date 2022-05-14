@@ -220,16 +220,6 @@ int HTTPHeader::parseProtocol(const std::string protocol)
 	return 1;
 }
 
-std::string	getHead(std::string buf)
-{
-	std::string firstLine;
-
-	std::stringstream ssin(buf);
-	std::getline(ssin, firstLine, '\r');
-	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
-	return (firstLine);
-}
-
 int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 {
 	std::string line;
@@ -249,7 +239,7 @@ int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		response.statusCode(code.status(4, 4), this->getFirstLine());
+		response.statusCode(code.status(4, 0), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;

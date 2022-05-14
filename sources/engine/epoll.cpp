@@ -35,7 +35,8 @@ int	initConnection(Socket &sock, int i)
 	ev.data.fd = newFd;
 	sock.addConnection(newFd, i);
 
-	std::cout << YELLOW << "[Init connection]" << END << " with " << newFd << " from socket " << i << std::endl;
+	std::cout << YELLOW << "[Accept]" << END << " connection on socket " + toString(i) + " at " + sock.getHost(i) + ":" + sock.getPort(i) << std::endl;
+	std::cout << GRAY << std::setw(52) << "socket " + toString(newFd) + " created to communicate" << END << std::endl;
 	if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, newFd, &ev) < 0)
 	{
 		perror("epoll_ctl: sock.getConnSock(i)");
