@@ -43,7 +43,7 @@ std::string	deletingUseless(std::string header)
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Client &client, Socket &sock, int socknbr)
+std::string	headerForCgi(std::string header, Client &client, const std::string servName)
 {
 	std::string	cgiHeader;
 	std::string	cgiCorps = client.getCgiCoprs();
@@ -53,7 +53,7 @@ std::string	headerForCgi(std::string header, Client &client, Socket &sock, int s
 	cgiHeader = deletingUseless(header);
 
 	cgiHeader += "Server: ";
-	cgiHeader += sock.getServerName(socknbr);
+	cgiHeader += servName;
 	cgiHeader += "\r\n";
 	while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
 		i++;
@@ -97,7 +97,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 		return ERR;
 
 	/////////////////printing////////////////
-	/*
+	
 	std::cout << "======================= ENV ========================" << std::endl;
 	std::cout << std::endl;
 	mapStr	tmp = client.getEnv();
@@ -113,7 +113,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	std::cout << "====================================================" << std::endl;
 	std::cout << std::endl;
 	/////////////////////////////////////////
-	*/
+	
 
 	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 		m = POST;

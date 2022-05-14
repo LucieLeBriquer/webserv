@@ -12,22 +12,22 @@
 
 #ifndef ENGINE_HPP
 # define ENGINE_HPP
+# define BUFFER_SIZE 1024
+# define B_SIZE 5
+# define END_REQUEST 1
+# define CLOSE_CONNECTION 2
+# define BAD_REQUEST 3
 # include "Socket.hpp"
- 
-# define 	BUFFER_SIZE	1024
-# define 	B_SIZE 5
-# define	END_REQUEST 1
-# define	CLOSE_CONNECTION 2
-# define	BAD_REQUEST 3
 
+// epoll
 int			initEpoll(Socket &sock);
 int			initConnection(Socket &sock, int i);
-int			requestReponse(int fde, Socket &sock);
-int			endRequest(Client &client);
 
+// message
+int			requestReponse(int fde, Socket &sock);
 
 // cgi
-std::string	headerForCgi(std::string header, Client &client, Socket &sock, int sockNbr);
+std::string	headerForCgi(std::string header, Client &client, const std::string servName);
 void        setEnvForCgi(Socket &sock, int sockNbr, Client &client);
 int			getCGIfile(std::string cgi, Client &client);
 int			getRightFile(Socket &sock, int sockNbr, Client &client);

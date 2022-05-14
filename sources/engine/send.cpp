@@ -12,12 +12,13 @@
 
 #include "engine.hpp"
 
-static int	sendHeader(int fde, Client &client, HTTPResponse &response, Socket &sock, bool redir, int sockNbr)
+static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int sockNbr)
 {
-	std::string	header = response.getHeader();
+	HTTPResponse	&response = client.getResponse();
+	std::string		header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, client, sock, sockNbr);
+		header = headerForCgi(header, client, sock.getServerName(sockNbr));
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -36,8 +37,9 @@ static int	sendHeader(int fde, Client &client, HTTPResponse &response, Socket &s
 
 static size_t chunk_size = 0;
 
-static int	sendData(int fde, Client &client, HTTPResponse &response, bool isCgi, Socket &sock)
+static int	sendData(int fde, Client &client, bool isCgi)
 {
+	HTTPResponse	&response = client.getResponse();
 	std::string		fileName(response.getFileName());
 	std::string		tmpname("html/tmp.html");
 	std::stringstream ss;
@@ -151,7 +153,7 @@ static int	sendData(int fde, Client &client, HTTPResponse &response, bool isCgi,
 		fileStream.close();
 	}
 	if (response.isChunked() && chunk_size < size)
-		sendData(fde, client, response, isCgi, sock);
+		sendData(fde, client, isCgi);
 	return (OK);
 }
 
@@ -171,7 +173,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		{
 			response.rendering(client.getHeader());
 			response.setRedir(0);
-			if (sendHeader(fde, client, response, sock, true, sockNbr))
+			if (sendHeader(fde, client, sock, true, sockNbr))
 				return (ERR);
 			return (OK);
 		}
@@ -194,9 +196,9 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 
 	isDownloading(header, response);
 
-	if (sendHeader(fde, client, response, sock, false, sockNbr))
+	if (sendHeader(fde, client, sock, false, sockNbr))
 		return (ERR);
-	if (sendData(fde, client, response, sock.isCgi(sockNbr, response.getUrl()), sock))
+	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
 
 	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
