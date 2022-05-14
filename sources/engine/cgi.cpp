@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/10 17:29:58 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/14 17:46:44 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 		return (ERR);
 
 	/////////////////printing////////////////
-	
+	/*
 	std::cout << "======================= ENV ========================" << std::endl;
 	std::cout << std::endl;
 	mapStr	tmp = client.getEnv();
@@ -107,7 +107,11 @@ int 		getCGIfile(std::string cgi, Client &client)
 	std::cout << "====================================================" << std::endl;
 	std::cout << std::endl;
 	/////////////////////////////////////////
+	*/
 	
+	// useless but needed to work hum
+	while (!std::feof(client.getTmp()))
+		std::fgetc(client.getTmp());
 	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
@@ -116,6 +120,8 @@ int 		getCGIfile(std::string cgi, Client &client)
 	{
 		if (client.getMethod() == POST)
 		{
+
+			
 			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
 			{
 				perror("dup2()");
@@ -132,9 +138,11 @@ int 		getCGIfile(std::string cgi, Client &client)
 		exit(EXIT_FAILURE);
 	}
 	else
+	{
 		waitpid(pid, &status, 0);
-
-	setCgiString(temp, fdtemp, client);
-	freeEnv(&env, client);
+		setCgiString(temp, fdtemp, client);
+		freeEnv(&env, client);
+	}
+	
 	return (OK);
 }
