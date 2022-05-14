@@ -58,8 +58,7 @@ std::string	headerForCgi(std::string header, Client &client)
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
 	client.setCgiCoprs(tmp);
-
-	return cgiHeader;
+	return (cgiHeader);
 }
 
 static void	setCgiString(FILE *temp, int fdtemp, Client &client)
@@ -70,13 +69,12 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 	std::rewind(temp);
 	while(!feof(temp))
  	{
-       if (fgets(buff, 1024, temp) == NULL)
+       if (fgets(buff, 4096, temp) == NULL)
              break;
        string += buff;
  	}
 	close(fdtemp);
 	std::fclose(temp);
-
 	client.setCgiCoprs(string);
 }
 
@@ -85,12 +83,12 @@ int 		getCGIfile(std::string cgi, Client &client)
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
 	pid_t		pid;
-	int			status, m = 0;
+	int			status;
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
 	
 	if (mallocEnv(&env, client) < 0)
-		return ERR;
+		return (ERR);
 
 	/////////////////printing////////////////
 	
@@ -110,17 +108,13 @@ int 		getCGIfile(std::string cgi, Client &client)
 	std::cout << std::endl;
 	/////////////////////////////////////////
 	
-
-	if (client.getEnvValue("REQUEST_METHOD") == "POST")
-		m = POST;
-	
 	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
-		if (m == POST)
+		if (client.getMethod() == POST)
 		{
 			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
 			{
@@ -142,5 +136,5 @@ int 		getCGIfile(std::string cgi, Client &client)
 
 	setCgiString(temp, fdtemp, client);
 	freeEnv(&env, client);
-	return OK;
+	return (OK);
 }
