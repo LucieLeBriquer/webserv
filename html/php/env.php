@@ -28,7 +28,7 @@ echo  '<span class="buttonTab">';
 echo    '<a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>';
 echo  '</span>';
 echo  '<span class="buttonTab">';
-echo    '<a href="download.html"><i class="fas fa-download"></i><span class="tabname">Download</span></a>';
+echo    '<a href="../upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>';
 echo  '</span>';
 echo  '<span class="buttonTab">';
 echo    '<a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>';

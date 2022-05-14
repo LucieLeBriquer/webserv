@@ -43,10 +43,10 @@ std::string	deletingUseless(std::string header)
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
+std::string	headerForCgi(std::string header, Client &client, Socket &sock, int socknbr)
 {
 	std::string	cgiHeader;
-	std::string	cgiCorps = sock.getCgiCoprs();
+	std::string	cgiCorps = client.getCgiCoprs();
 	std::string	tmp;
 	int			i = 0;
 
@@ -61,19 +61,12 @@ std::string	headerForCgi(std::string header, Socket &sock, int socknbr)
 	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
-	sock.setCgiCoprs(tmp);
+	client.setCgiCoprs(tmp);
 
 	return cgiHeader;
 }
 
-/*******
- * RAPPEL *
- * pipefd[2] : [0] = "read" end of pipe, [1] = "write" end of pipe
- * dup2() give the 2nd arg role to the 1st arg
- * STDIN == 0 & STDOUT == 1
- ********/
-
-void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
+static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 {
 	char buff[4096];
 	std::string string;
@@ -88,10 +81,10 @@ void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
 	close(fdtemp);
 	std::fclose(temp);
 
-	sock.setCgiCoprs(string);
+	client.setCgiCoprs(string);
 }
 
-int 	getCGIfile(Socket &sock, std::string cgi, Client &client)
+int 		getCGIfile(std::string cgi, Client &client)
 {
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
@@ -104,6 +97,7 @@ int 	getCGIfile(Socket &sock, std::string cgi, Client &client)
 		return ERR;
 
 	/////////////////printing////////////////
+	/*
 	std::cout << "======================= ENV ========================" << std::endl;
 	std::cout << std::endl;
 	mapStr	tmp = client.getEnv();
@@ -119,6 +113,7 @@ int 	getCGIfile(Socket &sock, std::string cgi, Client &client)
 	std::cout << "====================================================" << std::endl;
 	std::cout << std::endl;
 	/////////////////////////////////////////
+	*/
 
 	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 		m = POST;
@@ -149,7 +144,7 @@ int 	getCGIfile(Socket &sock, std::string cgi, Client &client)
 	else
 		waitpid(pid, &status, 0);
 
-	setCgiString(temp, fdtemp, sock);
+	setCgiString(temp, fdtemp, client);
 	freeEnv(&env, client);
 	return OK;
 }

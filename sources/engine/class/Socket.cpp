@@ -16,12 +16,12 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Socket::Socket() : _check(OK), _method(0), _cgiCoprs(""), _epollfd(-1)
+Socket::Socket() : _check(OK), _method(0), _epollfd(-1)
 {
 	return ;
 }
 
-Socket::Socket(const Socket &socket) : _check(OK), _method(0), _cgiCoprs(""), _epollfd(-1)
+Socket::Socket(const Socket &socket) : _check(OK), _method(0), _epollfd(-1)
 {
 	*this = socket;
 }
@@ -65,7 +65,6 @@ Socket	&Socket::operator=(const Socket &socket)
 		_addrLen = socket._addrLen;
 		_check = socket._check;
 		_method = socket._method;
-		_cgiCoprs = socket._cgiCoprs;
 		_epollfd = socket._epollfd;
 	}
 	return (*this);
@@ -171,11 +170,6 @@ void		Socket::setEpollFd(int epollfd)
 	_epollfd = epollfd;
 }
 
-void		Socket::setCgiCoprs(std::string str)
-{
-	this->_cgiCoprs = str;
-}
-
 /*
 **		GETTER FUNCTIONS
 */
@@ -218,11 +212,6 @@ int							Socket::getCheck(void) const
 const struct sockaddr_in &	Socket::getAddress(int nbr) const
 {
 	return (_address[nbr]);
-}
-
-std::string					Socket::getCgiCoprs(void) const
-{
-	return this->_cgiCoprs;
 }
 
 size_t						Socket::getNumberListen(void) const

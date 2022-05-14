@@ -27,9 +27,9 @@ int			endRequest(Client &client);
 
 
 // cgi
-std::string	headerForCgi(std::string header, Socket &sock, int sockNbr);
+std::string	headerForCgi(std::string header, Client &client, Socket &sock, int sockNbr);
 void        setEnvForCgi(Socket &sock, int sockNbr, Client &client);
-int			getCGIfile(Socket &sock, std::string cgi, Client &client);
+int			getCGIfile(std::string cgi, Client &client);
 int			getRightFile(Socket &sock, int sockNbr, Client &client);
 
 // env

@@ -43,7 +43,7 @@ int		endRequest(Client &client)
 				client.setMethod(getMethodNb(methods[i]));
 		}
 	}
-
+	
 	if (!client.hasRecvHeader())
 	{
 		std::rewind(file);
@@ -59,8 +59,13 @@ int		endRequest(Client &client)
 				&& lastChar[2] == '\r' && lastChar[3] == '\n')
 			{
 				client.changeRecvHeader();
-				if (client.getMethod() == POST)
+				std::fgetc(file);
+				if (client.getMethod() == POST && std::feof(file))
+				{
+					std::fseek(file, -1, SEEK_CUR);
 					return (OK);
+				}
+				std::fseek(file, -1, SEEK_CUR);
 				break;
 			}
 		}

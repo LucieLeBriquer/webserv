@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:30:07 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 12:49:58 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/14 16:35:18 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,6 @@ class Socket
 		std::vector<socklen_t>			_addrLen;
 		int								_check;
 		int								_method;
-		std::string						_cgiCoprs;
 		int								_epollfd;
 
 		int								_initSockets(void);
@@ -72,9 +71,6 @@ class Socket
 	
 		int							getMethod(void) const;
 		void						setMethod(int method);
-
-		std::string					getCgiCoprs(void) const;
-		void						setCgiCoprs(std::string str);
 
 		// config getter
 		const Server				getConfig(int nbr) const;

@@ -12,12 +12,12 @@
 
 #include "engine.hpp"
 
-static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir, int sockNbr)
+static int	sendHeader(int fde, Client &client, HTTPResponse &response, Socket &sock, bool redir, int sockNbr)
 {
 	std::string	header = response.getHeader();
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
-		header = headerForCgi(header, sock, sockNbr);
+		header = headerForCgi(header, client, sock, sockNbr);
 	else if (redir)
 		header += "\r\n\r\n\r\n";
 	else
@@ -36,7 +36,7 @@ static int	sendHeader(int fde, HTTPResponse &response, Socket &sock, bool redir,
 
 static size_t chunk_size = 0;
 
-static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
+static int	sendData(int fde, Client &client, HTTPResponse &response, bool isCgi, Socket &sock)
 {
 	std::string		fileName(response.getFileName());
 	std::string		tmpname("html/tmp.html");
@@ -85,7 +85,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 	}
 	if (isCgi)
 	{
-		std::stringstream	fileStream(sock.getCgiCoprs(), std::ios::in | std::ios::binary);
+		std::stringstream	fileStream(client.getCgiCoprs(), std::ios::in | std::ios::binary);
 		char				buf[BUFFER_SIZE];
 		int					i;
 		char				c;
@@ -151,7 +151,7 @@ static int	sendData(int fde, HTTPResponse &response, bool isCgi, Socket &sock)
 		fileStream.close();
 	}
 	if (response.isChunked() && chunk_size < size)
-		sendData(fde, response, isCgi, sock);
+		sendData(fde, client, response, isCgi, sock);
 	return (OK);
 }
 
@@ -171,7 +171,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		{
 			response.rendering(client.getHeader());
 			response.setRedir(0);
-			if (sendHeader(fde, response, sock, true, sockNbr))
+			if (sendHeader(fde, client, response, sock, true, sockNbr))
 				return (ERR);
 			return (OK);
 		}
@@ -185,7 +185,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
         header.setContentTypeResponse("text/html");
         response.rendering(header);
 		setEnvForCgi(sock, sockNbr, client);
-		if (getCGIfile(sock, sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
+		if (getCGIfile(sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
 			return ERR;
 	}
 
@@ -194,9 +194,9 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 
 	isDownloading(header, response);
 
-	if (sendHeader(fde, response, sock, false, sockNbr))
+	if (sendHeader(fde, client, response, sock, false, sockNbr))
 		return (ERR);
-	if (sendData(fde, response, sock.isCgi(sockNbr, response.getUrl()), sock))
+	if (sendData(fde, client, response, sock.isCgi(sockNbr, response.getUrl()), sock))
 		return (ERR);
 
 	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))

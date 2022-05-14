@@ -18,14 +18,14 @@
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs("")
 {
 	return ;
 }
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs("")
 {
 	return ;
 }
@@ -61,6 +61,7 @@ Client	&Client::operator=(const Client &client)
 		_isQuery = client._isQuery;
 		_recvHeader = client._recvHeader;
 		_method = client._method;
+		_cgiCoprs = client._cgiCoprs;
 	}
 	return (*this);
 }
@@ -140,35 +141,20 @@ void			Client::setMethod(int method)
 	_method = method;
 }
 
-void			Client::clear(void)
-{
-	std::fclose(_tmp);
-	_tmp = tmpfile();
-	_fdTmp = fileno(_tmp);
-	
-	_isFirstLine = true;	
-	_isQuery = false;
-	_recvHeader = false;
-	_method = BAD_METHOD;
-
-	_request.clear();
-	_env.clear();
-	_header.clear();
-	_response.clear();
-	_status.clear();
-	_env.clear();
-}
-
 void			Client::setIsQueryString(bool set)
 {
 	_isQuery = set;
+}
+
+void			Client::setCgiCoprs(std::string str)
+{
+	_cgiCoprs = str;
 }
 
 bool			Client::isQueryString(void) const
 {
 	return (_isQuery);
 }
-
 
 void			Client::setEnv(std::string envp)
 {
@@ -197,5 +183,31 @@ std::string		Client::getEnvValue(std::string envp)
 
 size_t			Client::getEnvSize(void) const
 {
-	return this->_env.size();
+	return (_env.size());
+}
+
+
+std::string		Client::getCgiCoprs(void) const
+{
+	return (_cgiCoprs);
+}
+
+void			Client::clear(void)
+{
+	std::fclose(_tmp);
+	_tmp = tmpfile();
+	_fdTmp = fileno(_tmp);
+	
+	_isFirstLine = true;	
+	_isQuery = false;
+	_recvHeader = false;
+	_method = BAD_METHOD;
+
+	_request.clear();
+	_env.clear();
+	_header.clear();
+	_response.clear();
+	_status.clear();
+	_env.clear();
+	_cgiCoprs = "";
 }

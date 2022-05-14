@@ -32,6 +32,7 @@ class Client
 		bool			_isQuery;
 		bool			_recvHeader;
 		int				_method;
+		std::string		_cgiCoprs;
 		
 	public:
 		Client(void);
@@ -61,6 +62,9 @@ class Client
 
 		void			setIsQueryString(bool set);
 		bool			isQueryString(void) const;
+
+		std::string		getCgiCoprs(void) const;
+		void			setCgiCoprs(std::string str);
 
 		void			addRecv(char *buf, int len);
 		void			changeFirstLine(void);
