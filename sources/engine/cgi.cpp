@@ -43,7 +43,7 @@ std::string	deletingUseless(std::string header)
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Client &client, const std::string servName)
+std::string	headerForCgi(std::string header, Client &client)
 {
 	std::string	cgiHeader;
 	std::string	cgiCorps = client.getCgiCoprs();
@@ -51,10 +51,6 @@ std::string	headerForCgi(std::string header, Client &client, const std::string s
 	int			i = 0;
 
 	cgiHeader = deletingUseless(header);
-
-	cgiHeader += "Server: ";
-	cgiHeader += servName;
-	cgiHeader += "\r\n";
 	while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
 		i++;
 	tmp = &cgiCorps[i + 6];

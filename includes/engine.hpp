@@ -27,7 +27,7 @@ int			initConnection(Socket &sock, int i);
 int			requestReponse(int fde, Socket &sock);
 
 // cgi
-std::string	headerForCgi(std::string header, Client &client, const std::string servName);
+std::string	headerForCgi(std::string header, Client &client);
 void        setEnvForCgi(Socket &sock, int sockNbr, Client &client);
 int			getCGIfile(std::string cgi, Client &client);
 int			getRightFile(Socket &sock, int sockNbr, Client &client);
