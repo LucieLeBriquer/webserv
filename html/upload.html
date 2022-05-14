@@ -22,7 +22,7 @@
         <a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>
     </span>
 	<span class="buttonTab active">
-        <a href="download.html"><i class="fas fa-download"></i><span class="tabname">Download</span></a>
+		<a href="upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>
     </span>
 	<span class="buttonTab">
         <a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>
@@ -30,32 +30,37 @@
 </header>
 
 <body class="main">
-	<h2>Download</h2>
-	<div class="columns">
-		<div>
-			<img src="./download/lama.jpg"><br>
-			<a href="./download/lama.jpg" download="lama.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
-		</div>
-		<!-- <div>
-			<img src="./download/lamaNB.jpg"><br>
-			<a href="./download/lamaNB.jpg" download="lamaNB.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
-		</div>
-		<div>
-			<img src="./download/lamaFat.jpg"><br>
-			<a href="./download/lamaFat.jpg" download="lamaFat.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
-		</div> -->
-		<div>
-			<img src="./download/icon_pdf.png" width="390"><br>
-			<a href="./download/subject.pdf" download="subject.pdf"><span class="button"><i class="fas fa-download"></i> Download</span></a>
-		</div>
-	</div>
 	<h2>Upload</h2>
-
-	<form action="upload.php" class="upload" method="post" enctype="multipart/form-data">
-		Select image to upload:
+	<h3>Select file to upload :</h3> 
+	<form action="./php/upload.php" class="upload" method="post" enctype="multipart/form-data">
 		<input type="file" name="fileToUpload" id="fileToUpload">
 		<input type="submit" value="Upload" name="submit">
 	</form>
+	<br><br>
+
+	<h2>Download</h2>
+	<div class="columns">
+		<div>
+			<img src="./data/lama.jpg"><br>
+			<a href="./data/lama.jpg" download="lama.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		<div>
+			<img src="./data/lamaNB.jpg"><br>
+			<a href="./data/lamaNB.jpg" download="lamaNB.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		<div>
+			<img src="./data/lamaFat.jpg"><br>
+			<a href="./data/lamaFat.jpg" download="lamaFat.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		
+	</div>
+
+	<div class="columns">
+	<div>
+		<img src="./data/icon_pdf.png" width="390"><br>
+		<a href="./data/subject.pdf" download="subject.pdf"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+	</div>
+	</div>
 
 </body>
 

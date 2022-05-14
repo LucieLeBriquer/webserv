@@ -1,6 +1,6 @@
 <?php
 
-$target_dir = "uploads/";
+$target_dir = "../uploads/";
 $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 $uploadOk = 1;
 $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -24,13 +24,13 @@ echo    '<div class="titlename">Webserv</div>';
 echo    '<div class="title">euses</div>';
 echo  '</div>';
 echo  '<span class="buttonTab">';
-echo    '<a href="index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>';
+echo    '<a href="../index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>';
 echo  '</span>';
 echo  '<span class="buttonTab">';
-echo    '<a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>';
+echo    '<a href="../form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>';
 echo  '</span>';
-echo  '<span class="buttonTab">';
-echo    '<a href="download.html"><i class="fas fa-download"></i><span class="tabname">Download</span></a>';
+echo  '<span class="buttonTab active">';
+echo    '<a href="../upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>';
 echo  '</span>';
 echo  '<span class="buttonTab">';
 echo    '<a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>';
