@@ -360,7 +360,11 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	if (_serverName != "")
 			_header += "Server: " + _serverName + "\r\n";
 
+	if (header.getResponseContentType() != "")
+		_header += header.getResponseContentType();
+		
 	_header += "Date: " + timeStr + "\r\n";
+
 	if (_method == "OPTIONS")
 			_header += "Allow: " + _options + "\r\n";
 

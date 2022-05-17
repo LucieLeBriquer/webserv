@@ -83,6 +83,7 @@ int		requestReponse(int fde, Socket &sock)
 		buf[byteCount] = 0;
 
 	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
+	std::cout << GRAY << buf << END << std::endl;
 
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
