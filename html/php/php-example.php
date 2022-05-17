@@ -1,64 +1,60 @@
 <?php
-  // The global $_POST variable allows you to access the data sent with the POST method by name
-  // To access the data sent with the GET method, you can use $_GET
-  if (getenv("REQUEST_METHOD") == 'GET')
-  {
-    if (isset($_GET['say']))
-      $say = htmlspecialchars($_GET['say']);
-    else
-      $say = 'say';
-    if (isset($_GET['to']))
-      $to = htmlspecialchars($_GET['to']);
-    else
-      $to = 'to';
-  }
-  else if (getenv("REQUEST_METHOD") == 'POST')
-  {
-    if (isset($_POST['say']))
-      $say = htmlspecialchars($_POST['say']);
-    else
-      $say = 'say';
-    if (isset($_POST['to']))
-      $to = htmlspecialchars($_POST['to']);
-    else
-      $to = 'to';
-  } 
-    echo "<!DOCTYPE html>";
-    echo "<html>";
+	// The global $_POST variable allows you to access the data sent with the POST method by name
+	// To access the data sent with the GET method, you can use $_GET
+	
+	$meth = 'not specified';
+	if (getenv("REQUEST_METHOD") == 'GET')
+		$meth = 'GET';
+	else if (getenv("REQUEST_METHOD") == 'POST')
+		$meth = 'POST';
+	
+	if (isset($_REQUEST['say']))
+		$say = htmlspecialchars($_REQUEST['say']);
+	else
+		$say = 'say';
+	if (isset($_REQUEST['to']))
+		$to = htmlspecialchars($_REQUEST['to']);
+	else
+		$to = 'to';
 
-    echo "<head>";
-    echo  "<title>Webserv</title>";
-    echo  '<link rel="shortcut icon" href="https://lucie-lebriquer.fr/webserv/favicon.png"/>';
-    echo  '<meta charset="utf-8"/>';
-	echo  '<link rel="stylesheet" href="https://lucie-lebriquer.fr/webserv/main.css"/>';
-    echo  '<script src="https://kit.fontawesome.com/58cd01063a.js" crossorigin="anonymous"></script>';
-    echo "</head>";
-
-    echo "<header>";
-	echo  '<div class="logo">';
-	echo    '<img src="https://lucie-lebriquer.fr/webserv/logo.png">';
-	echo    '<div class="titlename">Webserv</div>';
-	echo    '<div class="title">euses</div>';
-	echo  '</div>';
-	echo  '<span class="buttonTab">';
-    echo    '<a href="../index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>';
-    echo  '</span>';
-	echo  '<span class="buttonTab active">';
-    echo    '<a href="../form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>';
-    echo  '</span>';
-	echo  '<span class="buttonTab">';
-	echo    '<a href="../upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>';
-	echo  '</span>';
-	echo  '<span class="buttonTab">';
-    echo    '<a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>';
-    echo  '</span>';
-    echo '</header>';
-
-    echo '<body class="main">';
-    echo    '<h3>Welcome to our PHP form results</h3>';
-    echo    'You said <strong>', $say, '</strong> to <strong>', $to, '</strong>';
-	echo  '</div>';
-    echo '</body>';
-
-    echo "</html>";
+    echo "<!DOCTYPE html>\n";
+    echo "<html>\n";
+    echo "<head>\n";
+    echo "<title>Webserv</title>\n";
+    echo '<link rel="shortcut icon" href="https://lucie-lebriquer.fr/webserv/favicon.png"/>', "\n";
+    echo '<meta charset="utf-8"/>', "\n";
+	echo '<link rel="stylesheet" href="https://lucie-lebriquer.fr/webserv/main.css"/>', "\n";
+    echo '<script src="https://kit.fontawesome.com/58cd01063a.js" crossorigin="anonymous"></script>', "\n";
+    echo "</head>\n\n";
+    echo "<header>\n";
+	echo "\t", '<div class="logo">', "\n";
+	echo "\t\t", '<img src="https://lucie-lebriquer.fr/webserv/logo.png">', "\n";
+	echo "\t\t", '<div class="titlename">Webserv</div>', "\n";
+	echo "\t\t", '<div class="title">euses</div>', "\n";
+	echo "\t", '</div>', "\n";
+	echo "\t", '<span class="buttonTab">', "\n";
+    echo "\t\t", '<a href="../index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>', "\n";
+    echo "\t", '</span>', "\n";
+	echo "\t", '<span class="buttonTab active">', "\n";
+    echo "\t\t", '<a href="../form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>', "\n";
+    echo "\t", '</span>', "\n";
+	echo "\t", '<span class="buttonTab">', "\n";
+	echo "\t\t", '<a href="../upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>', "\n";
+	echo "\t", '</span>', "\n";
+	echo "\t", '<span class="buttonTab">', "\n";
+    echo "\t\t", '<a href="https://github.com/LucieLeBriquer/webserv.git"><i class="fab fa-github"></i><span class="tabname">Source</span></a>', "\n";
+    echo "\t", '</span>', "\n";
+    echo '</header>', "\n\n";
+    echo '<body class="main">', "\n";
+    echo "\t", '<h3>Welcome to our PHP form results</h3>', "\n";
+    echo "\t", 'You said <strong>', $say, '</strong> to <strong>', $to, '</strong>', "\n";
+	echo "\t", '<br>Through ', $meth, ' method', "\n";
+	echo "\t", "<br>Request parameters : ";
+	print_r($_REQUEST);
+	echo "\t", "<br>Post parameters : ";
+	print_r($_POST);
+	echo "\t", "<br>Get parameters : ";
+	print_r($_GET);
+    echo '</body>', "\n\n";
+    echo "</html>\n";
 ?>

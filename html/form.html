@@ -31,7 +31,24 @@
 
 <body class="main">
 	<div class="vertical">
+		<h3>POST</h3>
 		<form method="post" action="./php/php-example.php" enctype="multipart/form-data">
+			<div class="flex">
+				<label for="say">What greeting do you want to say ?</label>
+				<input name="say" id="say" value="Hi">
+			</div>
+			<div class="flex">
+				<label for="to">Who do you want to say it to ?</label>
+				<input name="to" value="Mom">
+			</div>
+			<div>
+				<button>Send my greetings</button>
+			</div>
+		</form>
+		<br><br><br>
+
+		<h3>GET</h3>
+		<form method="get" action="./php/php-example.php" enctype="multipart/form-data">
 			<div class="flex">
 				<label for="say">What greeting do you want to say ?</label>
 				<input name="say" id="say" value="Hi">

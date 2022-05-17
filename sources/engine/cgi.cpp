@@ -110,8 +110,8 @@ int 		getCGIfile(std::string cgi, Client &client)
 	*/
 	
 	// useless but needed to work hum
-	while (!std::feof(client.getTmp()))
-		std::fgetc(client.getTmp());
+	//while (!std::feof(client.getTmp()))
+	//	std::fgetc(client.getTmp());
 	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
@@ -119,9 +119,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	if (pid == 0)
 	{
 		if (client.getMethod() == POST)
-		{
-
-			
+		{			
 			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
 			{
 				perror("dup2()");
