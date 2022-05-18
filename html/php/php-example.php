@@ -1,13 +1,4 @@
 <?php
-	// The global $_POST variable allows you to access the data sent with the POST method by name
-	// To access the data sent with the GET method, you can use $_GET
-	
-	$meth = 'not specified';
-	if (getenv("REQUEST_METHOD") == 'GET')
-		$meth = 'GET';
-	else if (getenv("REQUEST_METHOD") == 'POST')
-		$meth = 'POST';
-	
 	if (isset($_REQUEST['say']))
 		$say = htmlspecialchars($_REQUEST['say']);
 	else
@@ -48,13 +39,6 @@
     echo '<body class="main">', "\n";
     echo "\t", '<h3>Welcome to our PHP form results</h3>', "\n";
     echo "\t", 'You said <strong>', $say, '</strong> to <strong>', $to, '</strong>', "\n";
-	echo "\t", '<br>Through ', $meth, ' method', "\n";
-	echo "\t", "<br>Request parameters : ";
-	print_r($_REQUEST);
-	echo "\t", "<br>Post parameters : ";
-	print_r($_POST);
-	echo "\t", "<br>Get parameters : ";
-	print_r($_GET);
     echo '</body>', "\n\n";
     echo "</html>\n";
 ?>
