@@ -68,7 +68,7 @@ int		endRequest(Client &client)
 		if (client.getMethod() != POST)
 			return (ERR);
 		else
-		{
+		{	
 			std::fseek(file, -2, SEEK_END);
 			lastChar[0] = std::fgetc(file);
 			lastChar[1] = std::fgetc(file);
