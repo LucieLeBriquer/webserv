@@ -298,7 +298,7 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 	std::string filename;
 	std::string	pageErr;
 	int			fd;
-
+	
 	if (_statusNb != 0 && _statusNb != 200)
 		return (_returnErrPage(sock, sockNbr));
 

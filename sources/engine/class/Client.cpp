@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/18 15:24:40 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/18 17:28:28 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs("")
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _bodySize(0)
 {
 	return ;
 }
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs("")
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _bodySize(0)
 {
 	return ;
 }
@@ -62,6 +62,7 @@ Client	&Client::operator=(const Client &client)
 		_recvHeader = client._recvHeader;
 		_method = client._method;
 		_cgiCoprs = client._cgiCoprs;
+		_bodySize = client._bodySize;
 	}
 	return (*this);
 }
@@ -120,10 +121,17 @@ int				Client::getMethod(void) const
 	return (_method);
 }
 
+
+size_t			Client::getBodySize(void) const
+{
+	return (_bodySize);
+}
+
 void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);
 	_request += buf;
+	_bodySize += len;
 	if (isFirstLine())
 	{
 		if (_request.find("POST") != std::string::npos && _request.find(".php") == std::string::npos)
@@ -215,4 +223,5 @@ void			Client::clear(void)
 	_status.clear();
 	_env.clear();
 	_cgiCoprs = "";
+	_bodySize = 0;
 }

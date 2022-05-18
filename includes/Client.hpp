@@ -33,6 +33,7 @@ class Client
 		bool			_recvHeader;
 		int				_method;
 		std::string		_cgiCoprs;
+		size_t			_bodySize;
 		
 	public:
 		Client(void);
@@ -52,6 +53,7 @@ class Client
 		bool			isFirstLine(void) const;
 		bool			hasRecvHeader(void) const;
 		int				getMethod(void) const;
+		size_t			getBodySize(void) const;
 
 		mapStr			getEnv(void) const;
 		std::string		getEnvValue(std::string envp);

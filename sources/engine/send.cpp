@@ -166,7 +166,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	if (response.getStatusNb() == 0
 		&& !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
-
+	
 	if (getRightFile(sock, sockNbr, client))
 	{
 		if (response.getRedir() == 1)
@@ -181,7 +181,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 			return (sendAutoindexPage(fde, response, response.getUrl(), sock.getRoot(sockNbr, response.getUrl())));
 		return (sendDefaultPage(fde, response));
 	}
-
+	
 	if (sock.isCgi(sockNbr, response.getUrl()))
 	{
         header.setContentTypeResponse("text/html");

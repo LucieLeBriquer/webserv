@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/18 14:29:37 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/18 17:36:32 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int		checkHeader(HTTPHeader &header, std::string string)
 		if (string == "")
 			break ;
 		if (header.fillheader(&string) == -1)
-			break ; // a changer en fonction du retour d'err
+			break ;
 	}
 	if (header.header() == -1)
 		return (ERR);
@@ -95,11 +95,13 @@ int		requestReponse(int fde, Socket &sock)
 	}
 	
 	if (end == BAD_REQUEST)
-		status.statusCode(status.status(4, 0), header.getFirstLine());
+		response.statusCode(status.status(4, 0), header.getFirstLine());
 	if (end == BAD_REQUEST || end == END_REQUEST)
 	{
 		if (checkHeader(header, client.getRequest()))
-			status.statusCode(status.status(4, 0), header.getFirstLine());
+			response.statusCode(status.status(4, 0), header.getFirstLine());
+		else if (client.getBodySize() > sock.getMaxClientBodySize(sockNbr, response.getUrl()))
+			response.statusCode(status.status(4, 13), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
 		response.setServerName(sock.getServerName(sockNbr));
 		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));

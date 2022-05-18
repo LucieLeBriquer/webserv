@@ -134,27 +134,30 @@ static const int			nbMethods = 5;
 static const std::string	methods[nbMethods] = {"GET", "POST", "DELETE", "HEAD", "OPTIONS"};
 
 // errors
-static const int			nbError = 4;
+static const int			nbError = 5;
 
 static const std::string	errorNb[nbError] = {
 	"400",
 	"403",
 	"404",
-	"405"
+	"405",
+	"413"
 };
 
 static const std::string	errorMsg[nbError] = {
 	"Bad Request",
 	"Forbiden",
 	"Page Not Found",
-	"Method Not Allowed"
+	"Method Not Allowed",
+	"Request Entity Too Large"
 };
 
 static const std::string	errorExplanation[nbError] = {
 	"The server cannot process the request due to something<br>that is perceived to be a client error (e.g., malformed request syntax,<br>invalid request message framing, or deceptive request routing).",
 	"You don't have permission to access<br>this resource.",
 	"The page you are looking for might have been removed,<br>	had its name changed or is temporarily unavailable.",
-	"The method received in the request-line is not<br>	supported by the target resource."
+	"The method received in the request-line is not<br>	supported by the target resource.",
+	"The body of your post request is too large."
 };
 
 #endif
