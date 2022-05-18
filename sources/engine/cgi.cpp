@@ -89,29 +89,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
-
-	/////////////////printing////////////////
-	/*
-	std::cout << "======================= ENV ========================" << std::endl;
-	std::cout << std::endl;
-	mapStr	tmp = client.getEnv();
-	mapStr::iterator it = tmp.begin();
-	for (size_t i = 0; env[i]; i++)
-	{
-		if (it == tmp.end())
-			break ;
-		std::cout << env[i] << std::endl;
-		it++;
-	}
-	std::cout << std::endl;
-	std::cout << "====================================================" << std::endl;
-	std::cout << std::endl;
-	/////////////////////////////////////////
-	*/
 	
-	// useless but needed to work hum
-	//while (!std::feof(client.getTmp()))
-	//	std::fgetc(client.getTmp());
 	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)

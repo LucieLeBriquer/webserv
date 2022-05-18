@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   usefull.cpp                                        :+:      :+:    :+:   */
+/*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/14 14:30:31 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:09:03 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 int		endRequest(Client &client)
 {
 	FILE		*file = client.getTmp();
-	int 		lastChar[4];
+	std::string	request = client.getRequest();
+	int 		lastChar[2];
+	char		toCompare[4];
 
 	if (client.getMethod() == BAD_METHOD)
 	{
@@ -46,26 +48,16 @@ int		endRequest(Client &client)
 	
 	if (!client.hasRecvHeader())
 	{
-		std::rewind(file);
-		while (!std::feof(file))
+		for (size_t i = 0; i + 3 < request.size(); i++)
 		{
-			std::fseek(file, -3, SEEK_CUR);
-			lastChar[0] = std::fgetc(file);
-			lastChar[1] = std::fgetc(file);
-			lastChar[2] = std::fgetc(file);
-			lastChar[3] = std::fgetc(file);
-
-			if (lastChar[0] == '\r' && lastChar[1] == '\n'
-				&& lastChar[2] == '\r' && lastChar[3] == '\n')
+			for (int j = 0; j < 4; j++)
+				toCompare[j] = request[i + j];
+			if (toCompare[0] ==  '\r' && toCompare[1] == '\n'
+				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
 				client.changeRecvHeader();
-				std::fgetc(file);
-				if (client.getMethod() == POST && std::feof(file))
-				{
-					std::fseek(file, -1, SEEK_CUR);
+				if (client.getMethod() == POST && i + 4 == request.size())
 					return (OK);
-				}
-				std::fseek(file, -1, SEEK_CUR);
 				break;
 			}
 		}
