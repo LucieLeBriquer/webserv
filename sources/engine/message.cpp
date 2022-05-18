@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/14 14:31:50 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/18 14:29:37 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,14 +98,14 @@ int		requestReponse(int fde, Socket &sock)
 		status.statusCode(status.status(4, 0), header.getFirstLine());
 	if (end == BAD_REQUEST || end == END_REQUEST)
 	{
-			if (checkHeader(header, client.getRequest()))
-				status.statusCode(status.status(4, 0), header.getFirstLine());
-			header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
-			response.setServerName(sock.getServerName(sockNbr));
-			response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
-			if (sendResponse(client, sock, sockNbr))
-				return (ERR);
-			client.clear();
+		if (checkHeader(header, client.getRequest()))
+			status.statusCode(status.status(4, 0), header.getFirstLine());
+		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
+		response.setServerName(sock.getServerName(sockNbr));
+		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
+		if (sendResponse(client, sock, sockNbr))
+			return (ERR);
+		client.clear();
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{

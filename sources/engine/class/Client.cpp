@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/13 15:58:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/18 15:24:40 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,11 @@ void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);
 	_request += buf;
+	if (isFirstLine())
+	{
+		if (_request.find("POST") != std::string::npos && _request.find(".php") == std::string::npos)
+			_request.replace(_request.find("POST"), 4, "GET");
+	}
 }
 
 void			Client::changeFirstLine(void)
