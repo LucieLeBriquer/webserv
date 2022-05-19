@@ -163,8 +163,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	HTTPResponse	&response = client.getResponse();
 	int				fde = client.getFd();
 	
-	if ((response.getStatusNb() == 0 || response.getStatusNb() == 200)
-		&& !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
+	if (response.statusIsOk() && !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
 	
 	if (getRightFile(sock, sockNbr, client))
@@ -201,7 +200,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
 
-	if ((response.getStatusNb() != 200 && response.getStatusNb() != 0) || sock.isCgi(sockNbr, response.getUrl()))
+	if (!response.statusIsOk() || sock.isCgi(sockNbr, response.getUrl()))
 		close(fde);
 
 	remove("html/tmp.html");

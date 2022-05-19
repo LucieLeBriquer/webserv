@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/18 14:28:45 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/19 12:38:32 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,12 @@ int			HTTPResponse::isChunked( void )
 	if (this->_chunked)
 		return (1);
 	return (0);
+}
+
+
+bool		HTTPResponse::statusIsOk(void) const
+{
+	return (_statusNb == 0 || _statusNb == 200);
 }
 
 int 		HTTPResponse::setStatus(std::string code, std::string str, HTTPHeader &header)
