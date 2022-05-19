@@ -1,7 +1,8 @@
 <?php
 
 $target_dir = "../uploads/";
-$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+$file = $_FILES["fileToUpload"];
+$target_file = $target_dir . basename($file);
 $uploadOk = 1;
 $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
@@ -39,23 +40,23 @@ echo '</header>';
 
 echo '<body class="main">';
   // Check if file already exists
-  if (file_exists($target_file))
-  {
-    echo "Sorry, file already exists.<br>";
-    $uploadOk = 0;
-  }
+if (file_exists($target_file))
+{
+	echo "Sorry, file already exists.<br>";
+	$uploadOk = 0;
+}
 
-  // Check if $uploadOk is set to 0 by an error
-  if ($uploadOk == 0)
-    echo "Your file was not uploaded.<br>";
-  else
-  {
-    // if everything is ok, try to upload file
-    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file))
-      echo "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.<br>";
-    else
-      echo "Sorry, there was an error uploading your file.<br>";
-  }
+// Check if $uploadOk is set to 0 by an error
+if ($uploadOk == 0)
+	echo "Your file was not uploaded.<br>";
+else
+	{
+	// if everything is ok, try to upload file
+	if (move_uploaded_file($file, $target_file))
+		echo "The file ". htmlspecialchars(basename($file)). " has been uploaded.<br>";
+	else
+		echo "Sorry, there was an error uploading your file.<br>";
+}
 echo '</body>';
 echo "</html>";
 
