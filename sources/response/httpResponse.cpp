@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/19 12:38:32 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 15:20:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -385,5 +385,5 @@ void HTTPResponse::rendering( HTTPHeader &header )
 		_header += "\r\nTransfer-Encoding: chunked";
 	}
 	else if (_contentLen != "")
-		_header += "\r\nContent-Length: " + _contentLen ;
+		_header += "\r\nContent-Length: " + _contentLen;
 }

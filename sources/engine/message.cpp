@@ -29,14 +29,16 @@ int		getRightFile(Socket &sock, int sockNbr, Client &client)
 	return (OK);
 }
 
-int		checkHeader(HTTPHeader &header, std::string string)
+int		checkHeader(HTTPHeader &header, const std::string string)
 {
-	string.erase(0, (getHead(string)).length() + 2);
+	std::string	copy = string;
+
+	copy.erase(0, (getHead(copy)).length() + 2);
 	while (1)
 	{
-		if (string == "")
+		if (copy == "")
 			break ;
-		if (header.fillheader(&string) == -1)
+		if (header.fillheader(&copy) == -1)
 			break ;
 	}
 	if (header.header() == -1)
@@ -88,7 +90,10 @@ int		requestReponse(int fde, Socket &sock)
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
 	else if (byteCount < 0)
+	{
 		checkFirstAndEnd(end, client);
+		end = END_REQUEST;
+	}
 	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
 		client.addRecv(buf, byteCount);
@@ -108,7 +113,7 @@ int		requestReponse(int fde, Socket &sock)
 		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
 		if (sendResponse(client, sock, sockNbr))
 			return (ERR);
-		if (!response.statusIsOk() || sock.isCgi(sockNbr, response.getUrl()))
+		if (!response.statusIsOk())
 			end = CLOSE_CONNECTION;
 		client.clear();
 	}

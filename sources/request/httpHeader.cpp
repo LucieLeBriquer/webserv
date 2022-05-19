@@ -148,6 +148,11 @@ std::string	HTTPHeader::getContentLen(void) const
 	return ("Content-Length: " + _contentLen + "\r\n");
 }
 
+std::string	HTTPHeader::getContentLenValue(void) const
+{
+	return (_contentLen);
+}
+
 std::string	HTTPHeader::getContentType(void) const
 {
 	return (_contentType);

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/19 11:49:34 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 15:07:53 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,20 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 	}
 }
 
+size_t	stringToInt(std::string str)
+{
+	size_t	s = 0;
+
+	for (size_t j = 0; j < str.size(); j++)
+		s = 10 * s + (str[j] - '0');
+	return (s);
+}
+
 int		endRequest(Client &client)
 {
-	FILE		*file = client.getTmp();
 	std::string	request = client.getRequest();
-	int 		lastChar[2];
 	char		toCompare[4];
+	size_t		len;
 	
 	if (!client.hasRecvHeader())
 	{
@@ -65,16 +73,13 @@ int		endRequest(Client &client)
 		if (client.getMethod() != POST)
 			return (ERR);
 		else
-		{	
-			std::fseek(file, -2, SEEK_END);
-			if (ftell(file) <= (long int)client.getHeaderSize())
+		{
+			len = client.getTotSize();
+			if (len <= client.getHeaderSize())
 				return (OK);
-			lastChar[0] = std::fgetc(file);
-			lastChar[1] = std::fgetc(file);
-			if (lastChar[0] == '\r' && lastChar[1] == '\n')
+			if (client.getBodySize() >= stringToInt(client.getHeader().getContentLenValue()))
 				return (ERR);
 		}
 	}
-	std::fseek(file, 0, SEEK_END);
 	return (OK);
 }
