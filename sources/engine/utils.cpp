@@ -43,7 +43,6 @@ int		endRequest(Client &client)
 {
 	std::string	request = client.getRequest();
 	char		toCompare[4];
-	size_t		len;
 	
 	if (!client.hasRecvHeader())
 	{
@@ -74,8 +73,7 @@ int		endRequest(Client &client)
 			return (ERR);
 		else
 		{
-			len = client.getTotSize();
-			if (len <= client.getHeaderSize())
+			if (client.getTotSize() <= client.getHeaderSize())
 				return (OK);
 			if (client.getBodySize() >= stringToInt(client.getHeader().getContentLenValue()))
 				return (ERR);
