@@ -55,6 +55,7 @@ class Client
 		bool			hasRecvHeader(void) const;
 		int				getMethod(void) const;
 		size_t			getBodySize(void) const;
+		size_t			getHeaderSize(void) const;
 
 		mapStr			getEnv(void) const;
 		std::string		getEnvValue(std::string envp);
@@ -73,6 +74,7 @@ class Client
 		void			setHeaderSize(size_t size);
 		void			changeFirstLine(void);
 		void			setMethod(int method);
+		void			updateMethod(void);
 
 		void			clear();
 };

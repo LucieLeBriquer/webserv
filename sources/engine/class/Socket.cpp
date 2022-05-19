@@ -299,7 +299,7 @@ bool		Socket::isAllowedMethod(int nbr, const std::string url, int method) const
 {
 	int			nbConfig;
 	vecInt		methods;
-
+	
 	nbConfig = getConfigFromUrl(nbr, url);
 	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isMethodsSet())
 	{

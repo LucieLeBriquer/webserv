@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/18 17:28:28 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 11:57:43 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,16 +131,16 @@ size_t			Client::getBodySize(void) const
 	return (0);
 }
 
+size_t			Client::getHeaderSize(void) const
+{
+	return (_headerSize);
+}
+
 void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);
 	_request += buf;
 	_totSize += len;
-	if (isFirstLine())
-	{
-		if (_request.find("POST") != std::string::npos && _request.find(".php") == std::string::npos)
-			_request.replace(_request.find("POST"), 4, "GET");
-	}
 }
 
 void			Client::setHeaderSize(size_t size)
@@ -157,6 +157,11 @@ void			Client::changeFirstLine(void)
 void			Client::setMethod(int method)
 {
 	_method = method;
+}
+
+void			Client::updateMethod(void)
+{
+	_method = getMethodNb(_header.getMethod());
 }
 
 void			Client::setIsQueryString(bool set)

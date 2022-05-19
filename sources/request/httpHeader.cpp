@@ -182,6 +182,7 @@ int	HTTPHeader::isChunked( void )
 int HTTPHeader::parseMethod(const std::string req)
 {
 	int i;
+	
 	if (req == "")
 		return -1;
 	for (i = 0; req[i]; i++)
@@ -271,6 +272,8 @@ int HTTPHeader::header( void )
 	if (this->_method == "POST")
 	{
 		if (this->_contentLen == "")
+			return -1;
+		if (this->_contentType == "")
 			return -1;
 	}
 	return 1;

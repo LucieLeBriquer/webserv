@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/18 14:31:28 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/19 12:14:22 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,8 +162,8 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	HTTPHeader		&header = client.getHeader();
 	HTTPResponse	&response = client.getResponse();
 	int				fde = client.getFd();
-
-	if (response.getStatusNb() == 0
+	
+	if ((response.getStatusNb() == 0 || response.getStatusNb() == 200)
 		&& !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
 	

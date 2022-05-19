@@ -57,6 +57,7 @@ static void	checkFirstAndEnd(int &end, Client &client)
 			client.changeFirstLine();
 			if (header.method(client.getRequest(), status, response) == -1)
 				end = BAD_REQUEST;
+			client.updateMethod();
 		}
 		if (endRequest(client) && end == 0)
 			end = END_REQUEST;
@@ -83,7 +84,7 @@ int		requestReponse(int fde, Socket &sock)
 		buf[byteCount] = 0;
 
 	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
-	
+
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
 	else if (byteCount < 0)

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/19 11:31:52 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 11:49:34 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,6 @@ int		endRequest(Client &client)
 	std::string	request = client.getRequest();
 	int 		lastChar[2];
 	char		toCompare[4];
-
-	if (client.getMethod() == BAD_METHOD)
-	{
-		for (int i = 0; i < nbMethods; i++)
-		{
-			if (strncmp(client.getRequest().c_str(), methods[i].c_str(), methods[i].size()) == 0)
-				client.setMethod(getMethodNb(methods[i]));
-		}
-	}
 	
 	if (!client.hasRecvHeader())
 	{
@@ -70,6 +61,8 @@ int		endRequest(Client &client)
 		else
 		{	
 			std::fseek(file, -2, SEEK_END);
+			if (ftell(file) <= (long int)client.getHeaderSize())
+				return (OK);
 			lastChar[0] = std::fgetc(file);
 			lastChar[1] = std::fgetc(file);
 			if (lastChar[0] == '\r' && lastChar[1] == '\n')
