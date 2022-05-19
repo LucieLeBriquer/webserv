@@ -19,8 +19,6 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, client);
-	else if (redir)
-		header += "\r\n\r\n\r\n";
 	else
 		header += "\r\n\r\n";
 	
@@ -199,9 +197,6 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		return (ERR);
 	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
-
-	if (!response.statusIsOk() || sock.isCgi(sockNbr, response.getUrl()))
-		close(fde);
 
 	remove("html/tmp.html");
 

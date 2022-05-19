@@ -141,7 +141,6 @@ int			HTTPResponse::isChunked( void )
 	return (0);
 }
 
-
 bool		HTTPResponse::statusIsOk(void) const
 {
 	return (_statusNb == 0 || _statusNb == 200);

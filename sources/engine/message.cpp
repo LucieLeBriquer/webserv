@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/18 17:36:32 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 14:08:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,8 @@ int		requestReponse(int fde, Socket &sock)
 		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
 		if (sendResponse(client, sock, sockNbr))
 			return (ERR);
+		if (!response.statusIsOk() || sock.isCgi(sockNbr, response.getUrl()))
+			end = CLOSE_CONNECTION;
 		client.clear();
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
