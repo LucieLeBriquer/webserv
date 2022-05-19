@@ -6,7 +6,11 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2022/05/19 14:35:47 by lpascrea         ###   ########.fr       */
+=======
+/*   Updated: 2022/05/19 15:20:07 by lle-briq         ###   ########.fr       */
+>>>>>>> c1f8eeafc1951a78f5846922928c7d2c08dc1359
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +144,6 @@ int			HTTPResponse::isChunked( void )
 		return (1);
 	return (0);
 }
-
 
 bool		HTTPResponse::statusIsOk(void) const
 {
@@ -389,5 +392,5 @@ void HTTPResponse::rendering( HTTPHeader &header )
 		_header += "\r\nTransfer-Encoding: chunked";
 	}
 	else if (_contentLen != "")
-		_header += "\r\nContent-Length: " + _contentLen ;
+		_header += "\r\nContent-Length: " + _contentLen;
 }

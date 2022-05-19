@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/18 17:36:32 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 14:08:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,16 @@ int		getRightFile(Socket &sock, int sockNbr, Client &client)
 	return (OK);
 }
 
-int		checkHeader(HTTPHeader &header, std::string string)
+int		checkHeader(HTTPHeader &header, const std::string string)
 {
-	string.erase(0, (getHead(string)).length() + 2);
+	std::string	copy = string;
+
+	copy.erase(0, (getHead(copy)).length() + 2);
 	while (1)
 	{
-		if (string == "")
+		if (copy == "")
 			break ;
-		if (header.fillheader(&string) == -1)
+		if (header.fillheader(&copy) == -1)
 			break ;
 	}
 	if (header.header() == -1)
@@ -88,7 +90,10 @@ int		requestReponse(int fde, Socket &sock)
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;
 	else if (byteCount < 0)
+	{
 		checkFirstAndEnd(end, client);
+		end = END_REQUEST;
+	}
 	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
 		client.addRecv(buf, byteCount);
@@ -108,6 +113,8 @@ int		requestReponse(int fde, Socket &sock)
 		response.setMaxSizeC(sock.getMaxClientBodySize(sockNbr, response.getUrl()));
 		if (sendResponse(client, sock, sockNbr))
 			return (ERR);
+		if (!response.statusIsOk())
+			end = CLOSE_CONNECTION;
 		client.clear();
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)

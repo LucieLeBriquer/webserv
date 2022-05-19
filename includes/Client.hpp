@@ -56,6 +56,7 @@ class Client
 		int				getMethod(void) const;
 		size_t			getBodySize(void) const;
 		size_t			getHeaderSize(void) const;
+		size_t			getTotSize(void) const;
 
 		mapStr			getEnv(void) const;
 		std::string		getEnvValue(std::string envp);

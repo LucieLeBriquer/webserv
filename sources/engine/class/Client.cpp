@@ -136,6 +136,11 @@ size_t			Client::getHeaderSize(void) const
 	return (_headerSize);
 }
 
+size_t			Client::getTotSize(void) const
+{
+	return (_totSize);
+}
+
 void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);

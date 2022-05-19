@@ -19,8 +19,6 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, client);
-	else if (redir)
-		header += "\r\n\r\n\r\n";
 	else
 		header += "\r\n\r\n";
 	
@@ -48,16 +46,12 @@ static int	sendData(int fde, Client &client, bool isCgi)
 	ss >> size;
 	if (response.isChunked())
 	{
-		// std::cout << "ok 1.0" << std::endl;
 		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
 		std::ofstream	tmpfile(tmpname.c_str());
 		std::string		line;
 		size_t			i;
 		size_t			size_of_chunk;
 
-		// std::cout << "max size = " << response.getMaxSizeC() << std::endl;
-		// std::cout << "size = " << size << std::endl;
-		// std::cout << "chunk size = " << chunk_size << std::endl;
 		if (response.getMaxSizeC() < size)
 			size_of_chunk = response.getMaxSizeC();
 		else
@@ -82,8 +76,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		fileName = tmpname;
 		response.setUrl(tmpname);
 		tmpfile.close();
-		fileS.close();		
-		// seg fault when max = 1
+		fileS.close();
 	}
 	if (isCgi)
 	{
@@ -187,7 +180,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
         response.rendering(header);
 		setEnvForCgi(sock, sockNbr, client);
 		if (getCGIfile(sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
-			return ERR;
+			return (ERR);
 	}
 
 	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
@@ -199,9 +192,6 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		return (ERR);
 	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
-
-	if (!response.statusIsOk() || sock.isCgi(sockNbr, response.getUrl()))
-		close(fde);
 
 	remove("html/tmp.html");
 
