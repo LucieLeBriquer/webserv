@@ -18,14 +18,16 @@
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _bodySize(0)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
+	_totSize(0)
 {
 	return ;
 }
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _bodySize(0)
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
+	_totSize(0)
 {
 	return ;
 }
@@ -62,7 +64,8 @@ Client	&Client::operator=(const Client &client)
 		_recvHeader = client._recvHeader;
 		_method = client._method;
 		_cgiCoprs = client._cgiCoprs;
-		_bodySize = client._bodySize;
+		_headerSize = client._headerSize;
+		_totSize = client._totSize;
 	}
 	return (*this);
 }
@@ -121,17 +124,18 @@ int				Client::getMethod(void) const
 	return (_method);
 }
 
-
 size_t			Client::getBodySize(void) const
 {
-	return (_bodySize);
+	if (_totSize >= _headerSize)
+		return ((size_t)(_totSize - _headerSize));
+	return (0);
 }
 
 void			Client::addRecv(char *buf, int len)
 {
 	write(_fdTmp, buf, len);
 	_request += buf;
-	_bodySize += len;
+	_totSize += len;
 	if (isFirstLine())
 	{
 		if (_request.find("POST") != std::string::npos && _request.find(".php") == std::string::npos)
@@ -139,14 +143,15 @@ void			Client::addRecv(char *buf, int len)
 	}
 }
 
+void			Client::setHeaderSize(size_t size)
+{
+	_headerSize = size;
+	_recvHeader = true;
+}
+
 void			Client::changeFirstLine(void)
 {
 	_isFirstLine = false;
-}
-
-void			Client::changeRecvHeader(void)
-{
-	_recvHeader = true;
 }
 
 void			Client::setMethod(int method)
@@ -223,5 +228,6 @@ void			Client::clear(void)
 	_status.clear();
 	_env.clear();
 	_cgiCoprs = "";
-	_bodySize = 0;
+	_headerSize = 0;
+	_totSize = 0;
 }

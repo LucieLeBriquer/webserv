@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/13 15:56:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 11:30:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ class Client
 		bool			_recvHeader;
 		int				_method;
 		std::string		_cgiCoprs;
-		size_t			_bodySize;
+		size_t			_headerSize;
+		size_t			_totSize;
 		
 	public:
 		Client(void);
@@ -69,9 +70,10 @@ class Client
 		void			setCgiCoprs(std::string str);
 
 		void			addRecv(char *buf, int len);
+		void			setHeaderSize(size_t size);
 		void			changeFirstLine(void);
-		void			changeRecvHeader(void);
 		void			setMethod(int method);
+
 		void			clear();
 };
 

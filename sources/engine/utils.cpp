@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/18 14:09:03 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 11:31:52 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		endRequest(Client &client)
 			if (toCompare[0] ==  '\r' && toCompare[1] == '\n'
 				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
-				client.changeRecvHeader();
+				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && i + 4 == request.size())
 					return (OK);
 				break;
