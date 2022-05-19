@@ -45,4 +45,6 @@ int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::
 void		isDownloading(HTTPHeader &header, HTTPResponse &response);
 int			endRequest(Client &client);
 
+int			checkHeader(HTTPHeader &header, std::string string);
+
 #endif
