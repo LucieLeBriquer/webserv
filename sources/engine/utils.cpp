@@ -47,7 +47,6 @@ int		endRequest(Client &client)
 				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
 				client.setHeaderSize(i + 4);
-				std::cerr << "hop we got header" << std::endl;
 				if (client.getMethod() == POST && i + 4 == request.size())
 				{
 					if (checkHeader(client.getHeader(), request))
