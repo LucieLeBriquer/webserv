@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:41:57 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/19 12:38:32 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 14:35:47 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,7 +194,10 @@ void           HTTPResponse::setServerName(const std::string serv)
 }
 void	HTTPResponse::setMaxSizeC(size_t value)
 {
-	_max_size_c = value;
+	if (value < 1024)
+		_max_size_c = 1024;
+	else
+		_max_size_c = value;
 }
 
 void	HTTPResponse::setHeader(std::string header)
