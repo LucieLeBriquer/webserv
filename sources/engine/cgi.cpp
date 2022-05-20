@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/14 17:51:36 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/20 15:31:54 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 	close(fdtemp);
 	std::fclose(temp);
 	client.setCgiCoprs(string);
+	client.setIsContentLen(string);
 }
 
 int 		getCGIfile(std::string cgi, Client &client)

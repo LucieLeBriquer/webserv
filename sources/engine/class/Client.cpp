@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/19 11:57:43 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/20 15:32:28 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
 	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
-	_totSize(0)
+	_totSize(0), _isContentLen(false)
 {
 	return ;
 }
@@ -27,7 +27,7 @@ Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tm
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
 	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
-	_totSize(0)
+	_totSize(0), _isContentLen(false)
 {
 	return ;
 }
@@ -218,6 +218,22 @@ size_t			Client::getEnvSize(void) const
 std::string		Client::getCgiCoprs(void) const
 {
 	return (_cgiCoprs);
+}
+
+void			Client::setIsContentLen(std::string cgiBody)
+{
+	int	found;
+
+	found = cgiBody.find("Content-Length:");
+	if (found < 0)
+		this->_isContentLen = false;
+	else
+		this->_isContentLen = true;
+}
+
+bool			Client::getIsContentLen(void) const
+{
+	return (_isContentLen);
 }
 
 void			Client::clear(void)
