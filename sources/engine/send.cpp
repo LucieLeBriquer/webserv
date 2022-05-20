@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 14:50:35 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/20 15:43:02 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,14 @@ static int	sendData(int fde, Client &client, bool isCgi)
 	HTTPResponse	&response = client.getResponse();
 	std::string		fileName(response.getFileName());
 	std::string		tmpname("html/tmp.html");
-	std::stringstream ss;
-	size_t			size;
+
+
 	ss << response.getContentLen();
 	ss >> size;
 	if (response.isChunked())
 	{
 		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
 		std::ofstream	tmpfile(tmpname.c_str());
-		std::string		line;
 		size_t			i;
 		size_t			size_of_chunk;
 
@@ -193,6 +192,6 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		return (ERR);
 
 	chunk_size = 0;
-	remove("html/tmp.html");
+	// remove("html/tmp.html");
 	return (OK);
 }
