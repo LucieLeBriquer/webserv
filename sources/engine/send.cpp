@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/19 12:14:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/20 14:50:35 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		tmpfile << std::hex << size_of_chunk << "\r\n";
 		fileS.read(buff, size_of_chunk);
 		buff[size_of_chunk] = '\0';
-
 		tmpfile << buff << "\r\n";
 		free(buff);
 
@@ -193,7 +192,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
 
+	chunk_size = 0;
 	remove("html/tmp.html");
-
 	return (OK);
 }
