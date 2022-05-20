@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/19 11:30:39 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/20 15:27:15 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class Client
 		std::string		_cgiCoprs;
 		size_t			_headerSize;
 		size_t			_totSize;
+		bool			_isContentLen;
 		
 	public:
 		Client(void);
@@ -76,6 +77,9 @@ class Client
 		void			changeFirstLine(void);
 		void			setMethod(int method);
 		void			updateMethod(void);
+
+		void			setIsContentLen(std::string cgiBody);
+		bool			getIsContentLen(void) const;
 
 		void			clear();
 };
