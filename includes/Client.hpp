@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/12 16:45:22 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/19 11:30:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ class Client
 		bool			_isFirstLine;
 		mapStr			_env;
 		bool			_isQuery;
+		bool			_recvHeader;
+		int				_method;
+		std::string		_cgiCoprs;
+		size_t			_headerSize;
+		size_t			_totSize;
 		
 	public:
 		Client(void);
@@ -47,6 +52,11 @@ class Client
 		HTTPHeader		&getHeader(void);
 		Status			&getStatus(void);
 		bool			isFirstLine(void) const;
+		bool			hasRecvHeader(void) const;
+		int				getMethod(void) const;
+		size_t			getBodySize(void) const;
+		size_t			getHeaderSize(void) const;
+		size_t			getTotSize(void) const;
 
 		mapStr			getEnv(void) const;
 		std::string		getEnvValue(std::string envp);
@@ -58,8 +68,15 @@ class Client
 		void			setIsQueryString(bool set);
 		bool			isQueryString(void) const;
 
+		std::string		getCgiCoprs(void) const;
+		void			setCgiCoprs(std::string str);
+
 		void			addRecv(char *buf, int len);
+		void			setHeaderSize(size_t size);
 		void			changeFirstLine(void);
+		void			setMethod(int method);
+		void			updateMethod(void);
+
 		void			clear();
 };
 

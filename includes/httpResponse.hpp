@@ -60,6 +60,7 @@ class HTTPResponse
 		int			getRedir(void) const;
 		size_t		getMaxSizeC(void) const;
 		bool		getNeedAutoindex(void) const;
+		bool		statusIsOk(void) const;
 
 		void		rendering(HTTPHeader &header);
 

@@ -64,6 +64,7 @@ class HTTPHeader : public HTTPRequest
 		std::string	getMethod(void) const;
 		std::string	getContentType(void) const;
 		std::string	getContentLen(void) const;
+		std::string	getContentLenValue(void) const;
 		std::string	getAccept(void) const;
 		std::string	getResponseContentType(void) const;
 		std::string	getSecFetchDest(void) const;

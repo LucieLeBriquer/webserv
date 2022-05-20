@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/12 16:01:56 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/18 15:19:16 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,11 @@ std::string	HTTPHeader::getContentLen(void) const
 	return ("Content-Length: " + _contentLen + "\r\n");
 }
 
+std::string	HTTPHeader::getContentLenValue(void) const
+{
+	return (_contentLen);
+}
+
 std::string	HTTPHeader::getContentType(void) const
 {
 	return (_contentType);
@@ -182,6 +187,7 @@ int	HTTPHeader::isChunked( void )
 int HTTPHeader::parseMethod(const std::string req)
 {
 	int i;
+	
 	if (req == "")
 		return -1;
 	for (i = 0; req[i]; i++)
@@ -220,16 +226,6 @@ int HTTPHeader::parseProtocol(const std::string protocol)
 	return 1;
 }
 
-std::string	getHead(std::string buf)
-{
-	std::string firstLine;
-
-	std::stringstream ssin(buf);
-	std::getline(ssin, firstLine, '\r');
-	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
-	return (firstLine);
-}
-
 int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 {
 	std::string line;
@@ -249,7 +245,7 @@ int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		response.statusCode(code.status(4, 4), this->getFirstLine());
+		response.statusCode(code.status(4, 0), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -281,6 +277,8 @@ int HTTPHeader::header( void )
 	if (this->_method == "POST")
 	{
 		if (this->_contentLen == "")
+			return -1;
+		if (this->_contentType == "")
 			return -1;
 	}
 	return 1;

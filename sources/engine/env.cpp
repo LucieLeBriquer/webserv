@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 17:44:49 by user42            #+#    #+#             */
-/*   Updated: 2022/05/09 14:13:16 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/14 17:46:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void    setEnvForCgi(Socket &sock, int sockNbr, Client &client)
 	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 	{
 		std::rewind(client.getTmp());
-		out << getFdSize(client.getFdTmp());
+		out << getFileSize(client.getFdTmp());
 		client.setEnvValue("CONTENT_LENGTH", out.str());
 	}
 	else
@@ -66,7 +66,7 @@ int 	mallocEnv(char ***env, Client &client)
 
 	(*env) = (char **)malloc(sizeof(char *) * client.getEnvSize() + 1);
 	if (!(*env))
-		return ERR;
+		return (ERR);
 	(*env)[client.getEnvSize()] = NULL;
 	for (mapStr::iterator it = tmp.begin(); it != tmp.end(); it++)
 	{
@@ -80,5 +80,5 @@ int 	mallocEnv(char ***env, Client &client)
 		(*env)[nbr][strlen(val.c_str())] = '\0';
 		nbr++;
 	}
-	return OK;
+	return (OK);
 }
