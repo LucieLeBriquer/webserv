@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 15:31:54 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/20 16:09:57 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,10 @@ std::string	deletingUseless(std::string header)
 
 std::string	headerForCgi(std::string header, Client &client)
 {
-	std::string	cgiHeader;
-	std::string	cgiCorps = client.getCgiCoprs();
-	std::string	tmp;
+	std::string			cgiHeader;
+	std::string			cgiCorps = client.getCgiCoprs();
+	std::string			tmp;
+	std::stringstream	out;
 	int			i = 0;
 
 	cgiHeader = deletingUseless(header);
@@ -55,9 +56,14 @@ std::string	headerForCgi(std::string header, Client &client)
 		i++;
 	tmp = &cgiCorps[i + 6];
 	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
+	client.setCgiCoprs(tmp);
+	out << client.getCgiCoprs().length();
+	cgiHeader += "Content-Length: ";
+	cgiHeader += out.str();
+	cgiHeader += "\r\n";
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
-	client.setCgiCoprs(tmp);
+	client.setIsContentLen(cgiHeader);
 	return (cgiHeader);
 }
 
@@ -76,7 +82,6 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 	close(fdtemp);
 	std::fclose(temp);
 	client.setCgiCoprs(string);
-	client.setIsContentLen(string);
 }
 
 int 		getCGIfile(std::string cgi, Client &client)
