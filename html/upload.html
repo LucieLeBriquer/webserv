@@ -18,10 +18,10 @@
 	<span class="buttonTab">
         <a href="index.html"><i class="fas fa-home"></i><span class="tabname">Index</span></a>
     </span>
-	<span class="buttonTab active">
+	<span class="buttonTab">
         <a href="form.html"><i class="fas fa-file"></i><span class="tabname">Form</span></a>
     </span>
-	<span class="buttonTab">
+	<span class="buttonTab active">
 		<a href="upload.html"><i class="fas fa-upload"></i><span class="tabname">Upload</span></a>
     </span>
 	<span class="buttonTab">
@@ -30,38 +30,38 @@
 </header>
 
 <body class="main">
-	<div class="vertical">
-		<h3>POST</h3>
-		<form method="post" action="./php/php-example.php" enctype="multipart/form-data">
-			<div class="flex">
-				<label for="say">What greeting do you want to say ?</label>
-				<input type="text" name="say" id="say" value="Hi">
-			</div>
-			<div class="flex">
-				<label for="to">Who do you want to say it to ?</label>
-				<input type="text" name="to" value="Mom">
-			</div>
-			<div>
-				<button>Send my greetings</button>
-			</div>
-		</form>
-		<br><br><br>
+	<h2>Upload</h2>
+	<h3>Select file to upload :</h3> 
+	<form action="./php/upload.php" class="upload" method="post" enctype="multipart/form-data">
+		<input type="file" name="fileToUpload" id="fileToUpload">
+		<input type="submit" value="Upload" name="submit">
+	</form>
+	<br><br>
 
-		<h3>GET</h3>
-		<form method="get" action="./php/php-example.php" enctype="multipart/form-data">
-			<div class="flex">
-				<label for="say">What greeting do you want to say ?</label>
-				<input type="text" name="say" id="say" value="Hi">
-			</div>
-			<div class="flex">
-				<label for="to">Who do you want to say it to ?</label>
-				<input type="text" name="to" value="Mom">
-			</div>
-			<div>
-				<button>Send my greetings</button>
-			</div>
-		</form>
+	<h2>Download</h2>
+	<div class="columns">
+		<div>
+			<img src="./data/lama.jpg"><br>
+			<a href="./data/lama.jpg" download="lama.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		<div>
+			<img src="./data/lamaNB.jpg"><br>
+			<a href="./data/lamaNB.jpg" download="lamaNB.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		<div>
+			<img src="./data/lamaFat.jpg"><br>
+			<a href="./data/lamaFat.jpg" download="lamaFat.jpg"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+		</div>
+		
 	</div>
+
+	<div class="columns">
+	<div>
+		<img src="./data/icon_pdf.png" width="390"><br>
+		<a href="./data/subject.pdf" download="subject.pdf"><span class="button"><i class="fas fa-download"></i> Download</span></a>
+	</div>
+	</div>
+
 </body>
 
 <footer>

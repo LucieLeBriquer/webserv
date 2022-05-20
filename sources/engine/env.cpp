@@ -3,52 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   env.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: user42 <user42@student.42.fr>              +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/25 17:44:49 by user42            #+#    #+#             */
-/*   Updated: 2022/04/27 15:56:45 by user42           ###   ########.fr       */
+/*   Updated: 2022/05/14 17:46:01 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "engine.hpp"
 
-void    setEnvForCgi(Socket &sock, HTTPResponse &response, int sockNbr, HTTPHeader &header)
+void    setEnvForCgi(Socket &sock, int sockNbr, Client &client)
 {
 	std::stringstream	out;
 	std::string			string;
+	HTTPResponse		&response = client.getResponse();
+	HTTPHeader			&header = client.getHeader();
+	std::string			file = sock.getRealUrl(sockNbr, response.getUrl());
     
-	sock.setEnvValue("SERVER_NAME", sock.getServerName(sockNbr));
-    sock.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
-	sock.setEnvValue("PATH_INFO", sock.getRealUrl(sockNbr, response.getUrl()));
-	sock.setEnvValue("REQUEST_METHOD", response.getMethod());
-	sock.setEnvValue("SCRIPT_FILENAME", sock.getRealUrl(sockNbr, response.getUrl()));
-	sock.setEnvValue("SERVER_PROTOCOL", "HTTP/1.1");
-	sock.setEnvValue("REDIRECT_STATUS", "200");
+	client.setEnvValue("SERVER_NAME", sock.getServerName(sockNbr));
+    client.setEnvValue("GATEWAY_INTERFACE", "CGI/1.1");
+	client.setEnvValue("PATH_INFO", file);
+	client.setEnvValue("REQUEST_METHOD", response.getMethod());
+	client.setEnvValue("SCRIPT_FILENAME", file);
+	client.setEnvValue("SERVER_PROTOCOL", "HTTP/1.1");
+	client.setEnvValue("REDIRECT_STATUS", "200");
 	if (header.getContentType() == "")
-		sock.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
+		client.setEnvValue("CONTENT_TYPE", "application/x-www-form-urlencoded");
 	else
-		sock.setEnvValue("CONTENT_TYPE", header.getContentType());
-	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
+		client.setEnvValue("CONTENT_TYPE", header.getContentType());
+	if (client.getEnvValue("REQUEST_METHOD") == "POST")
 	{
-		string = sock.getBody();
-		if (string[strlen(string.c_str()) - 1] == '\n' && string[strlen(string.c_str()) - 2] == '\r')
-			string.erase(strlen(string.c_str()) - 2, 2);
-		sock.setBody(string);
-		out << strlen(sock.getBody().c_str());
-		sock.setEnvValue("CONTENT_LENGTH", out.str());
+		std::rewind(client.getTmp());
+		out << getFileSize(client.getFdTmp());
+		client.setEnvValue("CONTENT_LENGTH", out.str());
 	}
 	else
 	{
-		if (sock.isQueryString() == false)
-			sock.setEnvValue("QUERY_STRING", "");
+		if (client.isQueryString() == false)
+			client.setEnvValue("QUERY_STRING", "");
 	}
 }
 
-void	ft_free_env_arg(char ***env, Socket *sock)
+void	freeEnv(char ***env, Client &client)
 {
 	size_t i = 0;
 
-	while (i < sock->getEnvSize())
+	while (i < client.getEnvSize())
 	{
 		free((*env)[i]);
 		(*env)[i] = NULL;
@@ -58,16 +58,16 @@ void	ft_free_env_arg(char ***env, Socket *sock)
 	(*env) = NULL;
 }
 
-int 	mallocEnv(char ***env, Socket &sock)
+int 	mallocEnv(char ***env, Client &client)
 {
 	size_t				nbr = 0;
-	mapStr				tmp = sock.getEnv();
+	mapStr				tmp = client.getEnv();
 	std::string			val;
 
-	(*env) = (char **)malloc(sizeof(char *) * sock.getEnvSize() + 1);
+	(*env) = (char **)malloc(sizeof(char *) * client.getEnvSize() + 1);
 	if (!(*env))
-		return ERR;
-	(*env)[sock.getEnvSize()] = NULL;
+		return (ERR);
+	(*env)[client.getEnvSize()] = NULL;
 	for (mapStr::iterator it = tmp.begin(); it != tmp.end(); it++)
 	{
 		val = it->first;
@@ -80,5 +80,5 @@ int 	mallocEnv(char ***env, Socket &sock)
 		(*env)[nbr][strlen(val.c_str())] = '\0';
 		nbr++;
 	}
-	return OK;
+	return (OK);
 }

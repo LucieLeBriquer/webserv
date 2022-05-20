@@ -21,6 +21,7 @@ static std::string	getSubtype(std::string str)
 {
 	size_t	quality = str.find(';');
 	size_t	start = str.find('/');
+
 	if (quality == std::string::npos)
 		return (str.substr(start + 1, str.size() - start));
 	else
@@ -29,6 +30,10 @@ static std::string	getSubtype(std::string str)
 
 static std::string	removeQuality(std::string str)
 {
+	size_t	quality = str.find(';');
+
+	if (quality == std::string::npos)
+		return (str);
 	return (str.substr(0, str.find(';')));
 }
 
@@ -46,10 +51,8 @@ std::string	mimeContentType(std::string accepted, std::string file)
 
 	splitPattern(splitted, file, ".");
 	splitPattern(accept, accepted, ",");
-
-	if (accept.empty())
-		return ("text/plain");
-	if (splitted.empty())
+	
+	if (splitted.size() == 1 && accepted.size() > 1)
 		return (removeQuality(accept[0]));
 	extension = splitted[splitted.size() - 1];
 	for (int i = 0; i < nbMime; i++)
@@ -61,7 +64,7 @@ std::string	mimeContentType(std::string accepted, std::string file)
 		}
 	}
 	if (mime.size() == 0)
-		return (removeQuality(accept[0]));
+		return ("text/plain");
 	type = getType(mime);
 	subtype = getSubtype(mime);
 	for (size_t i = 0; i < accept.size(); i++)
@@ -74,5 +77,7 @@ std::string	mimeContentType(std::string accepted, std::string file)
 			|| (typeA == type && subtypeA == subtype))
 			return (mime);
 	}
-	return (removeQuality(accept[0]));
+	if (accepted.size() > 1)
+		return (removeQuality(accept[0]));
+	return (mime);
 }

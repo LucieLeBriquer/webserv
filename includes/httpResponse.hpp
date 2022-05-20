@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpResponse.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:43:07 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/06 16:38:17 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:02:39 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 class Socket;
 class HTTPHeader;
+class Client;
 class HTTPResponse
 {
 	protected:
@@ -39,7 +40,6 @@ class HTTPResponse
 		std::string		_returnSetErrPage(Socket &sock, int sockNbr, std::string code,
 										std::string str, HTTPHeader &header);
 		std::string		_manageDirectory(Socket &sock, int sockNbr, HTTPHeader &header);
-		//std::string		_manageRegularFile(Socket &sock, int sockNbr, HTTPHeader &header);
 
 	public:
 		HTTPResponse(void);
@@ -60,6 +60,7 @@ class HTTPResponse
 		int			getRedir(void) const;
 		size_t		getMaxSizeC(void) const;
 		bool		getNeedAutoindex(void) const;
+		bool		statusIsOk(void) const;
 
 		void		rendering(HTTPHeader &header);
 
@@ -73,11 +74,14 @@ class HTTPResponse
 		void		setRedir(int r);
 		void		setMaxSizeC(size_t value);
 		void		setServerName(const std::string serv);
+		void		setHeader(std::string header);
 
 		int			isChunked(void);
 		std::string	checkUrl(Socket &sock, int sockNbr, HTTPHeader &header);
-		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header);
+		std::string	redirect(Socket &sock, int sockNbr, HTTPHeader &header, Client &client);
 		void		statusCode(std::string status, std::string firstLine);
+
+		void		clear(void);
 };
 
 #endif

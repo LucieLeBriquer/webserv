@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/05 16:16:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/14 17:51:36 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,14 @@ std::string	deletingUseless(std::string header)
 			i++;
 		header.erase(find, (i + 1) - find);
 	}
+	find = header.find("Host:");
+	if (find > 0)
+	{
+		i = find;
+		while (header[i] && header[i] != '\n')
+			i++;
+		header.erase(find, (i + 1) - find);
+	}
 	find = header.find("Content-Length:");
 	if (find > 0)
 	{
@@ -32,14 +40,13 @@ std::string	deletingUseless(std::string header)
 			i++;
 		header.erase(find, (i + 1) - find);
 	}
-	header += "\r\n";
 	return header;
 }
 
-std::string	headerForCgi(std::string header, Socket &sock)
+std::string	headerForCgi(std::string header, Client &client)
 {
 	std::string	cgiHeader;
-	std::string	cgiCorps = sock.getCgiCoprs();
+	std::string	cgiCorps = client.getCgiCoprs();
 	std::string	tmp;
 	int			i = 0;
 
@@ -50,19 +57,11 @@ std::string	headerForCgi(std::string header, Socket &sock)
 	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
-	sock.setCgiCoprs(tmp);
-
-	return cgiHeader;
+	client.setCgiCoprs(tmp);
+	return (cgiHeader);
 }
 
-/*******
- * RAPPEL *
- * pipefd[2] : [0] = "read" end of pipe, [1] = "write" end of pipe
- * dup2() give the 2nd arg role to the 1st arg
- * STDIN == 0 & STDOUT == 1
- ********/
-
-void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
+static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 {
 	char buff[4096];
 	std::string string;
@@ -70,66 +69,40 @@ void	setCgiString(FILE *temp, int fdtemp, Socket &sock)
 	std::rewind(temp);
 	while(!feof(temp))
  	{
-       if (fgets(buff, 1024, temp) == NULL)
+       if (fgets(buff, 4096, temp) == NULL)
              break;
        string += buff;
  	}
 	close(fdtemp);
 	std::fclose(temp);
-
-	sock.setCgiCoprs(string);
+	client.setCgiCoprs(string);
 }
 
-int 	getCgiFile(Socket &sock, std::string cgi)
+int 		getCGIfile(std::string cgi, Client &client)
 {
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
 	pid_t		pid;
-	int			status, fd[2], m = 0;
+	int			status;
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
 	
-	if (mallocEnv(&env, sock) < 0)
-		return ERR;
-
-	/////////////////printing////////////////
-	std::cout << "======================= ENV ========================" << std::endl;
-	std::cout << std::endl;
-	mapStr	tmp = sock.getEnv();
-	mapStr::iterator it = tmp.begin();
-	for (size_t i = 0; env[i]; i++)
-	{
-		if (it == tmp.end())
-			break ;
-		std::cout << env[i] << std::endl;
-		// std::cout << "s = " << sock.getEnvSize() << "  " << it->first << "=" << it->second << std::endl;
-		it++;
-	}
-	std::cout << std::endl;
-	std::cout << "====================================================" << std::endl;
-	std::cout << std::endl;
-	/////////////////////////////////////////
-
-	if (sock.getEnvValue("REQUEST_METHOD") == "POST")
-	{
-		m = POST;
-		pipe(fd);
-	}
+	if (mallocEnv(&env, client) < 0)
+		return (ERR);
 	
+	std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
-		if (m == POST)
-		{
-			close(fd[1]);
-			if (dup2(fd[0], STDIN_FILENO) < 0)
+		if (client.getMethod() == POST)
+		{			
+			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
 			{
 				perror("dup2()");
 				exit(EXIT_FAILURE);
 			}
-			close(fd[0]);
 		}
 		if (dup2(fdtemp, STDOUT_FILENO) < 0)
 		{
@@ -142,18 +115,10 @@ int 	getCgiFile(Socket &sock, std::string cgi)
 	}
 	else
 	{
-		if (m == POST)
-		{
-			close(fd[0]);
-			write(fd[1], sock.getBody().c_str(), strlen(sock.getBody().c_str()));
-			close(fd[1]);
-		}
 		waitpid(pid, &status, 0);
+		setCgiString(temp, fdtemp, client);
+		freeEnv(&env, client);
 	}
-
-	setCgiString(temp, fdtemp, sock);
-	ft_free_env_arg(&env, &sock);
-	sock.unsetEnv();
-	sock.setIsQueryString(false);
-	return OK;
+	
+	return (OK);
 }

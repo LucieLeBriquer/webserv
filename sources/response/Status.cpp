@@ -33,6 +33,12 @@ Status::~Status()
 	return ;
 }
 
+void	Status::clear(void)
+{
+	(*this).HTTPResponse::clear();
+	_code = "";
+}
+
 /*
 **		OVERLOAD OPERATOR
 */
@@ -41,6 +47,7 @@ Status	&Status::operator=(const Status &status)
 {
 	if (this != &status)
 	{
+		(*this).HTTPResponse::operator=(status);
 		_code = status._code;
 		for (int i = 0; i < 3; i++)
 			getStatus[i] = status.getStatus[i];
@@ -52,37 +59,36 @@ Status	&Status::operator=(const Status &status)
 **		MEMBER FUNCTIONS
 */
 
+static std::string	get2Dig(int type)
+{
+	if (type >= 0 && type <= 9)
+		return ("0" + toString(type));
+	return (toString(type));
+}
+
 void Status::err4xx(int type)
 {
-	std::ostringstream s;
-	s << type;
-	const std::string stype(s.str());
-
-	this->_code = "40" + stype;
-	if ( type == 0 )
-		this->_code += " Bad Request";
-	if ( type == 4 )
-		this->_code += " Not Found";
-	if ( type == 5 )
-		this->_code += " Method Not Allowed";
+	this->_code = "4" + get2Dig(type) + " ";
+	if (type == 0)
+		this->_code += "Bad Request";
+	else if (type == 4)
+		this->_code += "Not Found";
+	else if (type == 5)
+		this->_code += "Method Not Allowed";
+	else if (type == 5)
+		this->_code += "Request Entity Too Large";
 }
 
 void Status::status2xx(int type)
 {
-	std::ostringstream s;
-	s << type;
-	const std::string stype(s.str());
-	this->_code = "20" + stype;
+	this->_code = "20" + toString(type);
 	if ( type == 0 )
 		this->_code += " OK";
 }
 
 void Status::err5xx(int type)
 {
-	std::ostringstream s;
-	s << type;
-	const std::string stype(s.str());
-	this->_code = "50" + stype;
+	this->_code = "50" + toString(type);
 	if ( type == 0 )
 		this->_code += " Bad Request";
 }

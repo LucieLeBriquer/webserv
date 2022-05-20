@@ -1,4 +1,4 @@
-CC			= c++ -std=c++98 #-Wall -Wextra -Werror 
+CC			= c++ -Wall -Wextra -Werror -std=c++98
 RM			= rm -rf
 NAME		= ./webserv
 NAME_SHORT	= webserv
@@ -13,7 +13,9 @@ SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
 OBJS_DIR	= ./objects/
 OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
 
-SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine request response)
+SUB_DIRS	= $(addprefix $(OBJS_DIR), parsing engine request response engine/class)
+
+UP_DIR 		= ./html/uploads
 
 _COLOR		= \033[32m
 _BOLDCOLOR	= \033[32;1m
@@ -22,7 +24,7 @@ _CLEAR		= \033[0K\r\c
 _OK			= [\033[32mOK\033[0m]
 
 $(OBJS_DIR)%.o	: $(SRCS_DIR)%.cpp
-			@mkdir -p $(OBJS_DIR) $(SUB_DIRS)
+			@mkdir -p $(OBJS_DIR) $(SUB_DIRS) $(UP_DIR)
 			@echo "[..] $(NAME_SHORT)... compiling $*.cpp\r\c"
 			@$(CC) $(MAIN_INC) -c $< -o $@
 			@echo "$(_CLEAR)"
@@ -39,6 +41,7 @@ ifeq ($(OBJS_DIR), ./)
 else
 			@$(RM) $(OBJS_DIR)
 endif
+			@$(RM) $(UP_DIR)
 
 fclean		: clean
 			@$(RM) $(NAME)
@@ -46,3 +49,4 @@ fclean		: clean
 re			: fclean all
 
 .PHONY		: all clean fclean re
+

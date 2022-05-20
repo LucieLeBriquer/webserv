@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/06 16:35:45 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/18 15:19:16 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,15 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding(""), _secFetchDest(""), _secFetchMode("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
 	this->setFct[4] = &HTTPHeader::setEncoding;
+	this->setFct[5] = &HTTPHeader::setSecFetchDest;
+	this->setFct[6] = &HTTPHeader::setSecFetchMode;
 
 	return ;
 }
@@ -37,6 +39,20 @@ HTTPHeader::~HTTPHeader()
 	return ;
 }
 
+void	HTTPHeader::clear(void)
+{
+	(*this).HTTPRequest::clear();
+
+	_host  ="";
+	_contentLen = "";
+	_contentType = "";
+	_contentTypeResponse = "text/html";
+	_accept = "";
+	_encoding = "";
+	_secFetchDest = "";
+	_secFetchMode = "";
+}
+
 /*
 **		OVERLOAD OPERATORS
 */
@@ -45,20 +61,12 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 {
 	if (this != &header)
 	{
+		(*this).HTTPRequest::operator=(header);
 		_host = header._host;
 		_contentLen = header._contentLen;
 		_contentType = header._contentType;
 		_contentTypeResponse = header._contentTypeResponse;
 		_accept = header._accept;
-		
-		// http request parameters
-		_META = header._META;
-		_OPTION = header._OPTION;
-		_method = header._method;
-		_httpv = header._httpv;
-		_url = header._url;
-		_active = header._active;
-		_fLine = header._fLine;
 	}
 	return (*this);
 }
@@ -97,6 +105,18 @@ void HTTPHeader::setEncoding(std::string value)
 	this->_encoding = value;
 }
 
+void HTTPHeader::setSecFetchDest(std::string value)
+{
+	this->_secFetchDest = value;
+}
+
+void HTTPHeader::setSecFetchMode(std::string value)
+{
+	this->_secFetchMode = value;
+}
+
+
+
 /*
 **		GETTERS
 */
@@ -118,12 +138,19 @@ std::string	HTTPHeader::getMethod(void) const
 
 std::string	HTTPHeader::getHost(void) const
 {
-	return ("Host: " + _host + "\r\n");
+	if (_host != "")
+		return ("Host: " + _host + "\r\n");
+	return ("");
 }
 
 std::string	HTTPHeader::getContentLen(void) const
 {
 	return ("Content-Length: " + _contentLen + "\r\n");
+}
+
+std::string	HTTPHeader::getContentLenValue(void) const
+{
+	return (_contentLen);
 }
 
 std::string	HTTPHeader::getContentType(void) const
@@ -136,6 +163,20 @@ std::string	HTTPHeader::getResponseContentType(void) const
 	return ("Content-Type: " + _contentTypeResponse + "\r\n");
 }
 
+std::string HTTPHeader::getSecFetchDest(void) const
+{
+	return (this->_secFetchDest);
+}
+
+std::string HTTPHeader::getSecFetchMode(void) const
+{
+	return (this->_secFetchMode);
+}
+
+/*
+**		MEMBER FUNCTIONS
+*/
+
 int	HTTPHeader::isChunked( void )
 {
 	if (!strncasecmp("chunked", _encoding.c_str(), 7))
@@ -143,13 +184,10 @@ int	HTTPHeader::isChunked( void )
 	return (0);
 }
 
-/*
-**		MEMBER FUNCTIONS
-*/
-
 int HTTPHeader::parseMethod(const std::string req)
 {
 	int i;
+	
 	if (req == "")
 		return -1;
 	for (i = 0; req[i]; i++)
@@ -188,21 +226,10 @@ int HTTPHeader::parseProtocol(const std::string protocol)
 	return 1;
 }
 
-std::string	getHead(std::string buf)
+int HTTPHeader::method(std::string buf, Status &code, HTTPResponse &response)
 {
-	std::string firstLine;
-
-	std::stringstream ssin(buf);
-	std::getline(ssin, firstLine, '\r');
-	// std::cout <<"fline=["<< firstLine<<"]"<<std::endl;
-	return (firstLine);
-}
-
-int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
-{
-	std::string methods[5] = {"GET", "POST", "DELETE", "HEAD", "OPTIONS"};
 	std::string line;
-	int i;
+	int 		i;
 
 	line = getHead(buf);
 	std::vector<std::string> request = splitThis(line);
@@ -218,7 +245,7 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 	this->_method = "NULL";
 	if ((i = this->parseMethod(request[0])) == -1)
 	{
-		deliver->statusCode(code->status(4, 5), this->getFirstLine());
+		response.statusCode(code.status(4, 0), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
@@ -227,21 +254,21 @@ int HTTPHeader::method(std::string buf, Status *code, HTTPResponse *deliver)
 		this->_method = methods[i];
 	if (!this->parsePath(request[1]))
 	{
-		deliver->statusCode(code->status(4, 4), this->getFirstLine());
+		response.statusCode(code.status(4, 4), this->getFirstLine());
 		if (arg != 3)
 			return -1;
 		return 1;
 	}
 	if (!this->parseProtocol(request[2]))
 	{
-		deliver->statusCode(code->status(4, 0), this->getFirstLine());
+		response.statusCode(code.status(4, 0), this->getFirstLine());
 		return -1;
 	}
-	deliver->statusCode(code->status(2, 0), this->getFirstLine());
+	response.statusCode(code.status(2, 0), this->getFirstLine());
 	if (arg != 3)
 		return -1;
-	deliver->setMethod(this->_method);
-	deliver->setUrl(this->_url);
+	response.setMethod(this->_method);
+	response.setUrl(this->_url);
 	return 1;
 }
 
@@ -251,15 +278,17 @@ int HTTPHeader::header( void )
 	{
 		if (this->_contentLen == "")
 			return -1;
+		if (this->_contentType == "")
+			return -1;
 	}
 	return 1;
 }
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[5] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:"};
+	std::string header[7] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
-	int			headerSize = 5;
+	int			headerSize = 7;
 	int i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')

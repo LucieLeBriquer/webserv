@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/06 16:34:06 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/10 17:13:21 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,9 @@ class HTTPHeader : public HTTPRequest
 		std::string	_contentTypeResponse;
 		std::string	_accept;
 		std::string _encoding;
-		ptr			setFct[5];
+		std::string	_secFetchDest;
+		std::string	_secFetchMode;
+		ptr			setFct[7];
 		
 	public:
 		HTTPHeader();
@@ -37,12 +39,12 @@ class HTTPHeader : public HTTPRequest
 
 		HTTPHeader	&operator=(const HTTPHeader &header);
 
-		int			method(std::string buf, Status *code, HTTPResponse *response);
+		int			method(std::string buf, Status &code, HTTPResponse &deliver);
 		int			parsePath(const std::string url);
 		int 		parseProtocol(const std::string prot);
 		int			parseMethod(const std::string cmd);
 
-		int			header( void );
+		int			header(void);
 		int			fillheader(std::string *buf);
 		int			getContext(void);
 
@@ -52,6 +54,8 @@ class HTTPHeader : public HTTPRequest
 		void		setContentTypeResponse(std::string value);
 		void		setAccept(std::string value);
 		void		setEncoding(std::string value);
+		void		setSecFetchDest(std::string value);
+		void		setSecFetchMode(std::string value);
 
 		void		checkContext(void);
 		int			isChunked(void);
@@ -60,8 +64,13 @@ class HTTPHeader : public HTTPRequest
 		std::string	getMethod(void) const;
 		std::string	getContentType(void) const;
 		std::string	getContentLen(void) const;
+		std::string	getContentLenValue(void) const;
 		std::string	getAccept(void) const;
 		std::string	getResponseContentType(void) const;
+		std::string	getSecFetchDest(void) const;
+		std::string getSecFetchMode(void) const;
+
+		void		clear(void);
 };
 
 #endif
