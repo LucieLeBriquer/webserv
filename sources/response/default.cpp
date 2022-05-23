@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 13:50:27 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/19 16:24:32 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/23 13:28:56 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static std::string	getPageContent(std::string code)
 	content += getErrorExplanation(code);
 	content += "\n</div>\n</body>\n\n<footer>\n\t<ul class=\"footer\">\n\t\t<li></li>";
 	content += "\n\t\t<li><a href=\"https://github.com/MassiliaB\" target=\"_blank\"><i class=\"fab fa-github\"></i> masboula</a></li>";
-	content += "\n\t\t<li><a href=\"https://github.com/loupascreau\" target=\"_blank\"><i class=\"fab fa-github\"></i> lpascreau</a></li>";
+	content += "\n\t\t<li><a href=\"https://github.com/loupascreau\" target=\"_blank\"><i class=\"fab fa-github\"></i> lpascrea</a></li>";
 	content += "\n\t\t<li><a href=\"https://github.com/LucieLeBriquer\" target=\"_blank\"><i class=\"fab fa-github\"></i> lle-briq</a></li>";
 	content += "\n\t\t<li></li>\n\t</ul>\n</footer>\n</html>\n";
 	
