@@ -276,8 +276,8 @@ int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
-		if (this->_contentLen == "")
-			return -1;
+		//if (this->_contentLen == "")
+		//	return -1;
 		if (this->_contentType == "")
 			return -1;
 	}

@@ -56,7 +56,7 @@ int		endRequest(Client &client)
 				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && i + 4 == request.size())
 				{
-					if (checkHeader(client.getHeader(), request))
+					if (checkHeader(client.getHeader(), request) || client.getHeader().getContentLenValue() == "")
 						return (ERR);
 					return (OK);
 				}
