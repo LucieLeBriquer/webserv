@@ -20,7 +20,7 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, client);
 	else
-		header += "\r\n\r\n";
+		header += "\r\n";
 	
 	std::cout << GRAY << std::endl;
 	std::cout << header;

@@ -350,7 +350,7 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_url = line[1];
 }
 
-void HTTPResponse::rendering( HTTPHeader &header )
+void HTTPResponse::rendering(HTTPHeader &header)
 {
 	time_t          rawtime;
 	std::string     timeStr;
