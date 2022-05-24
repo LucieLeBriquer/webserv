@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 13:42:11 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:57:53 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,10 +35,10 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 
 static size_t chunk_size = 0;
 
-int		treatData(int fde, HTTPResponse &response, size_t size, std::string string, bool isChunked)
+int		treatData(int fde, HTTPResponse &response, size_t size, std::string string)
 {
 	std::string			toSend;
-	if (isChunked)
+	if (response.isChunked())
 	{
 		std::string			line;
 		size_t				size_of_chunk;
@@ -92,8 +92,8 @@ int		treatData(int fde, HTTPResponse &response, size_t size, std::string string,
 	}
 	fileStream.str(std::string());
 	fileStream.clear();
-	if (isChunked && chunk_size < size)
-		treatData(fde, response, size, string, isChunked);
+	if (response.isChunked() && chunk_size < size)
+		treatData(fde, response, size, string);
 	return (OK);
 }
 
@@ -104,13 +104,10 @@ static int	sendData(int fde, Client &client, bool isCgi)
 	size_t				size;
 	std::stringstream	ss;
 	std::string			string;
-	bool				isChunked;
 
 	if (isCgi)
 	{
 		std::string	C = client.getCgiCoprs();
-		isChunked = !client.getIsContentLen();
-	//	std::cout << "chunk = " << isChunked << std::endl;
 		size = C.length();
 		string = C;
 	}
@@ -126,10 +123,8 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		string = B;
 		free(buff);
 		fileS.close();
-		isChunked = response.isChunked();
-	//	std::cout << "--> chunk = " << isChunked << std::endl;
 	}
-	treatData(fde, response, size, string, isChunked);
+	treatData(fde, response, size, string);
 	return (OK);
 }
 
@@ -138,10 +133,10 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	HTTPHeader		&header = client.getHeader();
 	HTTPResponse	&response = client.getResponse();
 	int				fde = client.getFd();
-	
+
 	if (response.statusIsOk() && !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
-	
+
 	if (getRightFile(sock, sockNbr, client))
 	{
 		if (response.getRedir() == 1)
@@ -177,6 +172,5 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		return (ERR);
 
 	chunk_size = 0;
-	// remove("html/tmp.html");
 	return (OK);
 }

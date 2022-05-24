@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 14:50:36 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:05:31 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int		checkHeader(HTTPHeader &header, const std::string string)
 	}
 	if (header.header() == -1)
 		return (ERR);
+std::cout << "check ?" << std::endl;
 	return (OK);
 }
 
