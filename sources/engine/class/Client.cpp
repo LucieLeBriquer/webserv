@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/20 15:32:28 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 14:47:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,9 +143,14 @@ size_t			Client::getTotSize(void) const
 
 void			Client::addRecv(char *buf, int len)
 {
+	if (_method == POST && _recvHeader && getBodySize() + len > _header.getContentLenSize())
+	{
+		len = (size_t)(_header.getContentLenSize() - getBodySize());
+		buf[len] = '\0';
+	}
+	_totSize += len;
 	write(_fdTmp, buf, len);
 	_request += buf;
-	_totSize += len;
 }
 
 void			Client::setHeaderSize(size_t size)

@@ -229,6 +229,14 @@ size_t	myAtoi(std::string str, bool &succeed)
 	return (atoi(str.c_str()));
 }
 
+size_t	stringToInt(std::string str)
+{
+	size_t	s = 0;
+
+	for (size_t j = 0; j < str.size(); j++)
+		s = 10 * s + (str[j] - '0');
+	return (s);
+}
 
 /*
 **		CHECK FORMAT

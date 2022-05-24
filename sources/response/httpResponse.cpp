@@ -246,7 +246,6 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		this->_location = sock.getRedir(sockNbr, _url);
 		this->_statusCode = "301 Moved Permanently";
 		this->_redir = 1;
-		this->_contentLen = "178";
 		return "";
 	}
 	return (this->checkUrl(sock, sockNbr, header));
@@ -377,7 +376,7 @@ void HTTPResponse::rendering(HTTPHeader &header)
 			_header += "Allow: " + _options + "\r\n";
 
 	if (_redir)
-        _header += "Location: " + _location + "\r\n";		
+        _header += "Location: " + _location + "\r\n";
 	if (_statusNb != 0 && _statusNb != 200)
 		_header += "Connection: close\r\n";
     else

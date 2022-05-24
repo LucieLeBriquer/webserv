@@ -30,15 +30,6 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 	}
 }
 
-size_t	stringToInt(std::string str)
-{
-	size_t	s = 0;
-
-	for (size_t j = 0; j < str.size(); j++)
-		s = 10 * s + (str[j] - '0');
-	return (s);
-}
-
 int		endRequest(Client &client)
 {
 	std::string	request = client.getRequest();
@@ -73,10 +64,10 @@ int		endRequest(Client &client)
 			return (ERR);
 		else
 		{
+			if (client.getBodySize() >= client.getHeader().getContentLenSize())
+				return (ERR);
 			if (client.getTotSize() <= client.getHeaderSize())
 				return (OK);
-			if (client.getBodySize() >= stringToInt(client.getHeader().getContentLenValue()))
-				return (ERR);
 		}
 	}
 	return (OK);

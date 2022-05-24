@@ -97,7 +97,15 @@ int 		getCGIfile(std::string cgi, Client &client)
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
 	
-	std::rewind(client.getTmp());
+	//std::rewind(client.getTmp());
+	std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
+
+	/*while (!std::feof(client.getTmp()))
+	{
+		char c= std::fgetc(client.getTmp());
+		std::cerr << c;
+	}
+	std::fseek(client.getTmp(), client.getHeaderSize())*/
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);

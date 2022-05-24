@@ -7,7 +7,7 @@
 		$to = htmlspecialchars($_REQUEST['to']);
 	else
 		$to = 'to';
-
+	
     echo "<!DOCTYPE html>\n";
     echo "<html>\n";
     echo "<head>\n";
@@ -37,8 +37,11 @@
     echo "\t", '</span>', "\n";
     echo '</header>', "\n\n";
     echo '<body class="main">', "\n";
-    echo "\t", '<h3>Welcome to our PHP form results</h3>', "\n";
-    echo "\t", 'You said <strong>', $say, '</strong> to <strong>', $to, '</strong>', "\n";
+	echo '<div class="vertical">', "\n";
+	echo "\t", "<center>";
+    echo "\t", '<h6 class="title404_1">You said <strong>', $say, '</strong></h6><br><br><br>';
+	echo '<h6 class="title404_2">to <strong>', $to, '</strong></h6>', "\n";
+	echo "</div>\n";
     echo '</body>', "\n\n";
     echo "</html>\n";
 ?>
