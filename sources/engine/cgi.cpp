@@ -6,7 +6,7 @@
 /*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 13:31:39 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:53:41 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ std::string	headerForCgi(std::string header, Client &client)
 	std::string			cgiHeader;
 	std::string			cgiCorps = client.getCgiCoprs();
 	std::string			tmp;
+	std::stringstream	out;
 	int			i = 0;
 
 	cgiHeader = deletingUseless(header);
@@ -56,8 +57,13 @@ std::string	headerForCgi(std::string header, Client &client)
 	tmp = &cgiCorps[i + 6];
 	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
 	client.setCgiCoprs(tmp);
+	out << client.getCgiCoprs().length();
+	cgiHeader += "Content-Length: ";
+	cgiHeader += out.str();
+	cgiHeader += "\r\n";
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
+	client.setIsContentLen(cgiHeader);
 	return (cgiHeader);
 }
 
