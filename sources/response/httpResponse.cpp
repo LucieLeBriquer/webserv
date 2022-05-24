@@ -350,7 +350,7 @@ void HTTPResponse::statusCode(std::string status, std::string firstLine)
 	this->_url = line[1];
 }
 
-void HTTPResponse::rendering( HTTPHeader &header )
+void HTTPResponse::rendering(HTTPHeader &header)
 {
 	time_t          rawtime;
 	std::string     timeStr;
@@ -379,14 +379,14 @@ void HTTPResponse::rendering( HTTPHeader &header )
 	if (_redir)
         _header += "Location: " + _location + "\r\n";		
 	if (_statusNb != 0 && _statusNb != 200)
-		_header += "Connection: close";
+		_header += "Connection: close\r\n";
     else
-		_header += "Connection: keep-alive";	
+		_header += "Connection: keep-alive\r\n";	
 	if (header.isChunked())
 	{
 		_chunked = 1;
-		_header += "\r\nTransfer-Encoding: chunked";
+		_header += "Transfer-Encoding: chunked\r\n";
 	}
 	else if (_contentLen != "")
-		_header += "\r\nContent-Length: " + _contentLen;
+		_header += "Content-Length: " + _contentLen + "\r\n";
 }

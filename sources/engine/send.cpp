@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 16:23:01 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 13:42:11 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 	if (sock.isCgi(sockNbr, response.getUrl()) && !redir)
 		header = headerForCgi(header, client);
 	else
-		header += "\r\n\r\n";
+		header += "\r\n";
 	
 	std::cout << GRAY << std::endl;
 	std::cout << header;
@@ -37,6 +37,7 @@ static size_t chunk_size = 0;
 
 int		treatData(int fde, HTTPResponse &response, size_t size, std::string string, bool isChunked)
 {
+	std::string			toSend;
 	if (isChunked)
 	{
 		std::string			line;
@@ -49,15 +50,17 @@ int		treatData(int fde, HTTPResponse &response, size_t size, std::string string,
 			size_of_chunk = size;
 		if (size - chunk_size < size_of_chunk)
 			size_of_chunk = size - chunk_size;
-
 		os << std::hex << size_of_chunk;
-		line += os.str() + "\r\n";
+		line = os.str() + "\r\n";
 		line += string.substr(chunk_size, size_of_chunk);
 		chunk_size += size_of_chunk;
 		if (chunk_size >=  size)
 			line +=  "0\r\n";
+		toSend = line;
 	}
-	std::stringstream	fileStream(string, std::ios::in | std::ios::binary);
+	else
+		toSend = string;
+	std::stringstream	fileStream(toSend, std::ios::in | std::ios::binary);
 	char				buf[BUFFER_SIZE];
 	int					i;
 	char				c;
@@ -107,7 +110,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 	{
 		std::string	C = client.getCgiCoprs();
 		isChunked = !client.getIsContentLen();
-		std::cout <<"chunk = " << isChunked << std::endl;
+	//	std::cout << "chunk = " << isChunked << std::endl;
 		size = C.length();
 		string = C;
 	}
@@ -124,6 +127,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		free(buff);
 		fileS.close();
 		isChunked = response.isChunked();
+	//	std::cout << "--> chunk = " << isChunked << std::endl;
 	}
 	treatData(fde, response, size, string, isChunked);
 	return (OK);
