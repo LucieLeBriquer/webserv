@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 14:50:35 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:57:53 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,117 +35,96 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 
 static size_t chunk_size = 0;
 
-static int	sendData(int fde, Client &client, bool isCgi)
+int		treatData(int fde, HTTPResponse &response, size_t size, std::string string)
 {
-	HTTPResponse	&response = client.getResponse();
-	std::string		fileName(response.getFileName());
-	std::string		tmpname("html/tmp.html");
-	std::stringstream ss;
-	size_t			size;
-	ss << response.getContentLen();
-	ss >> size;
+	std::string			toSend;
 	if (response.isChunked())
 	{
-		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
-		std::ofstream	tmpfile(tmpname.c_str());
-		std::string		line;
-		size_t			i;
-		size_t			size_of_chunk;
+		std::string			line;
+		size_t				size_of_chunk;
+		std::ostringstream	os;
 
 		if (response.getMaxSizeC() < size)
 			size_of_chunk = response.getMaxSizeC();
 		else
 			size_of_chunk = size;
-
-		char *buff = new char [size_of_chunk + 1];
-		for (i = 0; i < chunk_size; i += size_of_chunk )
-			fileS.read(buff, size_of_chunk);
-
 		if (size - chunk_size < size_of_chunk)
 			size_of_chunk = size - chunk_size;
-		tmpfile << std::hex << size_of_chunk << "\r\n";
-		fileS.read(buff, size_of_chunk);
-		buff[size_of_chunk] = '\0';
-		tmpfile << buff << "\r\n";
-		free(buff);
-
+		os << std::hex << size_of_chunk;
+		line = os.str() + "\r\n";
+		line += string.substr(chunk_size, size_of_chunk);
 		chunk_size += size_of_chunk;
 		if (chunk_size >=  size)
-			tmpfile << "0" << "\r\n";
-		fileName = tmpname;
-		response.setUrl(tmpname);
-		tmpfile.close();
-		fileS.close();
+			line +=  "0\r\n";
+		toSend = line;
 	}
+	else
+		toSend = string;
+	std::stringstream	fileStream(toSend, std::ios::in | std::ios::binary);
+	char				buf[BUFFER_SIZE];
+	int					i;
+	char				c;
+
+	if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
+		return (OK);
+	while (fileStream.get(c))
+	{
+		memset(buf, 0, BUFFER_SIZE);
+		buf[0] = c;
+		i = 1;
+		while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
+		{
+			buf[i] = c;
+			i++;
+		}
+		if (i + 1 == BUFFER_SIZE)
+		{
+			buf[i] = c;
+			i++;
+		}
+		if (send(fde, buf, i, 0) < 0)
+		{
+			perror("send()");
+			fileStream.str(std::string());
+			fileStream.clear();
+			return (ERR);
+		}
+	}
+	fileStream.str(std::string());
+	fileStream.clear();
+	if (response.isChunked() && chunk_size < size)
+		treatData(fde, response, size, string);
+	return (OK);
+}
+
+static int	sendData(int fde, Client &client, bool isCgi)
+{
+	HTTPResponse		&response = client.getResponse();
+	std::string			fileName(response.getFileName());
+	size_t				size;
+	std::stringstream	ss;
+	std::string			string;
+
 	if (isCgi)
 	{
-		std::stringstream	fileStream(client.getCgiCoprs(), std::ios::in | std::ios::binary);
-		char				buf[BUFFER_SIZE];
-		int					i;
-		char				c;
-
-		if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
-			return (OK);
-		while (fileStream.get(c))
-		{
-			memset(buf, 0, BUFFER_SIZE);
-			buf[0] = c;
-			i = 1;
-			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
-			{
-				buf[i] = c;
-				i++;
-			}
-			if (i + 1 == BUFFER_SIZE)
-			{
-				buf[i] = c;
-				i++;
-			}
-			if (send(fde, buf, i, 0) < 0)
-			{
-				perror("send()");
-				fileStream.str(std::string());
-				fileStream.clear();
-				return (ERR);
-			}
-		}
-		fileStream.str(std::string());
-		fileStream.clear();
+		std::string	C = client.getCgiCoprs();
+		size = C.length();
+		string = C;
 	}
 	else
 	{
-		std::ifstream	fileStream(fileName.c_str(), std::ios::in | std::ios::binary);
-		char			buf[BUFFER_SIZE];
-		int				i;
-		char			c;
-		if (response.getMethod() == "HEAD" || response.getMethod() == "OPTIONS")
-			return (OK);
-		while (fileStream.get(c))
-		{
-			memset(buf, 0, BUFFER_SIZE);
-			buf[0] = c;
-			i = 1;
-			while (fileStream.get(c) && i + 1 < BUFFER_SIZE)
-			{
-				buf[i] = c;
-				i++;
-			}
-			if (i + 1 == BUFFER_SIZE)
-			{
-				buf[i] = c;
-				i++;
-			}
-			if (send(fde, buf, i, 0) < 0)
-			{
-				perror("send()");
-				fileStream.close();
-				return (ERR);
-			}
-		}
-		fileStream.close();
+		std::ifstream	fileS(fileName.c_str(), std::ios::in | std::ios::binary);
+		ss << response.getContentLen();
+		ss >> size;
+		char *buff = new char [size + 1];
+		fileS.read(buff, size);
+		buff[size] = '\0';
+		std::string B(buff);
+		string = B;
+		free(buff);
+		fileS.close();
 	}
-	if (response.isChunked() && chunk_size < size)
-		sendData(fde, client, isCgi);
+	treatData(fde, response, size, string);
 	return (OK);
 }
 
@@ -154,10 +133,10 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	HTTPHeader		&header = client.getHeader();
 	HTTPResponse	&response = client.getResponse();
 	int				fde = client.getFd();
-	
+
 	if (response.statusIsOk() && !sock.isAllowedMethod(sockNbr, response.getUrl(), getMethodNb(header.getMethod())))
 		response.setStatus("405", " Method Not Allowed", header);
-	
+
 	if (getRightFile(sock, sockNbr, client))
 	{
 		if (response.getRedir() == 1)
@@ -193,6 +172,5 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		return (ERR);
 
 	chunk_size = 0;
-	remove("html/tmp.html");
 	return (OK);
 }
