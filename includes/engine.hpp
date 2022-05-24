@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/14 14:38:38 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/24 14:43:14 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::
 // utils
 void		isDownloading(HTTPHeader &header, HTTPResponse &response);
 int			endRequest(Client &client);
-
 int			checkHeader(HTTPHeader &header, const std::string string);
 
 #endif

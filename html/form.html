@@ -30,8 +30,8 @@
 </header>
 
 <body class="main">
-	<div class="vertical">
 		<h3>POST</h3>
+		<h4>multipart</h4>
 		<form method="post" action="./php/php-example.php" enctype="multipart/form-data">
 			<div class="flex">
 				<label for="say">What greeting do you want to say ?</label>
@@ -39,7 +39,23 @@
 			</div>
 			<div class="flex">
 				<label for="to">Who do you want to say it to ?</label>
-				<input type="text" name="to" value="Mom">
+				<input type="text" name="to" value="Massilia">
+			</div>
+			<div>
+				<button>Send my greetings</button>
+			</div>
+		</form>
+		<br><br><br>
+
+		<h4>classic</h4>
+		<form method="post" action="./php/php-example.php">
+			<div class="flex">
+				<label for="say">What greeting do you want to say ?</label>
+				<input type="text" name="say" id="say" value="Hey">
+			</div>
+			<div class="flex">
+				<label for="to">Who do you want to say it to ?</label>
+				<input type="text" name="to" value="Lou">
 			</div>
 			<div>
 				<button>Send my greetings</button>
@@ -48,20 +64,19 @@
 		<br><br><br>
 
 		<h3>GET</h3>
-		<form method="get" action="./php/php-example.php" enctype="multipart/form-data">
+		<form method="get" action="./php/php-example.php">
 			<div class="flex">
 				<label for="say">What greeting do you want to say ?</label>
-				<input type="text" name="say" id="say" value="Hi">
+				<input type="text" name="say" id="say" value="Hello">
 			</div>
 			<div class="flex">
 				<label for="to">Who do you want to say it to ?</label>
-				<input type="text" name="to" value="Mom">
+				<input type="text" name="to" value="Lucie">
 			</div>
 			<div>
 				<button>Send my greetings</button>
 			</div>
 		</form>
-	</div>
 </body>
 
 <footer>

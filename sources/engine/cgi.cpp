@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 15:53:41 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 16:33:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
 	
-	std::rewind(client.getTmp());
+	std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);

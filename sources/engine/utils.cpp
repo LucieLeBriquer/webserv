@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/24 13:53:57 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 16:16:32 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,15 +28,6 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 			response.setHeader(hdr);
 		}
 	}
-}
-
-size_t	stringToInt(std::string str)
-{
-	size_t	s = 0;
-
-	for (size_t j = 0; j < str.size(); j++)
-		s = 10 * s + (str[j] - '0');
-	return (s);
 }
 
 int		endRequest(Client &client)
@@ -73,10 +64,10 @@ int		endRequest(Client &client)
 			return (ERR);
 		else
 		{
+			if (client.getBodySize() >= client.getHeader().getContentLenSize())
+				return (ERR);
 			if (client.getTotSize() <= client.getHeaderSize())
 				return (OK);
-			if (client.getBodySize() >= stringToInt(client.getHeader().getContentLenValue()))
-				return (ERR);
 		}
 	}
 	return (OK);

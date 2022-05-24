@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   httpHeader.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/10 09:54:51 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/10 17:13:21 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 14:44:55 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ class HTTPHeader : public HTTPRequest
 		std::string	getContentType(void) const;
 		std::string	getContentLen(void) const;
 		std::string	getContentLenValue(void) const;
+		size_t		getContentLenSize(void) const;
 		std::string	getAccept(void) const;
 		std::string	getResponseContentType(void) const;
 		std::string	getSecFetchDest(void) const;
