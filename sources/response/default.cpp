@@ -96,7 +96,7 @@ int	sendDefaultPage(int fde, HTTPResponse &response)
 	
 	std::cout << ORANGE << "[Sending] " << END << "default error page to " << fde << std::endl;
 	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
-	std::cout << header << std::endl;
+	std::cout << header << END << std::endl;
 	if (send(fde, toSend.c_str(), toSend.size(), 0) < 0)
 	{
 		perror("send()");
@@ -256,7 +256,7 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::st
 
 	std::cout << ORANGE << "[Sending] " << END << "autoindex page to " << fde << std::endl;
 	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
-	std::cout << header << std::endl;
+	std::cout << header << END << std::endl;
 	if (send(fde, toSend.c_str(), toSend.size(), 0) < 0)
 	{
 		perror("send()");

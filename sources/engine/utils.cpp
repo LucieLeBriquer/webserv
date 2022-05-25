@@ -107,6 +107,7 @@ static int	manageChunkedBody(Client &client)
 
 int		endRequest(Client &client)
 {
+	HTTPHeader	&header = client.getHeader();
 	std::string	request = client.getRequest();
 	char		toCompare[4];
 	
@@ -119,15 +120,16 @@ int		endRequest(Client &client)
 			if (toCompare[0] ==  '\r' && toCompare[1] == '\n'
 				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
-				std::cout << GRAY << std::endl << "<----------- Request ----------->" << std::endl << request.substr(0, i + 2) << std::endl;
+				std::cout << GRAY << std::endl << "<----------- Request ----------->";
+				std::cout << std::endl << request.substr(0, i + 2) << END << std::endl;
 				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && client.getHeaderSize() == request.size())
 				{
-					if (checkHeader(client.getHeader(), request))
+					if (checkHeader(header, request) || (header.getContentLenValue() == "" && !header.isChunkedEncoded()))
 						return (ERR);
 					return (OK);
 				}
-				if (checkHeader(client.getHeader(), request))
+				if (checkHeader(header, request))
 					return (ERR);
 				break;
 			}
@@ -140,9 +142,9 @@ int		endRequest(Client &client)
 			return (ERR);
 		else
 		{
-			if (client.getHeader().isChunkedEncoded())
+			if (header.isChunkedEncoded())
 				return (manageChunkedBody(client));
-			else if (client.getBodySize() >= client.getHeader().getContentLenSize())
+			else if (client.getBodySize() >= header.getContentLenSize())
 				return (ERR);
 		}
 	}

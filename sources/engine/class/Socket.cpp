@@ -251,7 +251,7 @@ std::string	Socket::errorPage(int nbr, const std::string url, int err) const
 	int					nbConfig;
 	
 	nbConfig = getConfigFromUrl(nbr, url);
-	if (nbConfig < 0)
+	if (nbConfig < 0 || !getConfig(nbr, nbConfig).isErrorPagesSet())
 		pages = getConfig(nbr).getErrorPages();
 	else
 		pages = getConfig(nbr, nbConfig).getErrorPages();

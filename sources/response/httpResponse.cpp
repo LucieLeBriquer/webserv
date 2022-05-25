@@ -254,7 +254,7 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 std::string	HTTPResponse::_returnErrPage(Socket &sock, int sockNbr)
 {
 	std::string	pageErr;
-	
+
 	pageErr = sock.errorPage(sockNbr, _url, _statusNb);
 	if (pageErr != "")
 	{
@@ -337,9 +337,9 @@ void	HTTPResponse::setContentLen(int len)
 
 void HTTPResponse::statusCode(std::string status, std::string firstLine)
 {
-	std::vector<std::string> line = splitThis(firstLine);
-	std::stringstream	ss;
-	int					statusNb;
+	std::vector<std::string>	line = splitThis(firstLine);
+	std::stringstream			ss;
+	int							statusNb;
 
 	ss << status;
 	ss >> statusNb;
