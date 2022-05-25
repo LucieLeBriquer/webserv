@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 16:33:06 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/25 17:20:42 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,19 @@ std::string	headerForCgi(std::string header, Client &client)
 	std::string			tmp;
 	std::stringstream	out;
 	int			i = 0;
+	size_t		find;
 
 	cgiHeader = deletingUseless(header);
-	while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
-		i++;
-	tmp = &cgiCorps[i + 6];
-	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
+	find = cgiCorps.find("Content-type:");
+	if (find != std::string::npos)
+	{
+		while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
+			i++;
+		tmp = &cgiCorps[i + 6];
+		cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
+	}
+	else
+		tmp = cgiCorps;
 	client.setCgiCoprs(tmp);
 	out << client.getCgiCoprs().length();
 	cgiHeader += "Content-Length: ";
@@ -103,22 +110,46 @@ int 		getCGIfile(std::string cgi, Client &client)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
-		if (client.getMethod() == POST)
-		{			
-			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+		pid_t worker_pid = fork();
+		if (worker_pid == 0)
+		{
+			if (client.getMethod() == POST)
+			{			
+				if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+				{
+					perror("dup2()");
+					exit(EXIT_FAILURE);
+				}
+			}
+			if (dup2(fdtemp, STDOUT_FILENO) < 0)
 			{
 				perror("dup2()");
 				exit(EXIT_FAILURE);
 			}
-		}
-		if (dup2(fdtemp, STDOUT_FILENO) < 0)
-		{
-			perror("dup2()");
+			execve((char *)cgi.c_str(), arg, env);
+			perror("execve()");
 			exit(EXIT_FAILURE);
+			_exit(0);
 		}
-		execve((char *)cgi.c_str(), arg, env);
-		perror("execve()");
-		exit(EXIT_FAILURE);
+
+    	pid_t	timeout_pid = fork();
+		int		timeout_sleep = 2;
+		if (timeout_pid == 0)
+		{
+			sleep(timeout_sleep);
+			_exit(0);
+    	}
+
+		pid_t exited_pid = wait(NULL);
+		if (exited_pid == worker_pid)
+			kill(timeout_pid, SIGKILL);
+		else
+		{
+			kill(worker_pid, SIGKILL);
+			write(fdtemp, "Content-type: text/plain\r\n\r\nTIMEOUT", 35);
+		}
+    	wait(NULL);
+    	_exit(0);
 	}
 	else
 	{
