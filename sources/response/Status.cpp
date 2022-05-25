@@ -75,7 +75,7 @@ void Status::err4xx(int type)
 		this->_code += "Not Found";
 	else if (type == 5)
 		this->_code += "Method Not Allowed";
-	else if (type == 5)
+	else if (type == 13)
 		this->_code += "Request Entity Too Large";
 }
 

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/25 15:07:34 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/25 15:58:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,11 +105,12 @@ static int	manageChunkedBody(Client &client)
 	return (OK);
 }
 
-int		endRequest(Client &client)
+int		endRequest(Client &client, size_t maxBody)
 {
 	HTTPHeader	&header = client.getHeader();
 	std::string	request = client.getRequest();
 	char		toCompare[4];
+	(void)maxBody;
 	
 	if (!client.hasRecvHeader())
 	{

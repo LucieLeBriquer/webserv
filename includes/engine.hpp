@@ -12,7 +12,7 @@
 
 #ifndef ENGINE_HPP
 # define ENGINE_HPP
-# define BUFFER_SIZE 1024
+# define BUFFER_SIZE 4096
 # define B_SIZE 5
 # define END_REQUEST 1
 # define CLOSE_CONNECTION 2
@@ -43,7 +43,7 @@ int			sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::
 
 // utils
 void		isDownloading(HTTPHeader &header, HTTPResponse &response);
-int			endRequest(Client &client);
+int			endRequest(Client &client, size_t maxBody);
 int			checkHeader(HTTPHeader &header, const std::string string);
 
 #endif

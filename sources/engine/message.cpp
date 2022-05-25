@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/25 15:21:40 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/25 16:13:45 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ int		checkHeader(HTTPHeader &header, const std::string string)
 	return (OK);
 }
 
-static void	checkFirstAndEnd(int &end, Client &client)
+static void	checkFirstAndEnd(int &end, Client &client, size_t maxBody)
 {
 	HTTPResponse	&response = client.getResponse();
 	HTTPHeader		&header = client.getHeader();
@@ -61,7 +61,7 @@ static void	checkFirstAndEnd(int &end, Client &client)
 				end = BAD_REQUEST;
 			client.updateMethod();
 		}
-		if (endRequest(client) && end == 0)
+		if (endRequest(client, maxBody) && end == 0)
 			end = END_REQUEST;
 	}
 }
@@ -72,6 +72,7 @@ int		requestReponse(int fde, Socket &sock)
 	int				byteCount = 0;
 	int				end = 0;
 	int				sockNbr = sock.getConnection(fde);
+	size_t			maxBody;
 
 	if (!sock.isConnectedClient(fde))
 		sock.addClient(fde);
@@ -79,8 +80,10 @@ int		requestReponse(int fde, Socket &sock)
 	HTTPResponse	&response = client.getResponse();
 	HTTPHeader		&header = client.getHeader();
 	Status			&status = client.getStatus();
-	
+
+	maxBody = sock.getMaxClientBodySize(sockNbr, response.getUrl());
 	memset(buf, 0, BUFFER_SIZE);
+	
 	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
 	if (byteCount > 0)
 		buf[byteCount] = 0;
@@ -91,13 +94,13 @@ int		requestReponse(int fde, Socket &sock)
 		end = CLOSE_CONNECTION;
 	else if (byteCount < 0)
 	{
-		checkFirstAndEnd(end, client);
+		checkFirstAndEnd(end, client, maxBody);
 		end = END_REQUEST;
 	}
 	else if (!onlySpaces(buf) || !client.isFirstLine())
 	{
 		client.addRecv(buf, byteCount);
-		checkFirstAndEnd(end, client);
+		checkFirstAndEnd(end, client, maxBody);
 	}
 	
 	if (end == BAD_REQUEST)
@@ -106,7 +109,7 @@ int		requestReponse(int fde, Socket &sock)
 	{
 		if (checkHeader(header, client.getRequest()))
 			response.statusCode(status.status(4, 0), header.getFirstLine());
-		else if (client.getBodySize() > sock.getMaxClientBodySize(sockNbr, response.getUrl()))
+		else if (client.getBodySize() > maxBody)
 			response.statusCode(status.status(4, 13), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
 		response.setServerName(sock.getServerName(sockNbr));
