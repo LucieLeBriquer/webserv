@@ -102,7 +102,7 @@ static int	manageChunkedBody(Client &client)
 		if (readBlock(client, fileStream))
 			return (manageChunkedBody(client));
 	}
-	return (OK);
+	return (manageChunkedBody(client));
 }
 
 int		endRequest(Client &client, size_t maxBody)
