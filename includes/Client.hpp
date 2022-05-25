@@ -36,6 +36,10 @@ class Client
 		size_t			_headerSize;
 		size_t			_totSize;
 		bool			_isContentLen;
+		bool			_recvBlockSize;
+		size_t			_readBlock;
+		size_t			_blockSize;
+		size_t			_readPos;
 		
 	public:
 		Client(void);
@@ -80,6 +84,16 @@ class Client
 
 		void			setIsContentLen(std::string cgiBody);
 		bool			getIsContentLen(void) const;
+
+		bool			hasRecvBlockSize(void) const;
+		size_t			getReadBlock(void) const;
+		size_t			getBlockSize(void) const;
+		size_t			getReadPos(void) const;
+		void			setRecvBlockSize(bool b);
+		void			setReadBlock(size_t size);
+		void			setReadPos(size_t size);
+		void			setBlockSize(size_t size);
+		bool			isBlockEnd(void);
 
 		void			clear();
 };

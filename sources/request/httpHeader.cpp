@@ -183,11 +183,17 @@ std::string HTTPHeader::getSecFetchMode(void) const
 **		MEMBER FUNCTIONS
 */
 
-int	HTTPHeader::isChunked( void )
+int		HTTPHeader::isChunked(void)
 {
 	if (!strncasecmp("chunked", _accept.c_str(), 7))
 		return (1);
 	return (0);
+}
+
+
+bool	HTTPHeader::isChunkedEncoded(void)
+{
+	return (!strncasecmp("chunked", _encoding.c_str(), 7));
 }
 
 int HTTPHeader::parseMethod(const std::string req)
@@ -282,8 +288,8 @@ int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
-		if (this->_contentLen == "")
-			return -1;
+		//if (this->_contentLen == "")
+		//	return -1;
 		if (this->_contentType == "")
 			return -1;
 	}

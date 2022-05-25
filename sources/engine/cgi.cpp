@@ -93,6 +93,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	int			status;
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
+	int			timeout_time = 1;
 	
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
@@ -103,22 +104,43 @@ int 		getCGIfile(std::string cgi, Client &client)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
-		if (client.getMethod() == POST)
-		{			
-			if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+		pid_t worker_pid = fork();
+		if (worker_pid == 0) {
+			if (client.getMethod() == POST)
+			{			
+				if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+				{
+					perror("dup2()");
+					exit(EXIT_FAILURE);
+				}
+			}
+			if (dup2(fdtemp, STDOUT_FILENO) < 0)
 			{
 				perror("dup2()");
 				exit(EXIT_FAILURE);
 			}
-		}
-		if (dup2(fdtemp, STDOUT_FILENO) < 0)
-		{
-			perror("dup2()");
+			execve((char *)cgi.c_str(), arg, env);
+			perror("execve()");
 			exit(EXIT_FAILURE);
+			_exit(0);
 		}
-		execve((char *)cgi.c_str(), arg, env);
-		perror("execve()");
-		exit(EXIT_FAILURE);
+
+    	pid_t timeout_pid = fork();
+		if (timeout_pid == 0) {
+			sleep(timeout_time);
+			_exit(0);
+    	}
+
+		pid_t exited_pid = wait(NULL);
+		if (exited_pid == worker_pid) {
+			kill(timeout_pid, SIGKILL);
+		}
+		else {
+			kill(worker_pid, SIGKILL);
+			write(fdtemp, "TIMEOUT", 7);
+		}
+    	wait(NULL);
+    	_exit(0);
 	}
 	else
 	{
@@ -129,3 +151,4 @@ int 		getCGIfile(std::string cgi, Client &client)
 	
 	return (OK);
 }
+

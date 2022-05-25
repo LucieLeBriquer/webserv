@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   usefull.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:15 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/19 13:26:49 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/25 13:36:20 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,6 +415,31 @@ std::string copystr(std::string str, int start)
     for (int j = 0; str[start] ; start++, j++)
         dest[j] = str[start];
     return dest;
+}
+
+bool	isHexaChar(char c)
+{
+	return ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'));
+}
+
+size_t	hexToInt(std::string str)
+{
+	size_t	size = 0;
+	char	c;
+
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		c = str[i];
+		if (c >= '0' && c <= '9')
+			size = 16 * size + (c - '0');
+		else if (c >= 'a' && c <= 'f')
+			size = 16 * size + (c - 'a' + 10);
+		else if (c >= 'A' && c <= 'F')
+			size = 16 * size + (c - 'A' + 10);
+		else
+			break;
+	}
+	return (size);
 }
 
 /*

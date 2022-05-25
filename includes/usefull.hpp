@@ -119,6 +119,9 @@ std::string		mimeContentType(std::string accepted, std::string extension);
 size_t			getFileSize(const int fd);
 size_t			getFileSize(const std::string filenqme);
 
+bool			isHexaChar(char c);
+size_t			hexToInt(std::string str);
+
 
 template<typename T> std::ostream	&operator<<(std::ostream &o, std::vector<T> vect)
 {

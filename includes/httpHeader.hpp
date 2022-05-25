@@ -59,6 +59,7 @@ class HTTPHeader : public HTTPRequest
 
 		void		checkContext(void);
 		int			isChunked(void);
+		bool		isChunkedEncoded(void);
 
 		std::string	getHost(void) const;
 		std::string	getMethod(void) const;

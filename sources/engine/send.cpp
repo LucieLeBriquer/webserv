@@ -22,7 +22,7 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 	else
 		header += "\r\n";
 	
-	std::cout << GRAY << std::endl;
+	std::cout << GRAY << std::endl << "< Response >" << std::endl;
 	std::cout << header;
 	std::cout << END;
 	if (send(fde, header.c_str(), header.size(), 0) < 0)
