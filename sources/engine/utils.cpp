@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/19 15:07:53 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/24 16:53:50 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,15 +30,6 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 	}
 }
 
-size_t	stringToInt(std::string str)
-{
-	size_t	s = 0;
-
-	for (size_t j = 0; j < str.size(); j++)
-		s = 10 * s + (str[j] - '0');
-	return (s);
-}
-
 int		endRequest(Client &client)
 {
 	std::string	request = client.getRequest();
@@ -56,7 +47,7 @@ int		endRequest(Client &client)
 				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && i + 4 == request.size())
 				{
-					if (checkHeader(client.getHeader(), request))
+					if (checkHeader(client.getHeader(), request) || client.getHeader().getContentLenValue() == "")
 						return (ERR);
 					return (OK);
 				}
@@ -73,10 +64,10 @@ int		endRequest(Client &client)
 			return (ERR);
 		else
 		{
+			if (client.getBodySize() >= client.getHeader().getContentLenSize())
+				return (ERR);
 			if (client.getTotSize() <= client.getHeaderSize())
 				return (OK);
-			if (client.getBodySize() >= stringToInt(client.getHeader().getContentLenValue()))
-				return (ERR);
 		}
 	}
 	return (OK);

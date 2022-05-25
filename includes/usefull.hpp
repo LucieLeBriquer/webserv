@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   usefull.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:23 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/05 11:00:58 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 14:43:18 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ bool			checkWordFormat(std::string str);
 
 size_t			myAtoi(std::string str);
 size_t			myAtoi(std::string str, bool &success);
+size_t			stringToInt(std::string str);
 
 int				getMethodNb(std::string method);
 std::string		getMethod(int methodNm);

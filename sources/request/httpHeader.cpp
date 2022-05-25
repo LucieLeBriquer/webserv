@@ -6,7 +6,7 @@
 /*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/08 11:42:26 by masboula          #+#    #+#             */
-/*   Updated: 2022/05/18 15:19:16 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/24 17:17:06 by masboula         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,9 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 		_contentType = header._contentType;
 		_contentTypeResponse = header._contentTypeResponse;
 		_accept = header._accept;
+		_encoding = header._encoding;
+		_secFetchDest = header._secFetchDest;
+		_secFetchMode = header._secFetchMode;
 	}
 	return (*this);
 }
@@ -115,8 +118,6 @@ void HTTPHeader::setSecFetchMode(std::string value)
 	this->_secFetchMode = value;
 }
 
-
-
 /*
 **		GETTERS
 */
@@ -153,6 +154,11 @@ std::string	HTTPHeader::getContentLenValue(void) const
 	return (_contentLen);
 }
 
+size_t		HTTPHeader::getContentLenSize(void) const
+{
+	return (stringToInt(_contentLen));
+}
+
 std::string	HTTPHeader::getContentType(void) const
 {
 	return (_contentType);
@@ -179,7 +185,7 @@ std::string HTTPHeader::getSecFetchMode(void) const
 
 int	HTTPHeader::isChunked( void )
 {
-	if (!strncasecmp("chunked", _encoding.c_str(), 7))
+	if (!strncasecmp("chunked", _accept.c_str(), 7))
 		return (1);
 	return (0);
 }

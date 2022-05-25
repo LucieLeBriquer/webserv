@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/20 15:31:54 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/24 16:33:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,10 @@ std::string	deletingUseless(std::string header)
 
 std::string	headerForCgi(std::string header, Client &client)
 {
-	std::string	cgiHeader;
-	std::string	cgiCorps = client.getCgiCoprs();
-	std::string	tmp;
+	std::string			cgiHeader;
+	std::string			cgiCorps = client.getCgiCoprs();
+	std::string			tmp;
+	std::stringstream	out;
 	int			i = 0;
 
 	cgiHeader = deletingUseless(header);
@@ -55,9 +56,14 @@ std::string	headerForCgi(std::string header, Client &client)
 		i++;
 	tmp = &cgiCorps[i + 6];
 	cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
+	client.setCgiCoprs(tmp);
+	out << client.getCgiCoprs().length();
+	cgiHeader += "Content-Length: ";
+	cgiHeader += out.str();
+	cgiHeader += "\r\n";
 	cgiHeader += cgiCorps;
 	cgiHeader += "\r\n";
-	client.setCgiCoprs(tmp);
+	client.setIsContentLen(cgiHeader);
 	return (cgiHeader);
 }
 
@@ -75,8 +81,8 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
  	}
 	close(fdtemp);
 	std::fclose(temp);
-	client.setCgiCoprs(string);
 	client.setIsContentLen(string);
+	client.setCgiCoprs(string);
 }
 
 int 		getCGIfile(std::string cgi, Client &client)
@@ -91,7 +97,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
 	
-	std::rewind(client.getTmp());
+	std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
