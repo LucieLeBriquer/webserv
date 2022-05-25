@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/25 14:24:38 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/25 15:07:34 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,7 +119,7 @@ int		endRequest(Client &client)
 			if (toCompare[0] ==  '\r' && toCompare[1] == '\n'
 				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
-				std::cout << GRAY << std::endl << "< Request >" << std::endl << request.substr(0, i) << std::endl;
+				std::cout << GRAY << std::endl << "<----------- Request ----------->" << std::endl << request.substr(0, i + 2) << std::endl;
 				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && client.getHeaderSize() == request.size())
 				{

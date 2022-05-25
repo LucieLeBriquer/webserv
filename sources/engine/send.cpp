@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: masboula <masboula@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 16:53:51 by masboula         ###   ########.fr       */
+/*   Updated: 2022/05/25 15:06:51 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 	else
 		header += "\r\n";
 	
-	std::cout << GRAY << std::endl << "< Response >" << std::endl;
-	std::cout << header;
+	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
+	std::cout << header.substr(0, header.size() - 2);
 	std::cout << END;
 	if (send(fde, header.c_str(), header.size(), 0) < 0)
 	{
