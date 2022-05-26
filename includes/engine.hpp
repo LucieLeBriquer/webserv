@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/24 14:43:14 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:36:00 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int			requestReponse(int fde, Socket &sock);
 // cgi
 std::string	headerForCgi(std::string header, Client &client);
 void        setEnvForCgi(Socket &sock, int sockNbr, Client &client);
-int			getCGIfile(std::string cgi, Client &client);
+int			executeCGI(std::string cgi, Client &client);
 int			getRightFile(Socket &sock, int sockNbr, Client &client);
 
 // env

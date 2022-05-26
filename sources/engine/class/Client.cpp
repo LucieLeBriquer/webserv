@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/26 13:52:17 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:33:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
 	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
 	_readPos(0)
 {
@@ -27,7 +27,7 @@ Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tm
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiCoprs(""), _headerSize(0),
+	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
 	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
 	_readPos(0)
 {
@@ -65,7 +65,7 @@ Client	&Client::operator=(const Client &client)
 		_isQuery = client._isQuery;
 		_recvHeader = client._recvHeader;
 		_method = client._method;
-		_cgiCoprs = client._cgiCoprs;
+		_cgiBody = client._cgiBody;
 		_headerSize = client._headerSize;
 		_totSize = client._totSize;
 		_recvBlockSize = client._recvBlockSize;
@@ -189,9 +189,9 @@ void			Client::setIsQueryString(bool set)
 	_isQuery = set;
 }
 
-void			Client::setCgiCoprs(std::string str)
+void			Client::setCgiBody(std::string str)
 {
-	_cgiCoprs = str;
+	_cgiBody = str;
 }
 
 bool			Client::isQueryString(void) const
@@ -230,9 +230,9 @@ size_t			Client::getEnvSize(void) const
 }
 
 
-std::string		Client::getCgiCoprs(void) const
+std::string		Client::getCgiBody(void) const
 {
-	return (_cgiCoprs);
+	return (_cgiBody);
 }
 
 void			Client::setIsContentLen(std::string cgiBody)
@@ -268,7 +268,7 @@ void			Client::clear(void)
 	_response.clear();
 	_status.clear();
 	_env.clear();
-	_cgiCoprs = "";
+	_cgiBody = "";
 	_headerSize = 0;
 	_totSize = 0;
 	_recvBlockSize = false;

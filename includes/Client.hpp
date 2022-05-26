@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/20 15:27:15 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:33:39 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ class Client
 		bool			_isQuery;
 		bool			_recvHeader;
 		int				_method;
-		std::string		_cgiCoprs;
+		std::string		_cgiBody;
 		size_t			_headerSize;
 		size_t			_totSize;
 		bool			_isContentLen;
@@ -73,8 +73,8 @@ class Client
 		void			setIsQueryString(bool set);
 		bool			isQueryString(void) const;
 
-		std::string		getCgiCoprs(void) const;
-		void			setCgiCoprs(std::string str);
+		std::string		getCgiBody(void) const;
+		void			setCgiBody(std::string str);
 
 		void			addRecv(char *buf, int len);
 		void			setHeaderSize(size_t size);

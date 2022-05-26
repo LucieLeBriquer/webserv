@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/25 15:06:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 15:17:05 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,11 +37,11 @@ static size_t chunk_size = 0;
 
 static int	sendData(int fde, Client &client, bool isCgi)
 {
-	HTTPResponse	&response = client.getResponse();
-	std::string		fileName(response.getFileName());
-	std::string		tmpname("html/tmp.html");
-	std::stringstream ss;
-	size_t			size;
+	HTTPResponse		&response = client.getResponse();
+	std::string			fileName(response.getFileName());
+	std::string			tmpname("html/tmp.html");
+	std::stringstream	ss;
+	size_t				size;
 	std::string			line;
 	ss << response.getContentLen();
 	ss >> size;
@@ -51,7 +51,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		{
 			size_t				size_of_chunk;
 			std::ostringstream	os;
-			std::string	corps = client.getCgiCoprs();
+			std::string	corps = client.getCgiBody();
 			size = corps.length();
 
 			if (response.getMaxSizeC() < size)
@@ -69,7 +69,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 			line = corps;
 		}
 		else
-			line = client.getCgiCoprs();
+			line = client.getCgiBody();
 		std::stringstream	fileStream(line, std::ios::in | std::ios::binary);
 		char				buf[BUFFER_SIZE];
 		int					i;
@@ -201,7 +201,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
         header.setContentTypeResponse("text/html");
         response.rendering(header);
 		setEnvForCgi(sock, sockNbr, client);
-		if (getCGIfile(sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
+		if (executeCGI(sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
 			return (ERR);
 	}
 

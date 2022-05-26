@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:54 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 17:19:57 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:27:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,6 @@ class Server : public Block
 
 std::ostream	&operator<<(std::ostream &o, const Server &server);
 
-typedef void (Server::*setFunc2)(vecStr words);
+typedef void (Server::*servSet)(vecStr words);
 
 #endif

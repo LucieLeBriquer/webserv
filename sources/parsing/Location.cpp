@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:07 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/29 15:16:11 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:29:06 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,28 +57,7 @@ Location	&Location::operator=(const Location &location)
 {
 	if (this != &location)
 	{
-		_index.clear();
-		_methods.clear();
-		_errorPages.clear();
-
-		_root = location._root;
-		_index = location._index;
-		_maxClientBodySize = location._maxClientBodySize;
-		_methods = location._methods;
-		_errorPages = location._errorPages;
-		_redirUrl = location._redirUrl;
-		_autoindex = location._autoindex;
-
-		_rootSet = location._rootSet;
-		_indexSet = location._indexSet;
-		_maxClientBodySizeSet = location._maxClientBodySizeSet;
-		_methodsSet = location._methodsSet;
-		_errorPagesSet = location._errorPagesSet;
-		_redirUrlSet = location._redirUrlSet;
-		_autoindexSet = location._autoindexSet;
-
-		_formatOk = location._formatOk;
-		_formatErr = location._formatErr;
+		(*this).Block::operator=(location);
 		
 		_path = location._path;
 		_cgiPass = location._cgiPass;
@@ -140,7 +119,7 @@ void	Location::_fillOneInfo(std::string str)
 {
 	int		keyword;
 	vecStr	words;
-	setFunc3	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
+	locSet	setters[nbKeywords] = {&Location::_setRoot, &Location::_setIndex, &Location::_setMaxClientBody,
 			&Location::_setMethods, &Location::_setErrorPages, &Location::_setAutoIndex,
 			&Location::_setRedirUrl, &Location::_setCgiPass};
 

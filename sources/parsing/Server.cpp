@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:53:56 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/04/07 13:58:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:27:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,28 +77,7 @@ Server	&Server::operator=(const Server &server)
 		std::cout << GREEN << "[Server]" END << " assignation operator" << std::endl;
 	if (this != &server)
 	{
-		_index.clear();
-		_methods.clear();
-		_errorPages.clear();
-
-		_root = server._root;
-		_index = server._index;
-		_maxClientBodySize = server._maxClientBodySize;
-		_methods = server._methods;
-		_errorPages = server._errorPages;
-		_redirUrl = server._redirUrl;
-		_autoindex = server._autoindex;
-
-		_rootSet = server._rootSet;
-		_indexSet = server._indexSet;
-		_maxClientBodySizeSet = server._maxClientBodySizeSet;
-		_methodsSet = server._methodsSet;
-		_errorPagesSet = server._errorPagesSet;
-		_redirUrlSet = server._redirUrlSet;
-		_autoindexSet = server._autoindexSet;
-
-		_formatOk = server._formatOk;
-		_formatErr = server._formatErr;
+		(*this).Block::operator=(server);
 
 		_locations.clear();
 		_serverNames.clear();
@@ -164,7 +143,7 @@ void	Server::_fillOneInfo(std::string str)
 {
 	int			keyword;
 	vecStr		words;
-	setFunc2	setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
+	servSet		setters[nbKeywords] = {&Server::_setListen, &Server::_setServerNames,
 			&Server::_setRoot, &Server::_setIndex, &Server::_setMaxClientBody,
 			&Server::_setMethods, &Server::_setErrorPages, &Server::_setAutoIndex,
 			&Server::_setRedirUrl};

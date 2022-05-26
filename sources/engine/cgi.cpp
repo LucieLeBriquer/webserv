@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cgi.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/25 17:30:01 by lpascrea         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:36:00 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,29 +46,29 @@ std::string	deletingUseless(std::string header)
 std::string	headerForCgi(std::string header, Client &client)
 {
 	std::string			cgiHeader;
-	std::string			cgiCorps = client.getCgiCoprs();
+	std::string			cgiBody = client.getCgiBody();
 	std::string			tmp;
 	std::stringstream	out;
 	int			i = 0;
 	size_t		find;
 
 	cgiHeader = deletingUseless(header);
-	find = cgiCorps.find("Content-type:");
+	find = cgiBody.find("Content-type:");
 	if (find != std::string::npos)
 	{
-		while (cgiCorps[i + 3] && (cgiCorps[i] != '\r' && cgiCorps[i + 1] != '\n' && cgiCorps[i + 2] != '\r' && cgiCorps[i + 3] != '\n'))
+		while (cgiBody[i + 3] && (cgiBody[i] != '\r' && cgiBody[i + 1] != '\n' && cgiBody[i + 2] != '\r' && cgiBody[i + 3] != '\n'))
 			i++;
-		tmp = &cgiCorps[i + 6];
-		cgiCorps.erase(i + 4, strlen(cgiCorps.c_str()) - (i + 4));
+		tmp = &cgiBody[i + 6];
+		cgiBody.erase(i + 4, strlen(cgiBody.c_str()) - (i + 4));
 	}
 	else
-		tmp = cgiCorps;
-	client.setCgiCoprs(tmp);
-	out << client.getCgiCoprs().length();
+		tmp = cgiBody;
+	client.setCgiBody(tmp);
+	out << client.getCgiBody().length();
 	cgiHeader += "Content-Length: ";
 	cgiHeader += out.str();
 	cgiHeader += "\r\n";
-	cgiHeader += cgiCorps;
+	cgiHeader += cgiBody;
 	cgiHeader += "\r\n";
 	client.setIsContentLen(cgiHeader);
 	return (cgiHeader);
@@ -89,10 +89,31 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 	close(fdtemp);
 	std::fclose(temp);
 	client.setIsContentLen(string);
-	client.setCgiCoprs(string);
+	client.setCgiBody(string);
 }
 
-int 		getCGIfile(std::string cgi, Client &client)
+static void	execution(std::string cgi, Client &client, int fdtemp, char **arg, char **env)
+{
+	if (client.getMethod() == POST)
+	{			
+		if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+		{
+			perror("dup2()");
+			exit(EXIT_FAILURE);
+		}
+	}
+	if (dup2(fdtemp, STDOUT_FILENO) < 0)
+	{
+		perror("dup2()");
+		exit(EXIT_FAILURE);
+	}
+	execve((char *)cgi.c_str(), arg, env);
+	perror("execve()");
+	exit(EXIT_FAILURE);
+	exit(0);
+}
+
+int 		executeCGI(std::string cgi, Client &client)
 {
 	char		**env;
 	char        *arg[2] = {(char *)cgi.c_str(), NULL};
@@ -109,6 +130,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 		std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
 	else
 		std::rewind(client.getTmp());
+	
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
@@ -116,25 +138,7 @@ int 		getCGIfile(std::string cgi, Client &client)
 	{
 		pid_t workerPid = fork();
 		if (workerPid == 0)
-		{
-			if (client.getMethod() == POST)
-			{			
-				if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
-				{
-					perror("dup2()");
-					exit(EXIT_FAILURE);
-				}
-			}
-			if (dup2(fdtemp, STDOUT_FILENO) < 0)
-			{
-				perror("dup2()");
-				exit(EXIT_FAILURE);
-			}
-			execve((char *)cgi.c_str(), arg, env);
-			perror("execve()");
-			exit(EXIT_FAILURE);
-			exit(0);
-		}
+			execution(cgi, client, fdtemp, arg, env);
 
     	pid_t	timeoutPid = fork();
 		if (timeoutPid == 0)

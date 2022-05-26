@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:29 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/03/28 16:38:14 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 14:27:38 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ class Location : public Block
 		bool				isCgiPassSet(void) const;
 
 		// static
-		static const int	nbKeywords = 8;
+		static const int			nbKeywords = 8;
 		static const std::string	keywords[nbKeywords];
 };
 
 std::ostream	&operator<<(std::ostream &o, const Location &location);
 
-typedef void (Location::*setFunc3)(vecStr words);
+typedef void (Location::*locSet)(vecStr words);
 
 #endif
