@@ -1,6 +1,9 @@
 <?php
 
 $target_dir = "../uploads/";
+$nofile = false;
+$target_file = "";
+$imageFileType = "";
 if (isset($_FILES["fileToUpload"]))
 {
 	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);

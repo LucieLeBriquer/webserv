@@ -46,7 +46,7 @@ int		checkHeader(HTTPHeader &header, const std::string string)
 	return (OK);
 }
 
-static void	checkFirstAndEnd(int &end, Client &client, size_t maxBody)
+static void	checkFirstAndEnd(int &end, Client &client)
 {
 	HTTPResponse	&response = client.getResponse();
 	HTTPHeader		&header = client.getHeader();
@@ -61,55 +61,24 @@ static void	checkFirstAndEnd(int &end, Client &client, size_t maxBody)
 				end = BAD_REQUEST;
 			client.updateMethod();
 		}
-		if (endRequest(client, maxBody) && end == 0)
+		if (endRequest(client) && end == 0)
 			end = END_REQUEST;
 	}
 }
 
-int		requestReponse(int fde, Socket &sock)
+static int	treatEndRequest(Client &client, int &end, Socket &sock, int sockNbr, int fde)
 {
-	char			buf[BUFFER_SIZE + 1];
-	int				byteCount = 0;
-	int				end = 0;
-	int				sockNbr = sock.getConnection(fde);
-	size_t			maxBody;
-
-	if (!sock.isConnectedClient(fde))
-		sock.addClient(fde);
-	Client			&client = sock.getClient(fde);
 	HTTPResponse	&response = client.getResponse();
 	HTTPHeader		&header = client.getHeader();
 	Status			&status = client.getStatus();
 
-	maxBody = sock.getMaxClientBodySize(sockNbr, response.getUrl());
-	memset(buf, 0, BUFFER_SIZE);
-	
-	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
-	if (byteCount > 0)
-		buf[byteCount] = 0;
-
-	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
-
-	if (byteCount == 0)
-		end = CLOSE_CONNECTION;
-	else if (byteCount < 0)
-	{
-		checkFirstAndEnd(end, client, maxBody);
-		end = END_REQUEST;
-	}
-	else if (!onlySpaces(buf) || !client.isFirstLine())
-	{
-		client.addRecv(buf, byteCount);
-		checkFirstAndEnd(end, client, maxBody);
-	}
-	
 	if (end == BAD_REQUEST)
 		response.statusCode(status.status(4, 0), header.getFirstLine());
 	if (end == BAD_REQUEST || end == END_REQUEST)
 	{
 		if (checkHeader(header, client.getRequest()))
 			response.statusCode(status.status(4, 0), header.getFirstLine());
-		else if (client.getBodySize() > maxBody)
+		else if (client.getBodySize() > sock.getMaxClientBodySize(sockNbr, response.getUrl()))
 			response.statusCode(status.status(4, 13), header.getFirstLine());
 		header.setContentTypeResponse(mimeContentType(header.getAccept(), header.getUrl()));
 		response.setServerName(sock.getServerName(sockNbr));
@@ -122,11 +91,46 @@ int		requestReponse(int fde, Socket &sock)
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{
-		std::cerr << std::endl << RED << "[Closing]" << END << " connection with " << fde << std::endl;
+		std::cout << std::endl << RED << "[Closing]" << END << " connection with " << fde << std::endl;
 		client.clear();
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
 		close(fde);
 	}
 	return (OK);
+}
+
+int		requestReponse(int fde, Socket &sock)
+{
+	char			buf[BUFFER_SIZE + 1];
+	int				byteCount = 0;
+	int				end = 0;
+	int				sockNbr = sock.getConnection(fde);
+
+	if (!sock.isConnectedClient(fde))
+		sock.addClient(fde);
+	
+	Client			&client = sock.getClient(fde);
+
+	memset(buf, 0, BUFFER_SIZE);	
+	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
+	if (byteCount > 0)
+		buf[byteCount] = 0;
+
+	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
+
+	if (byteCount == 0)
+		end = CLOSE_CONNECTION;
+	else if (byteCount < 0)
+	{
+		checkFirstAndEnd(end, client);
+		end = END_REQUEST;
+	}
+	else if (!onlySpaces(buf) || !client.isFirstLine())
+	{
+		client.addRecv(buf, byteCount);
+		checkFirstAndEnd(end, client);
+	}
+	
+	return (treatEndRequest(client, end, sock, sockNbr, fde));
 }

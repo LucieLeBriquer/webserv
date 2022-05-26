@@ -100,19 +100,22 @@ int 		getCGIfile(std::string cgi, Client &client)
 	int			status;
 	FILE		*temp = std::tmpfile();
 	int			fdtemp = fileno(temp);
-	int			timeout_sleep = 1;
+	int			timeoutTime = 1;
 	
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
-	
-	std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
+
+	if (!client.getHeader().isChunkedEncoded())	
+		std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
+	else
+		std::rewind(client.getTmp());
 	pid = fork();
 	if (pid < 0)
 		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
-		pid_t worker_pid = fork();
-		if (worker_pid == 0)
+		pid_t workerPid = fork();
+		if (workerPid == 0)
 		{
 			if (client.getMethod() == POST)
 			{			
@@ -130,26 +133,26 @@ int 		getCGIfile(std::string cgi, Client &client)
 			execve((char *)cgi.c_str(), arg, env);
 			perror("execve()");
 			exit(EXIT_FAILURE);
-			_exit(0);
+			exit(0);
 		}
 
-    	pid_t	timeout_pid = fork();
-		if (timeout_pid == 0)
+    	pid_t	timeoutPid = fork();
+		if (timeoutPid == 0)
 		{
-			sleep(timeout_sleep);
-			_exit(0);
+			sleep(timeoutTime);
+			exit(0);
     	}
 
-		pid_t exited_pid = wait(NULL);
-		if (exited_pid == worker_pid)
-			kill(timeout_pid, SIGKILL);
+		pid_t exitedPid = wait(NULL);
+		if (exitedPid == workerPid)
+			kill(timeoutPid, SIGKILL);
 		else
 		{
-			kill(worker_pid, SIGKILL);
+			kill(workerPid, SIGKILL);
 			write(fdtemp, "Content-type: text/plain\r\n\r\nTIMEOUT", 35);
 		}
     	wait(NULL);
-    	_exit(0);
+    	exit(0);
 	}
 	else
 	{

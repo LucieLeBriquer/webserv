@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/25 15:58:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 13:15:00 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,23 +32,23 @@ void	isDownloading(HTTPHeader &header, HTTPResponse &response)
 
 static int	readBlock(Client &client, std::stringstream &fileStream)
 {
-	std::string			block;
+	std::string			block = "";
 	char				c;
 	char				toCompare[2];
 	size_t				pos;
 
-	block.clear();
 	pos = client.getReadPos();
-	while (fileStream.get(c) && client.getReadPos() < client.getReadBlock() + client.getBlockSize() + 2)
+	while (fileStream.get(c) && pos < client.getReadBlock() + client.getBlockSize() + 2)
 	{
 		toCompare[0] = toCompare[1];
 		toCompare[1] = c;
 		block += c;
 		pos++;
-		client.setReadPos(pos);
 	}
+	client.setReadPos(pos);
 	if (client.isBlockEnd() && toCompare[0] ==  '\r' && toCompare[1] == '\n')
 	{
+		block[client.getBlockSize()] = '\0';
 		write(client.getFdTmp(), block.c_str(), client.getBlockSize());
 		client.setRecvBlockSize(false);
 	}
@@ -105,12 +105,21 @@ static int	manageChunkedBody(Client &client)
 	return (manageChunkedBody(client));
 }
 
-int		endRequest(Client &client, size_t maxBody)
+static int	writeHeader(Client &client, int status)
+{
+	HTTPHeader	&header = client.getHeader();
+	std::string	request = client.getRequest();
+
+	if (!header.isChunkedEncoded())
+		write(client.getFdTmp(), request.c_str(), client.getTotSize());
+	return (status);
+}
+
+int		endRequest(Client &client)
 {
 	HTTPHeader	&header = client.getHeader();
 	std::string	request = client.getRequest();
 	char		toCompare[4];
-	(void)maxBody;
 	
 	if (!client.hasRecvHeader())
 	{
@@ -127,11 +136,12 @@ int		endRequest(Client &client, size_t maxBody)
 				if (client.getMethod() == POST && client.getHeaderSize() == request.size())
 				{
 					if (checkHeader(header, request) || (header.getContentLenValue() == "" && !header.isChunkedEncoded()))
-						return (ERR);
-					return (OK);
+						return (writeHeader(client, ERR));
+					return (writeHeader(client, OK));
 				}
 				if (checkHeader(header, request))
-					return (ERR);
+					return (writeHeader(client, ERR));
+				writeHeader(client, OK);
 				break;
 			}
 		}

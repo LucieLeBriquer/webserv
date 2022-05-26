@@ -149,15 +149,14 @@ size_t			Client::getTotSize(void) const
 
 void			Client::addRecv(char *buf, int len)
 {
-	if (_method == POST && _recvHeader && _header.isChunked() 
-		&& getBodySize() + len > _header.getContentLenSize())
+	if (_method == POST && _recvHeader && getBodySize() + len > _header.getContentLenSize())
 	{
 		len = (size_t)(_header.getContentLenSize() - getBodySize());
 		buf[len] = '\0';
 	}
-	_totSize += len;
-	if (!_header.isChunkedEncoded())
+	if (!_header.isChunkedEncoded() && _recvHeader)
 		write(_fdTmp, buf, len);
+	_totSize += len;
 	_request += buf;
 }
 
