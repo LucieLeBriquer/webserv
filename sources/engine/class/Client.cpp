@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/25 13:56:39 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/26 13:52:17 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,13 +149,15 @@ size_t			Client::getTotSize(void) const
 
 void			Client::addRecv(char *buf, int len)
 {
-	if (_method == POST && _recvHeader && getBodySize() + len > _header.getContentLenSize())
-	{
-		len = (size_t)(_header.getContentLenSize() - getBodySize());
-		buf[len] = '\0';
-	}
 	if (!_header.isChunkedEncoded() && _recvHeader)
+	{
+		if (_method == POST && getBodySize() + len > _header.getContentLenSize())
+		{
+			len = (size_t)(_header.getContentLenSize() - getBodySize());
+			buf[len] = '\0';
+		}
 		write(_fdTmp, buf, len);
+	}
 	_totSize += len;
 	_request += buf;
 }
@@ -164,7 +166,7 @@ void			Client::setHeaderSize(size_t size)
 {
 	_headerSize = size;
 	_recvHeader = true;
-	_readPos = _headerSize;
+	_readPos = size;
 }
 
 void			Client::changeFirstLine(void)

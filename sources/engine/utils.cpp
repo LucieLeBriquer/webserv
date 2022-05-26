@@ -46,9 +46,8 @@ static int	readBlock(Client &client, std::stringstream &fileStream)
 		pos++;
 	}
 	client.setReadPos(pos);
-	if (client.isBlockEnd() && toCompare[0] ==  '\r' && toCompare[1] == '\n')
+ 	if (client.isBlockEnd() && toCompare[0] ==  '\r' && toCompare[1] == '\n')
 	{
-		block[client.getBlockSize()] = '\0';
 		write(client.getFdTmp(), block.c_str(), client.getBlockSize());
 		client.setRecvBlockSize(false);
 	}
@@ -60,6 +59,9 @@ static int	readBlock(Client &client, std::stringstream &fileStream)
 static int	manageChunkedBody(Client &client)
 {
 	std::string			request = client.getRequest();
+	if (client.getReadPos() >= request.size())
+		return (OK);
+	
 	char				toCompare[2];
 	std::stringstream	fileStream(request.substr(client.getReadPos()), std::ios::in | std::ios::binary);
 	char				c;
@@ -95,7 +97,6 @@ static int	manageChunkedBody(Client &client)
 			client.getResponse().statusCode(client.getStatus().status(4, 0), client.getHeader().getFirstLine());
 			return (ERR);
 		}
-		
 	}
 	else
 	{
