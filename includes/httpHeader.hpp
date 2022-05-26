@@ -27,10 +27,11 @@ class HTTPHeader : public HTTPRequest
 		std::string	_contentType;
 		std::string	_contentTypeResponse;
 		std::string	_accept;
+		std::string	_acceptEncoding;
 		std::string _encoding;
 		std::string	_secFetchDest;
 		std::string	_secFetchMode;
-		ptr			setFct[7];
+		ptr			setFct[8];
 		
 	public:
 		HTTPHeader();
@@ -52,6 +53,7 @@ class HTTPHeader : public HTTPRequest
 		void		setContentLen(std::string value);
 		void		setContentType(std::string value);
 		void		setContentTypeResponse(std::string value);
+		void		setAcceptEncoding(std::string value);
 		void		setAccept(std::string value);
 		void		setEncoding(std::string value);
 		void		setSecFetchDest(std::string value);

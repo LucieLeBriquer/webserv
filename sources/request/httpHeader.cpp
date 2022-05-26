@@ -16,15 +16,17 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""), _encoding(""), _secFetchDest(""), _secFetchMode("")
+HTTPHeader::HTTPHeader() : _host(""), _contentLen(""), _contentType(""), _contentTypeResponse("text/html"), _accept(""),
+	_acceptEncoding(""), _encoding(""), _secFetchDest(""), _secFetchMode("")
 {
 	this->setFct[0] = &HTTPHeader::setHost;
 	this->setFct[1] = &HTTPHeader::setContentLen;
 	this->setFct[2] = &HTTPHeader::setContentType;
 	this->setFct[3] = &HTTPHeader::setAccept;
-	this->setFct[4] = &HTTPHeader::setEncoding;
-	this->setFct[5] = &HTTPHeader::setSecFetchDest;
-	this->setFct[6] = &HTTPHeader::setSecFetchMode;
+	this->setFct[4] = &HTTPHeader::setAcceptEncoding;
+	this->setFct[5] = &HTTPHeader::setEncoding;
+	this->setFct[6] = &HTTPHeader::setSecFetchDest;
+	this->setFct[7] = &HTTPHeader::setSecFetchMode;
 
 	return ;
 }
@@ -43,11 +45,12 @@ void	HTTPHeader::clear(void)
 {
 	(*this).HTTPRequest::clear();
 
-	_host  ="";
+	_host = "";
 	_contentLen = "";
 	_contentType = "";
 	_contentTypeResponse = "text/html";
-	_accept = "";
+	_accept =  "";
+	_acceptEncoding = "";
 	_encoding = "";
 	_secFetchDest = "";
 	_secFetchMode = "";
@@ -67,6 +70,7 @@ HTTPHeader	&HTTPHeader::operator=(const HTTPHeader &header)
 		_contentType = header._contentType;
 		_contentTypeResponse = header._contentTypeResponse;
 		_accept = header._accept;
+		_acceptEncoding = header._acceptEncoding;
 		_encoding = header._encoding;
 		_secFetchDest = header._secFetchDest;
 		_secFetchMode = header._secFetchMode;
@@ -101,6 +105,11 @@ void HTTPHeader::setContentTypeResponse(std::string value)
 void HTTPHeader::setAccept(std::string value)
 {
 	this->_accept = value;
+}
+
+void HTTPHeader::setAcceptEncoding(std::string value)
+{
+	this->_acceptEncoding = value;
 }
 
 void HTTPHeader::setEncoding(std::string value)
@@ -185,11 +194,10 @@ std::string HTTPHeader::getSecFetchMode(void) const
 
 int		HTTPHeader::isChunked(void)
 {
-	if (!strncasecmp("chunked", _accept.c_str(), 7))
+	if (!strncasecmp("chunked", _acceptEncoding.c_str(), 7))
 		return (1);
 	return (0);
 }
-
 
 bool	HTTPHeader::isChunkedEncoded(void)
 {
@@ -288,8 +296,6 @@ int HTTPHeader::header( void )
 {
 	if (this->_method == "POST")
 	{
-		//if (this->_contentLen == "")
-		//	return -1;
 		if (this->_contentType == "")
 			return -1;
 	}
@@ -298,10 +304,11 @@ int HTTPHeader::header( void )
 
 int HTTPHeader::fillheader(std::string *buf)
 {
-	std::string header[7] = {"host:", "content-length:", "content-type:" ,"accept:", "transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
+	std::string header[8] = {"host:", "content-length:", "content-type:" ,"accept:", "accept-encoding:",
+		"transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
-	int			headerSize = 7;
-	int i, j;
+	int			headerSize = 8;
+	int 		i, j;
 
 	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
 		return -1;

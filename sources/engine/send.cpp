@@ -33,7 +33,7 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 	return (OK);
 }
 
-static size_t chunk_size = 0;
+static size_t chunkSize = 0;
 
 static int	sendData(int fde, Client &client, bool isCgi)
 {
@@ -49,24 +49,24 @@ static int	sendData(int fde, Client &client, bool isCgi)
 	{
 		if (response.isChunked())
 		{
-			size_t				size_of_chunk;
+			size_t				sizeOfChunk;
 			std::ostringstream	os;
-			std::string	corps = client.getCgiBody();
-			size = corps.length();
+			std::string			body = client.getCgiBody();
+			size = body.length();
 
 			if (response.getMaxSizeC() < size)
-				size_of_chunk = response.getMaxSizeC();
+				sizeOfChunk = response.getMaxSizeC();
 			else
-				size_of_chunk = size;
-			if (size - chunk_size < size_of_chunk)
-				size_of_chunk = size - chunk_size;
-			os << std::hex << size_of_chunk;
+				sizeOfChunk = size;
+			if (size - chunkSize < sizeOfChunk)
+				sizeOfChunk = size - chunkSize;
+			os << std::hex << sizeOfChunk;
 			line = os.str() + "\r\n";
-			line += corps.substr(chunk_size, size_of_chunk);
-			chunk_size += size_of_chunk;
-			if (chunk_size >=  size)
+			line += body.substr(chunkSize, sizeOfChunk);
+			chunkSize += sizeOfChunk;
+			if (chunkSize >=  size)
 				line +=  "0\r\n";
-			line = corps;
+			line = body;
 		}
 		else
 			line = client.getCgiBody();
@@ -111,26 +111,26 @@ static int	sendData(int fde, Client &client, bool isCgi)
 			std::ofstream	tmpfile(tmpname.c_str());
 			std::string		line;
 			size_t			i;
-			size_t			size_of_chunk;
+			size_t			sizeOfChunk;
 
 			if (response.getMaxSizeC() < size)
-				size_of_chunk = response.getMaxSizeC();
+				sizeOfChunk = response.getMaxSizeC();
 			else
-				size_of_chunk = size;
+				sizeOfChunk = size;
 
-			char *buff = new char [size_of_chunk + 1];
-			for (i = 0; i < chunk_size; i += size_of_chunk )
-				fileS.read(buff, size_of_chunk);
+			char *buff = new char [sizeOfChunk + 1];
+			for (i = 0; i < chunkSize; i += sizeOfChunk )
+				fileS.read(buff, sizeOfChunk);
 
-			if (size - chunk_size < size_of_chunk)
-				size_of_chunk = size - chunk_size;
-			tmpfile << std::hex << size_of_chunk << "\r\n";
-			fileS.read(buff, size_of_chunk);
-			buff[size_of_chunk] = '\0';
+			if (size - chunkSize < sizeOfChunk)
+				sizeOfChunk = size - chunkSize;
+			tmpfile << std::hex << sizeOfChunk << "\r\n";
+			fileS.read(buff, sizeOfChunk);
+			buff[sizeOfChunk] = '\0';
 			tmpfile << buff << "\r\n";
 			free(buff);
-			chunk_size += size_of_chunk;
-			if (chunk_size >=  size)
+			chunkSize += sizeOfChunk;
+			if (chunkSize >=  size)
 				tmpfile << "0" << "\r\n";
 			fileName = tmpname;
 			response.setUrl(tmpname);
@@ -167,7 +167,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 		}
 		fileStream.close();
 	}
-	if (response.isChunked() && chunk_size < size)
+	if (response.isChunked() && chunkSize < size)
 		sendData(fde, client, isCgi);
 	return (OK);
 }
@@ -215,7 +215,7 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 	if (sendData(fde, client, sock.isCgi(sockNbr, response.getUrl())))
 		return (ERR);
 
-	chunk_size = 0;
+	chunkSize = 0;
 	remove("html/tmp.html");
 	return (OK);
 }
