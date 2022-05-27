@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/26 14:36:00 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 12:03:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # define END_REQUEST 1
 # define CLOSE_CONNECTION 2
 # define BAD_REQUEST 3
+# define WRONG_CHUNKED -2
 # include "Socket.hpp"
 
 // epoll
