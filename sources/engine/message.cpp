@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/25 16:13:45 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 14:00:54 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,8 @@ static int	treatEndRequest(Client &client, int &end, Socket &sock, int sockNbr, 
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{
-		std::cout << std::endl << RED << "[Closing]" << END << " connection with " << fde << std::endl;
+		if (LOG_LEVEL >= LVL_INFO)
+			std::cout << RED << "[Closing]" << END << " connection with " << fde << std::endl;
 		client.clear();
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
@@ -116,8 +117,9 @@ int		requestReponse(int fde, Socket &sock)
 	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
 	if (byteCount > 0)
 		buf[byteCount] = 0;
-
-	std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
+		
+	if (LOG_LEVEL >= LVL_INFO)
+		std::cout << GREEN << "[Received] " << END << byteCount << " bytes from " << fde << std::endl;
 
 	if (byteCount == 0)
 		end = CLOSE_CONNECTION;

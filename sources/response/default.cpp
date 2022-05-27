@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/14 13:50:27 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/25 15:06:51 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 14:04:00 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,9 +94,13 @@ int	sendDefaultPage(int fde, HTTPResponse &response)
 	
 	toSend = header + "\r\n\r\n" + body;
 	
-	std::cout << ORANGE << "[Sending] " << END << "default error page to " << fde << std::endl;
-	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
-	std::cout << header << END << std::endl;
+	if (LOG_LEVEL >= LVL_INFO)
+		std::cout << ORANGE << "[Sending] " << END << "default error page to " << fde << std::endl;
+	if (LOG_LEVEL >= LVL_RESPONSE)
+	{
+		std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
+		std::cout << header << END << std::endl << std::endl;
+	}
 	if (send(fde, toSend.c_str(), toSend.size(), 0) < 0)
 	{
 		perror("send()");
@@ -254,9 +258,13 @@ int	sendAutoindexPage(int fde, HTTPResponse &response, std::string path, std::st
 	
 	toSend = header + "\r\n\r\n" + body;
 
-	std::cout << ORANGE << "[Sending] " << END << "autoindex page to " << fde << std::endl;
-	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
-	std::cout << header << END << std::endl;
+	if (LOG_LEVEL >= LVL_INFO)
+		std::cout << ORANGE << "[Sending] " << END << "autoindex page to " << fde << std::endl;
+	if (LOG_LEVEL >= LVL_RESPONSE)
+	{
+		std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
+		std::cout << header << END << std::endl << std::endl;
+	}
 	if (send(fde, toSend.c_str(), toSend.size(), 0) < 0)
 	{
 		perror("send()");

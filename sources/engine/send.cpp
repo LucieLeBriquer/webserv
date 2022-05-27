@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/26 15:17:05 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 14:03:30 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ static int	sendHeader(int fde, Client &client, Socket &sock, bool redir, int soc
 		header = headerForCgi(header, client);
 	else
 		header += "\r\n";
-	
-	std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
-	std::cout << header.substr(0, header.size() - 2);
-	std::cout << END;
+	if (LOG_LEVEL >= LVL_RESPONSE)
+	{
+		std::cout << GRAY << std::endl << "<----------- Response ----------->" << std::endl;
+		std::cout << header.substr(0, header.size()) << END;
+	}
 	if (send(fde, header.c_str(), header.size(), 0) < 0)
 	{
 		perror("send()");
@@ -204,9 +205,11 @@ int		sendResponse(Client &client, Socket &sock, int sockNbr)
 		if (executeCGI(sock.getCgiPass(sockNbr, response.getUrl()), client) < 0)
 			return (ERR);
 	}
-
-	std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
-	std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
+	if (LOG_LEVEL >= LVL_INFO)
+	{
+		std::cout << ORANGE << "[Sending] " << END << "data to " << fde;
+		std::cout << " from " << ORANGE << sock.getRealUrl(sockNbr, response.getUrl()) << END << std::endl;
+	}
 
 	isDownloading(header, response);
 
