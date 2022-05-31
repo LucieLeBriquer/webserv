@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/27 11:39:12 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 13:49:19 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
 	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
-	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
-	_readPos(0)
+	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
 {
 	return ;
 }
@@ -28,8 +27,7 @@ Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tm
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
 	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
 	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
-	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
-	_readPos(0)
+	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
 {
 	return ;
 }
@@ -71,7 +69,6 @@ Client	&Client::operator=(const Client &client)
 		_recvBlockSize = client._recvBlockSize;
 		_readBlock = client._readBlock;
 		_blockSize = client._blockSize;
-		_readPos = client._readPos;
 	}
 	return (*this);
 }
@@ -166,7 +163,7 @@ void			Client::setHeaderSize(size_t size)
 {
 	_headerSize = size;
 	_recvHeader = true;
-	_readPos = size;
+	_readBlock = size;
 }
 
 void			Client::changeFirstLine(void)
@@ -274,7 +271,6 @@ void			Client::clear(void)
 	_recvBlockSize = false;
 	_readBlock = 0;
 	_blockSize = 0;
-	_readPos = 0;
 }
 
 bool	Client::hasRecvBlockSize(void) const
@@ -292,11 +288,6 @@ size_t	Client::getBlockSize(void) const
 	return(_blockSize);
 }
 
-size_t	Client::getReadPos(void) const
-{
-	return (_readPos);
-}
-
 void	Client::setRecvBlockSize(bool b)
 {
 	_recvBlockSize = b;
@@ -307,22 +298,17 @@ void	Client::setReadBlock(size_t size)
 	_readBlock = size;
 }
 
-void	Client::setReadPos(size_t size)
-{
-	_readPos = size;
-}
-
 void	Client::setBlockSize(size_t size)
 {
 	_blockSize = size;
 }
 
-bool	Client::isBlockEnd(void)
+bool	Client::isBlockEnd(size_t cur)
 {
 	size_t	size;
 
-	size = _readPos - _readBlock;
+	size = cur - _readBlock;
 	if (size >= _blockSize + 2)
-		_readPos = _readBlock + _blockSize + 2;
+		_readBlock = _readBlock + _blockSize + 2;
 	return (size >= _blockSize + 2);
 }

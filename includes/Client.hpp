@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/26 14:33:39 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 13:48:58 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ class Client
 		bool			_recvBlockSize;
 		size_t			_readBlock;
 		size_t			_blockSize;
-		size_t			_readPos;
 		
 	public:
 		Client(void);
@@ -88,12 +87,10 @@ class Client
 		bool			hasRecvBlockSize(void) const;
 		size_t			getReadBlock(void) const;
 		size_t			getBlockSize(void) const;
-		size_t			getReadPos(void) const;
 		void			setRecvBlockSize(bool b);
 		void			setReadBlock(size_t size);
-		void			setReadPos(size_t size);
 		void			setBlockSize(size_t size);
-		bool			isBlockEnd(void);
+		bool			isBlockEnd(size_t cur);
 
 		void			clear();
 };

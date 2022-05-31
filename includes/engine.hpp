@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:25:03 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/27 12:03:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 14:04:17 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,10 @@
 # define CLOSE_CONNECTION 2
 # define BAD_REQUEST 3
 # define WRONG_CHUNKED -2
+# define LVL_INFO 0
+# define LVL_RESPONSE 1
+# define LVL_REQUEST 2
+# define LOG_LEVEL 0
 # include "Socket.hpp"
 
 // epoll

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/12 13:26:04 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 13:58:29 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,10 @@ int	initConnection(Socket &sock, int i)
 	if ((newFd = accept(sock.getSocket(i), (struct sockaddr *)&in_addr, &in_addr_len)) < 0)
 	{
 		if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
-			std::cout << "we already processed all incoming connections" << std::endl;
+		{
+			if (LOG_LEVEL >= LVL_INFO)
+				std::cout << "we already processed all incoming connections" << std::endl;
+		}
 		else
 		{
 			perror("accept()");
@@ -35,8 +38,11 @@ int	initConnection(Socket &sock, int i)
 	ev.data.fd = newFd;
 	sock.addConnection(newFd, i);
 
-	std::cout << YELLOW << "[Accept]" << END << " connection on socket " + toString(i) + " at " + sock.getHost(i) + ":" + sock.getPort(i) << std::endl;
-	std::cout << GRAY << std::setw(52) << "socket " + toString(newFd) + " created to communicate" << END << std::endl;
+	if (LOG_LEVEL >= LVL_INFO)
+	{
+		std::cout << YELLOW << "[Accept]" << END << " connection on socket " + toString(i) + " at " + sock.getHost(i) + ":" + sock.getPort(i) << std::endl;
+		std::cout << GRAY << std::setw(52) << "socket " + toString(newFd) + " created to communicate" << END << std::endl;
+	}
 	if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, newFd, &ev) < 0)
 	{
 		perror("epoll_ctl: sock.getConnSock(i)");
@@ -74,8 +80,9 @@ int	waitEpoll(Socket &sock)
 	struct epoll_event	events[MAX_EVENTS];
 	int 				nfds = 0;
 	int					i = 0;
-
-	std::cout << std::endl << BLUE << "++++++++++++ Waiting for new connection ++++++++++++" << END << std::endl << std::endl;
+	
+	if (LOG_LEVEL >= LVL_INFO)
+		std::cout << std::endl << BLUE << "++++++++++++ Waiting for new connection ++++++++++++" << END << std::endl << std::endl;
 
 	if ((nfds = epoll_wait(sock.getEpollFd(), events, MAX_EVENTS, -1)) < 0)
 	{
@@ -87,7 +94,7 @@ int	waitEpoll(Socket &sock)
 	{
 		if ((events[n].events & EPOLLERR) || (events[n].events & EPOLLHUP) || (!(events[n].events & EPOLLIN)))
 		{
-			std::cout << "epoll error, events = " << events[n].events << std::endl;
+			std::cerr << "epoll error, events = " << events[n].events << std::endl;
 			close(events[n].data.fd);
 			return (OK);
 		}

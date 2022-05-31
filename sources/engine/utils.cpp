@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/27 12:04:15 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/05/27 13:54:53 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,38 +37,43 @@ static int	readBlock(Client &client, std::stringstream &fileStream)
 	char				toCompare[2] = {0, 0};
 	size_t				pos;
 	
-	pos = 0;
-	while (fileStream.get(c) && pos < client.getBlockSize() + 2)
+	pos = client.getReadBlock();
+	while (fileStream.get(c) && pos < client.getReadBlock() + client.getBlockSize() + 2)
 	{
 		toCompare[0] = toCompare[1];
 		toCompare[1] = c;
 		block += c;
 		pos++;
 	}
-	client.setReadPos(pos);
- 	if (client.isBlockEnd() && toCompare[0] ==  '\r' && toCompare[1] == '\n')
+ 	if (client.isBlockEnd(pos))
 	{
-		write(client.getFdTmp(), block.c_str(), client.getBlockSize());
-		client.setRecvBlockSize(false);
+		if (toCompare[0] ==  '\r' && toCompare[1] == '\n')
+		{
+			write(client.getFdTmp(), block.c_str(), client.getBlockSize());
+			client.setReadBlock(pos);
+			client.setRecvBlockSize(false);
+			if (!fileStream.eof())
+				return (ERR);
+			return (OK);
+		}
+		else
+			return (WRONG_CHUNKED);
 	}
-	else if (client.isBlockEnd())
-		return (WRONG_CHUNKED);
-	if (!fileStream.eof())
-		return (ERR);
 	return (OK);
+	
 }
 
 static int	manageChunkedBody(Client &client)
 {
 	std::string			request = client.getRequest();
-	if (client.getReadPos() >= request.size())
+	if (client.getReadBlock() >= request.size())
 		return (OK);
 	
 	char				toCompare[2];
-	std::stringstream	fileStream(request.substr(client.getReadPos(), request.size() - client.getReadPos()), std::ios::in | std::ios::binary);
+	std::stringstream	fileStream(request.substr(client.getReadBlock(), request.size() - client.getReadBlock()), std::ios::in | std::ios::binary);
 	char				c;
 	std::string			size = "";
-	size_t				pos = client.getReadPos();
+	size_t				pos = client.getReadBlock();
 	int					err;
 	
 	if (!client.hasRecvBlockSize())
@@ -91,7 +96,6 @@ static int	manageChunkedBody(Client &client)
 			client.setRecvBlockSize(true);
 			client.setBlockSize(hexToInt(size));
 			pos += 2;
-			client.setReadPos(pos);
 			client.setReadBlock(pos);
 		}
 		else
@@ -110,6 +114,8 @@ static int	manageChunkedBody(Client &client)
 			client.getResponse().statusCode(client.getStatus().status(4, 0), client.getHeader().getFirstLine());
 			return (ERR);
 		}
+		else
+			return (OK);
 	}
 	return (manageChunkedBody(client));
 }
@@ -139,8 +145,11 @@ int		endRequest(Client &client)
 			if (toCompare[0] ==  '\r' && toCompare[1] == '\n'
 				&& toCompare[2] == '\r' && toCompare[3] == '\n')
 			{
-				std::cout << GRAY << std::endl << "<----------- Request ----------->";
-				std::cout << std::endl << request.substr(0, i + 2) << END << std::endl;
+				if (LOG_LEVEL >= LVL_REQUEST)
+				{
+					std::cout << GRAY << std::endl << "<----------- Request ----------->";
+					std::cout << std::endl << request.substr(0, i + 2) << END << std::endl;
+				}
 				client.setHeaderSize(i + 4);
 				if (client.getMethod() == POST && client.getHeaderSize() == request.size())
 				{
