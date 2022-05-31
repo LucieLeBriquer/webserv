@@ -8,7 +8,8 @@ else
 
 ?>
 
-<!--
+<!-- File Intrusion Vulnerability
+
 To solve the vulnerability add pages that are allowed by yourself :
 
 ...
