@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 14:43:44 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/26 14:36:00 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/01 17:42:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
 	char buff[4096];
 	std::string string;
 
-	std::rewind(temp);
+	rewind(temp);
 	while(!feof(temp))
  	{
        if (fgets(buff, 4096, temp) == NULL)
@@ -87,16 +87,28 @@ static void	setCgiString(FILE *temp, int fdtemp, Client &client)
        string += buff;
  	}
 	close(fdtemp);
-	std::fclose(temp);
+	fclose(temp);
 	client.setIsContentLen(string);
 	client.setCgiBody(string);
 }
 
 static void	execution(std::string cgi, Client &client, int fdtemp, char **arg, char **env)
 {
+	int	fdToUse;
+
 	if (client.getMethod() == POST)
-	{			
-		if (dup2(client.getFdTmp(), STDIN_FILENO) < 0)
+	{
+		if (client.getHeader().isChunkedEncoded())
+		{
+			rewind(client.getTmpChunked());
+			fdToUse = client.getFdTmpChunked();
+		}
+		else
+		{
+			fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
+			fdToUse = client.getFdTmp();	
+		}
+		if (dup2(fdToUse, STDIN_FILENO) < 0)
 		{
 			perror("dup2()");
 			exit(EXIT_FAILURE);
@@ -125,11 +137,6 @@ int 		executeCGI(std::string cgi, Client &client)
 	
 	if (mallocEnv(&env, client) < 0)
 		return (ERR);
-
-	if (!client.getHeader().isChunkedEncoded())	
-		std::fseek(client.getTmp(), client.getHeaderSize(), SEEK_SET);
-	else
-		std::rewind(client.getTmp());
 	
 	pid = fork();
 	if (pid < 0)

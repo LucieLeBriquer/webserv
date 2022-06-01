@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/14 14:30:31 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/27 13:54:53 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/01 16:13:27 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static int	readBlock(Client &client, std::stringstream &fileStream)
 	{
 		if (toCompare[0] ==  '\r' && toCompare[1] == '\n')
 		{
-			write(client.getFdTmp(), block.c_str(), client.getBlockSize());
+			write(client.getFdTmpChunked(), block.c_str(), client.getBlockSize());
 			client.setReadBlock(pos);
 			client.setRecvBlockSize(false);
 			if (!fileStream.eof())
@@ -120,16 +120,6 @@ static int	manageChunkedBody(Client &client)
 	return (manageChunkedBody(client));
 }
 
-static int	writeHeader(Client &client, int status)
-{
-	HTTPHeader	&header = client.getHeader();
-	std::string	request = client.getRequest();
-
-	if (!header.isChunkedEncoded())
-		write(client.getFdTmp(), request.c_str(), client.getTotSize());
-	return (status);
-}
-
 int		endRequest(Client &client)
 {
 	HTTPHeader	&header = client.getHeader();
@@ -154,17 +144,15 @@ int		endRequest(Client &client)
 				if (client.getMethod() == POST && client.getHeaderSize() == request.size())
 				{
 					if (checkHeader(header, request) || (header.getContentLenValue() == "" && !header.isChunkedEncoded()))
-						return (writeHeader(client, ERR));
-					return (writeHeader(client, OK));
+						return (ERR);
+					return (OK);
 				}
 				if (checkHeader(header, request))
-					return (writeHeader(client, ERR));
-				writeHeader(client, OK);
+					return (ERR);
 				break;
 			}
 		}
 	}
-	
 	if (client.hasRecvHeader())
 	{
 		if (client.getMethod() != POST)

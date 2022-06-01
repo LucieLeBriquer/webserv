@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:34:40 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/27 13:48:58 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/01 17:42:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ class Client
 		std::string		_request;
 		FILE*			_tmp;
 		int				_fdTmp;
+		FILE*			_tmpChunked;
+		int				_fdTmpChunked;
 		HTTPResponse	_response;
 		HTTPHeader		_header;
 		Status			_status;
@@ -52,6 +54,8 @@ class Client
 		int				getFd(void) const;
 		FILE			*getTmp(void) const;
 		int				getFdTmp(void) const;
+		FILE			*getTmpChunked(void) const;
+		int				getFdTmpChunked(void) const;
 		HTTPResponse	&getResponse(void);
 		HTTPHeader		&getHeader(void);
 		Status			&getStatus(void);

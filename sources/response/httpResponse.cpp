@@ -214,7 +214,6 @@ std::string HTTPResponse::redirect(Socket &sock, int sockNbr, HTTPHeader &header
 		{
 			client.setEnvValue("QUERY_STRING", this->_url.substr(this->_url.find('?') + 1, this->_url.length()));	
 			client.setIsQueryString(true);
-			std::rewind(client.getTmp());
 			write(client.getFdTmp(), client.getEnvValue("QUERY_STRING").c_str(), strlen(client.getEnvValue("QUERY_STRING").c_str()));
 			this->_url = this->_url.substr(0, this->_url.find('?'));
 		}

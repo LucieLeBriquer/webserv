@@ -14,7 +14,6 @@
 
 void    setEnvForCgi(Socket &sock, int sockNbr, Client &client)
 {
-	std::stringstream	out;
 	std::string			string;
 	HTTPResponse		&response = client.getResponse();
 	HTTPHeader			&header = client.getHeader();
@@ -32,11 +31,7 @@ void    setEnvForCgi(Socket &sock, int sockNbr, Client &client)
 	else
 		client.setEnvValue("CONTENT_TYPE", header.getContentType());
 	if (client.getEnvValue("REQUEST_METHOD") == "POST")
-	{
-		std::rewind(client.getTmp());
-		out << getFileSize(client.getFdTmp());
-		client.setEnvValue("CONTENT_LENGTH", out.str());
-	}
+		client.setEnvValue("CONTENT_LENGTH", toString(client.getBodySize()));
 	else
 	{
 		if (client.isQueryString() == false)

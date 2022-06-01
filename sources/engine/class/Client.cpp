@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/27 13:49:19 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/01 17:42:07 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,19 @@
 */
 
 Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
-	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
-	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
+	_tmpChunked(tmpfile()), _fdTmpChunked(fileno(_tmpChunked)), _response(HTTPResponse()),
+	_header(HTTPHeader()), _status(Status()), _isFirstLine(true), _isQuery(false),
+	_recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0), _totSize(0),
+	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
 {
 	return ;
 }
 
 Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
-	_response(HTTPResponse()), _header(HTTPHeader()), _status(Status()), _isFirstLine(true),
-	_isQuery(false), _recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0),
-	_totSize(0), _isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
+	_tmpChunked(tmpfile()), _fdTmpChunked(fileno(_tmpChunked)), _response(HTTPResponse()),
+	_header(HTTPHeader()), _status(Status()), _isFirstLine(true), _isQuery(false),
+	_recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0), _totSize(0),
+	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
 {
 	return ;
 }
@@ -55,6 +57,8 @@ Client	&Client::operator=(const Client &client)
 		_request = client._request;
 		_tmp = client._tmp;
 		_fdTmp = client._fdTmp;
+		_tmpChunked = client._tmpChunked;
+		_fdTmpChunked = client._fdTmpChunked;
 		_response = client._response;
 		_header = client._header;
 		_status = client._status;
@@ -95,6 +99,16 @@ FILE			*Client::getTmp(void) const
 int				Client::getFdTmp(void) const
 {
 	return (_fdTmp);
+}
+
+FILE			*Client::getTmpChunked(void) const
+{
+	return (_tmpChunked);
+}
+
+int				Client::getFdTmpChunked(void) const
+{
+	return (_fdTmpChunked);
 }
 
 HTTPResponse	&Client::getResponse(void)
@@ -146,15 +160,13 @@ size_t			Client::getTotSize(void) const
 
 void			Client::addRecv(char *buf, int len)
 {
-	if (!_header.isChunkedEncoded() && _recvHeader)
+	if (!_header.isChunkedEncoded() && _recvHeader &&_method == POST
+		&& getBodySize() + len > _header.getContentLenSize())
 	{
-		if (_method == POST && getBodySize() + len > _header.getContentLenSize())
-		{
-			len = (size_t)(_header.getContentLenSize() - getBodySize());
-			buf[len] = '\0';
-		}
-		write(_fdTmp, buf, len);
+		len = (size_t)(_header.getContentLenSize() - getBodySize());
+		buf[len] = '\0';
 	}
+	write(_fdTmp, buf, len);
 	_totSize += len;
 	_request += buf;
 }
@@ -250,11 +262,15 @@ bool			Client::getIsContentLen(void) const
 
 void			Client::clear(void)
 {
-	std::fclose(_tmp);
+	fclose(_tmp);
 	_tmp = tmpfile();
 	_fdTmp = fileno(_tmp);
+
+	fclose(_tmpChunked);
+	_tmpChunked = tmpfile();
+	_fdTmpChunked = fileno(_tmpChunked);
 	
-	_isFirstLine = true;	
+	_isFirstLine = true;
 	_isQuery = false;
 	_recvHeader = false;
 	_method = BAD_METHOD;

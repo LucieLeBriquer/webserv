@@ -62,6 +62,7 @@ else
 	else
 		echo "Sorry, there was an error uploading your file.<br>", "\n";
 }
+
 echo '</body>', "\n";
 echo "</html>", "\n";
 

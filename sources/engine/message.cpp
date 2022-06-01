@@ -133,6 +133,6 @@ int		requestReponse(int fde, Socket &sock)
 		client.addRecv(buf, byteCount);
 		checkFirstAndEnd(end, client);
 	}
-	
+
 	return (treatEndRequest(client, end, sock, sockNbr, fde));
 }
