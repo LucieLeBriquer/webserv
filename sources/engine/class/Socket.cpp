@@ -105,7 +105,7 @@ int		Socket::_initSockets(void)
 			return (ERR);
 		}
 		_setSocket(listenSock);
-		if (setsockopt(getSocket(i), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &yes, sizeof(yes)))
+		if (setsockopt(getSocket(i), SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)))
 		{
 			perror("setsockopt()");
 			return (ERR);
