@@ -5,10 +5,41 @@ NAME_SHORT	= webserv
 
 INCS_DIR	= ./includes/
 MAIN_INC	= -I$(INCS_DIR)
-INCS		= $(shell find $(INCS_DIR) -type f -name "*.hpp")
+INCS		= $(addprefix $(INCS_DIR), Block.hpp \
+			Client.hpp \
+			Config.hpp \
+			engine.hpp \
+			httpHeader.hpp \
+			httpRequest.hpp \
+			httpResponse.hpp \
+			Location.hpp \
+			mime.hpp \
+			Server.hpp \
+			Socket.hpp \
+			Status.hpp \
+			usefull.hpp)
 
 SRCS_DIR 	= ./sources/
-SRCS		= $(shell find $(SRCS_DIR) -type f -name "*.cpp")
+SRCS		= $(addprefix $(SRCS_DIR), main.cpp \
+			engine/cgi.cpp \
+			engine/send.cpp \
+			engine/epoll.cpp \
+			engine/env.cpp \
+			engine/class/Client.cpp \
+			engine/class/Socket.cpp \
+			engine/message.cpp \
+			engine/utils.cpp \
+			request/httpRequest.cpp \
+			request/httpHeader.cpp \
+			response/default.cpp \
+			response/httpResponse.cpp \
+			response/Status.cpp \
+			response/mime.cpp \
+			parsing/Server.cpp \
+			parsing/Location.cpp \
+			parsing/Config.cpp \
+			parsing/Block.cpp \
+			parsing/usefull.cpp)
 
 OBJS_DIR	= ./objects/
 OBJS		= $(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
