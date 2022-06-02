@@ -72,6 +72,13 @@ int addCreateSocketEpoll(Socket &sock)
 			return (ERR);
 		}
 	}
+	ev.events = EPOLLIN;
+	ev.data.fd = 0;
+	if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, 0, &ev) < 0)
+	{
+		perror("epoll_ctl: stdin");
+		return (ERR);
+	}
 	return (OK);
 }
 
@@ -103,6 +110,11 @@ int	waitEpoll(Socket &sock)
 			if (initConnection(sock, i))
 				return (ERR);
 		}
+		else if (events[n].data.fd == 0)
+		{
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+			return (ERR);
+		}
 		else
 		{
 			if (requestReponse(events[n].data.fd, sock))
@@ -119,7 +131,7 @@ int initEpoll(Socket &sock)
 
 	while (waitEpoll(sock) != ERR)
 		;
-
+	std::cout << "Closing webserv..." << std::endl;
 	close(sock.getEpollFd());
 	for (int i = 0; i < sock.getSocketNbr(); i++)
 		close(sock.getSocket(i));
