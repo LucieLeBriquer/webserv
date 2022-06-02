@@ -18,13 +18,12 @@ int	main(int argc, char **argv)
 	Socket		sock;
 
 	if (!config.wellFormatted())
-		return (1);
+		return (OK);
 
 	sock = Socket(config);
 	if (sock.getCheck() < 0)
-		exit(EXIT_FAILURE);
+		return (ERR);
 	
-	if (!initEpoll(sock))
-		exit(EXIT_FAILURE);
-	return (0);
+	initEpoll(sock);
+	return (OK);
 }

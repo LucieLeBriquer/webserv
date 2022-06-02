@@ -16,9 +16,9 @@ static void	initEpollEvent(struct epoll_event &ev, uint32_t flag, int fd)
 {
 	ev.events = flag;
 	ev.data.fd = fd;
-	ev.data.ptr = NULL;
+	/*ev.data.ptr = NULL;
 	ev.data.u32 = 0;
-	ev.data.u64 = 0;
+	ev.data.u64 = 0;*/
 }
 
 int	initConnection(Socket &sock, int i)
