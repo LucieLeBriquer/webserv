@@ -28,7 +28,7 @@ class HTTPRequest
 	public:
 		HTTPRequest();
 		HTTPRequest(const HTTPRequest &request);
-		~HTTPRequest();
+		virtual ~HTTPRequest();
 
 		HTTPRequest	&operator=(const HTTPRequest &request);
 		std::string		getFirstLine(void);

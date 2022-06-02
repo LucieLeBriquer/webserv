@@ -44,7 +44,7 @@ class HTTPResponse
 	public:
 		HTTPResponse(void);
 		HTTPResponse(const HTTPResponse &response);
-		~HTTPResponse();
+		virtual ~HTTPResponse();
 
 		HTTPResponse	&operator=(const HTTPResponse &response);
 

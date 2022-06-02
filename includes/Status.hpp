@@ -25,7 +25,7 @@ class Status : public HTTPResponse
 	public:
 		Status();
 		Status(const Status &status);
-		~Status();
+		virtual ~Status();
 
 		Status	&operator=(const Status &status);
 

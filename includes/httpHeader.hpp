@@ -36,7 +36,7 @@ class HTTPHeader : public HTTPRequest
 	public:
 		HTTPHeader();
 		HTTPHeader(const HTTPHeader &header);
-		~HTTPHeader();
+		virtual ~HTTPHeader();
 
 		HTTPHeader	&operator=(const HTTPHeader &header);
 

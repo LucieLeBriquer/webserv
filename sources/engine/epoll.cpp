@@ -139,8 +139,11 @@ int initEpoll(Socket &sock)
 	while (waitEpoll(sock) != ERR)
 		;
 	std::cout << RED << "[Close]" << END << " webserv..." << std::endl;
-	close(sock.getEpollFd());
 	for (int i = 0; i < sock.getSocketNbr(); i++)
+	{
 		close(sock.getSocket(i));
+		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, sock.getSocket(i), NULL);
+	}
+	close(sock.getEpollFd());
 	return (OK);
 }
