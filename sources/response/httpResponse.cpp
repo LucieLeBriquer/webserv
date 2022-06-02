@@ -309,12 +309,15 @@ std::string HTTPResponse::checkUrl(Socket &sock, int sockNbr, HTTPHeader &header
 		return (_returnErrPage(sock, sockNbr));
 
 	filename = sock.getRealUrl(sockNbr, _url);
-	std::cout << PURPLE << "[Getting]" << END ;
-	if (isDirectory(filename))
-		std::cout << " directory " << PURPLE << "/";
-	else
-		std::cout << " file ";
-	std::cout << PURPLE << filename << END << std::endl;
+	if (LOG_LEVEL >= LVL_INFO)
+	{
+		std::cout << PURPLE << "[Getting]" << END ;
+		if (isDirectory(filename))
+			std::cout << " directory " << PURPLE << "/";
+		else
+			std::cout << " file ";
+		std::cout << PURPLE << filename << END << std::endl;
+	}
 
 	if (isDirectory(filename))
 		return (_manageDirectory(sock, sockNbr, header));
