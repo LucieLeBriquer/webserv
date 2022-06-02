@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/26 14:54:12 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/05/12 13:30:27 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/02 14:20:05 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,12 @@ int	main(int argc, char **argv)
 	Socket		sock;
 
 	if (!config.wellFormatted())
-		return (1);
-
+		return (OK);
+	
 	sock = Socket(config);
 	if (sock.getCheck() < 0)
-		exit(EXIT_FAILURE);
+		return (ERR);
 	
-	if (!initEpoll(sock))
-		exit(EXIT_FAILURE);
-	return (0);
+	initEpoll(sock);
+	return (OK);
 }
