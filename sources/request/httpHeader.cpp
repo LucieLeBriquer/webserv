@@ -302,18 +302,19 @@ int HTTPHeader::header( void )
 	return 1;
 }
 
-int HTTPHeader::fillheader(std::string *buf)
+int HTTPHeader::fillheader(std::string &buf)
 {
 	std::string header[8] = {"host:", "content-length:", "content-type:" ,"accept:", "accept-encoding:",
 		"transfer-encoding:", "sec-fetch-dest:", "sec-fetch-mode:"};
 	std::string line;
 	int			headerSize = 8;
-	int 		i, j;
+	int 		i;
+	size_t		j;
 
-	if ((*buf)[0] == '\r' && (*buf)[1] == '\n')
+	if (buf.size() >= 2 && buf[0] == '\r' && buf[1] == '\n')
 		return -1;
-	line = getHead(*buf);
-	(*buf).erase(0, line.length() + 2);
+	line = getHead(buf);
+	buf.erase(0, line.length() + 2);
 	for (i = 0; i < headerSize; i++)
 	{
 		if (!strncasecmp(line.c_str(), header[i].c_str(), header[i].length()))
@@ -325,7 +326,7 @@ int HTTPHeader::fillheader(std::string *buf)
 	if (line[j] == ' ')
 		j++;
 	int pos = j;
-	while (line[j] != '\n' && line[j] != '\r' && line[j] != ' ')
+	while (j < line.size() && line[j] != '\n' && line[j] != '\r' && line[j] != ' ')
 	    j++;
 	this->_active = 1;
 	(this->*(this->setFct[i]))(line.substr(pos, line.size() - pos));

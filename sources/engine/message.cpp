@@ -38,7 +38,7 @@ int		checkHeader(HTTPHeader &header, const std::string string)
 	{
 		if (copy == "")
 			break ;
-		if (header.fillheader(&copy) == -1)
+		if (header.fillheader(copy) == -1)
 			break ;
 	}
 	if (header.header() == -1)

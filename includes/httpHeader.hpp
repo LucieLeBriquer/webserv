@@ -46,7 +46,7 @@ class HTTPHeader : public HTTPRequest
 		int			parseMethod(const std::string cmd);
 
 		int			header(void);
-		int			fillheader(std::string *buf);
+		int			fillheader(std::string &buf);
 		int			getContext(void);
 
 		void		setHost(std::string value);
