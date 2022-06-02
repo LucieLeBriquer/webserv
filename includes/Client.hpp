@@ -96,7 +96,7 @@ class Client
 		void			setBlockSize(size_t size);
 		bool			isBlockEnd(size_t cur);
 
-		void			clear();
+		void			clear(bool reopen = true);
 };
 
 #endif

@@ -87,13 +87,14 @@ static int	treatEndRequest(Client &client, int &end, Socket &sock, int sockNbr, 
 			return (ERR);
 		if (!response.statusIsOk())
 			end = CLOSE_CONNECTION;
-		client.clear();
+		if (end != BAD_REQUEST && end != CLOSE_CONNECTION)
+			client.clear();
 	}
 	if (end == BAD_REQUEST || end == CLOSE_CONNECTION)
 	{
 		if (LOG_LEVEL >= LVL_INFO)
 			std::cout << RED << "[Closing]" << END << " connection with " << fde << std::endl;
-		client.clear();
+		client.clear(false);
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
 		close(fde);

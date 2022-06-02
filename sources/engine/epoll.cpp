@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 09:28:17 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/27 13:58:29 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/02 17:58:21 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,8 @@ int initEpoll(Socket &sock)
 	while (waitEpoll(sock) != ERR)
 		;
 	std::cout << RED << "[Close]" << END << " webserv..." << std::endl;
+	for (mapClient::iterator it = sock.getClients().begin(); it != sock.getClients().end(); it++)
+		sock.getClient(it->first).clear(false);
 	for (int i = 0; i < sock.getSocketNbr(); i++)
 	{
 		close(sock.getSocket(i));

@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/06/01 17:42:07 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/02 17:48:41 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,15 +260,21 @@ bool			Client::getIsContentLen(void) const
 	return (_isContentLen);
 }
 
-void			Client::clear(void)
+void			Client::clear(bool reopen)
 {
 	fclose(_tmp);
-	_tmp = tmpfile();
-	_fdTmp = fileno(_tmp);
+	if (reopen)
+	{
+		_tmp = tmpfile();
+		_fdTmp = fileno(_tmp);
+	}
 
 	fclose(_tmpChunked);
-	_tmpChunked = tmpfile();
-	_fdTmpChunked = fileno(_tmpChunked);
+	if (reopen)
+	{
+		_tmpChunked = tmpfile();
+		_fdTmpChunked = fileno(_tmpChunked);
+	}
 	
 	_isFirstLine = true;
 	_isQuery = false;
