@@ -21,7 +21,7 @@
 # define LVL_INFO 0
 # define LVL_RESPONSE 1
 # define LVL_REQUEST 2
-# define LOG_LEVEL 0
+# define LOG_LEVEL -1
 # include "Socket.hpp"
 
 // epoll
