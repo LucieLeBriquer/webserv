@@ -12,13 +12,11 @@
 
 #include "engine.hpp"
 
-static void	initEpollEvent(struct epoll_event &ev, uint32_t flag, int fd)
+static void	initEpollEvent(struct epoll_event *ev, uint32_t flag, int fd)
 {
-	ev.events = flag;
-	ev.data.fd = fd;
-	/*ev.data.ptr = NULL;
-	ev.data.u32 = 0;
-	ev.data.u64 = 0;*/
+	memset(ev, 0, sizeof(*ev));
+	ev->events = flag;
+	ev->data.fd = fd;
 }
 
 int	initConnection(Socket &sock, int i)
@@ -44,7 +42,7 @@ int	initConnection(Socket &sock, int i)
 	if (setsocknonblock(newFd) < 0)
 		return (ERR);
 	
-	initEpollEvent(ev, EPOLLIN, newFd);
+	initEpollEvent(&ev, EPOLLIN, newFd);
 	sock.addConnection(newFd, i);
 
 	if (LOG_LEVEL >= LVL_INFO)
@@ -73,7 +71,7 @@ int addCreateSocketEpoll(Socket &sock)
 	
 	for (size_t i = 0; i < sock.getNumberListen(); i++)
 	{
-		initEpollEvent(ev, EPOLLIN, sock.getSocket(i));
+		initEpollEvent(&ev, EPOLLIN, sock.getSocket(i));
 		if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, sock.getSocket(i), &ev) < 0)
 		{
 			perror("epoll_ctl: sock.getSocket(i)");
@@ -81,7 +79,7 @@ int addCreateSocketEpoll(Socket &sock)
 		}
 	}
 
-	initEpollEvent(ev, EPOLLIN, 0);
+	initEpollEvent(&ev, EPOLLIN, 0);
 	if (epoll_ctl(sock.getEpollFd(), EPOLL_CTL_ADD, 0, &ev) < 0)
 	{
 		perror("epoll_ctl: stdin");
