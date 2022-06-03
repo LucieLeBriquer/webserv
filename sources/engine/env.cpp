@@ -59,7 +59,7 @@ int 	mallocEnv(char ***env, Client &client)
 	mapStr				tmp = client.getEnv();
 	std::string			val;
 
-	(*env) = (char **)malloc(sizeof(char *) * client.getEnvSize() + 1);
+	(*env) = (char **)malloc(sizeof(char *) * (client.getEnvSize() + 1));
 	if (!(*env))
 		return (ERR);
 	(*env)[client.getEnvSize()] = NULL;

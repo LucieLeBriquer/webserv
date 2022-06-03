@@ -139,9 +139,6 @@ int initEpoll(Socket &sock)
 	while (waitEpoll(sock) != ERR)
 		;
 	std::cout << RED << "[Close]" << END << " webserv..." << std::endl;
-
-	for (mapClient::iterator it = sock.getClients().begin(); it != sock.getClients().end(); it++)
-		it->second.clear(false);
 	
 	for (int i = 0; i < sock.getSocketNbr(); i++)
 	{

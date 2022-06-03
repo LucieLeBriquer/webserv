@@ -121,7 +121,6 @@ static void	execution(std::string cgi, Client &client, int fdtemp, char **arg, c
 	}
 	execve((char *)cgi.c_str(), arg, env);
 	perror("execve()");
-	exit(EXIT_FAILURE);
 	exit(0);
 }
 

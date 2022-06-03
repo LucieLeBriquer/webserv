@@ -260,18 +260,18 @@ bool			Client::getIsContentLen(void) const
 	return (_isContentLen);
 }
 
-void			Client::clear(bool reopen)
+void			Client::openNewTmp(void)
+{
+	_tmp = tmpfile();
+	_fdTmp = fileno(_tmp);
+	_tmpChunked = tmpfile();
+	_fdTmpChunked = fileno(_tmpChunked);
+}
+
+void			Client::clear()
 {
 	fclose(_tmp);
 	fclose(_tmpChunked);
-
-	if (reopen)
-	{
-		_tmp = tmpfile();
-		_fdTmp = fileno(_tmp);
-		_tmpChunked = tmpfile();
-		_fdTmpChunked = fileno(_tmpChunked);
-	}
 	
 	_isFirstLine = true;
 	_isQuery = false;

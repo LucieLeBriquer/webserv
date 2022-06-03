@@ -94,7 +94,7 @@ static int	treatEndRequest(Client &client, int &end, Socket &sock, int sockNbr, 
 	{
 		if (LOG_LEVEL >= LVL_INFO)
 			std::cout << RED << "[Closing]" << END << " connection with " << fde << std::endl;
-		client.clear(false);
+		client.clear();
 		sock.removeClient(fde);
 		epoll_ctl(sock.getEpollFd(), EPOLL_CTL_DEL, fde, NULL);
 		close(fde);
@@ -108,10 +108,17 @@ int		requestReponse(int fde, Socket &sock)
 	int				byteCount = 0;
 	int				end = 0;
 	int				sockNbr = sock.getConnection(fde);
+	bool			reopen = false;
 
 	if (!sock.isConnectedClient(fde))
 		sock.addClient(fde);
+	else
+		reopen = true;
+	
 	Client			&client = sock.getClient(fde);
+	
+	if (reopen)
+		client.openNewTmp();
 
 	memset(buf, 0, BUFFER_SIZE);	
 	byteCount = recv(fde, buf, BUFFER_SIZE, 0);
