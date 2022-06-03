@@ -108,16 +108,12 @@ int		requestReponse(int fde, Socket &sock)
 	int				byteCount = 0;
 	int				end = 0;
 	int				sockNbr = sock.getConnection(fde);
-	bool			reopen = false;
 
 	if (!sock.isConnectedClient(fde))
 		sock.addClient(fde);
-	else
-		reopen = true;
-	
 	Client			&client = sock.getClient(fde);
 	
-	if (reopen)
+	if (client.getNeedReopen())
 		client.openNewTmp();
 
 	memset(buf, 0, BUFFER_SIZE);	

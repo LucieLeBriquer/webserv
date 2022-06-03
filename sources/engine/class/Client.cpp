@@ -20,7 +20,8 @@ Client::Client(void) : _fd(-1), _request(""), _tmp(NULL), _fdTmp(-1),
 	_tmpChunked(NULL), _fdTmpChunked(-1), _response(HTTPResponse()),
 	_header(HTTPHeader()), _status(Status()), _isFirstLine(true), _isQuery(false),
 	_recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0), _totSize(0),
-	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
+	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
+	_hasBeenClosed(true)
 {
 	return ;
 }
@@ -29,7 +30,8 @@ Client::Client(int fd) : _fd(fd), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_
 	_tmpChunked(tmpfile()), _fdTmpChunked(fileno(_tmpChunked)), _response(HTTPResponse()),
 	_header(HTTPHeader()), _status(Status()), _isFirstLine(true), _isQuery(false),
 	_recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0), _totSize(0),
-	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
+	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0),
+	_hasBeenClosed(false)
 {
 	return ;
 }
@@ -73,6 +75,7 @@ Client	&Client::operator=(const Client &client)
 		_recvBlockSize = client._recvBlockSize;
 		_readBlock = client._readBlock;
 		_blockSize = client._blockSize;
+		_hasBeenClosed = client._hasBeenClosed;
 	}
 	return (*this);
 }
@@ -266,12 +269,21 @@ void			Client::openNewTmp(void)
 	_fdTmp = fileno(_tmp);
 	_tmpChunked = tmpfile();
 	_fdTmpChunked = fileno(_tmpChunked);
+	_hasBeenClosed = false;
+}
+
+bool			Client::getNeedReopen(void) const
+{
+	return (_hasBeenClosed);
 }
 
 void			Client::clear()
 {
 	fclose(_tmp);
 	fclose(_tmpChunked);
+	_hasBeenClosed = true;
+	_fdTmp = -1;
+	_fdTmpChunked = -1;
 	
 	_isFirstLine = true;
 	_isQuery = false;

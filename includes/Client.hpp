@@ -41,6 +41,7 @@ class Client
 		bool			_recvBlockSize;
 		size_t			_readBlock;
 		size_t			_blockSize;
+		bool			_hasBeenClosed;
 		
 	public:
 		Client(void);
@@ -97,6 +98,7 @@ class Client
 		bool			isBlockEnd(size_t cur);
 
 		void			clear(void);
+		bool			getNeedReopen(void) const;
 		void			openNewTmp(void);
 };
 
