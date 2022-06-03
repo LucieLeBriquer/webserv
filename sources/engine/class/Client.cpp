@@ -6,7 +6,7 @@
 /*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 13:41:30 by lle-briq          #+#    #+#             */
-/*   Updated: 2022/06/02 17:48:41 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/03 10:57:03 by lle-briq         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 **		CONSTRUCTORS AND DESTRUCTOR
 */
 
-Client::Client(void) : _fd(-1), _request(""), _tmp(tmpfile()), _fdTmp(fileno(_tmp)),
-	_tmpChunked(tmpfile()), _fdTmpChunked(fileno(_tmpChunked)), _response(HTTPResponse()),
+Client::Client(void) : _fd(-1), _request(""), _tmp(NULL), _fdTmp(-1),
+	_tmpChunked(NULL), _fdTmpChunked(-1), _response(HTTPResponse()),
 	_header(HTTPHeader()), _status(Status()), _isFirstLine(true), _isQuery(false),
 	_recvHeader(false), _method(BAD_METHOD), _cgiBody(""), _headerSize(0), _totSize(0),
 	_isContentLen(false), _recvBlockSize(false), _readBlock(0), _blockSize(0)
@@ -263,15 +263,12 @@ bool			Client::getIsContentLen(void) const
 void			Client::clear(bool reopen)
 {
 	fclose(_tmp);
+	fclose(_tmpChunked);
+
 	if (reopen)
 	{
 		_tmp = tmpfile();
 		_fdTmp = fileno(_tmp);
-	}
-
-	fclose(_tmpChunked);
-	if (reopen)
-	{
 		_tmpChunked = tmpfile();
 		_fdTmpChunked = fileno(_tmpChunked);
 	}
