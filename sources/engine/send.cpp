@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   send.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lle-briq <lle-briq@student.42.fr>          +#+  +:+       +#+        */
+/*   By: lpascrea <lpascrea@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 10:15:59 by lpascrea          #+#    #+#             */
-/*   Updated: 2022/05/27 14:03:30 by lle-briq         ###   ########.fr       */
+/*   Updated: 2022/06/05 06:13:58 by lpascrea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ static int	sendData(int fde, Client &client, bool isCgi)
 			fileS.read(buff, sizeOfChunk);
 			buff[sizeOfChunk] = '\0';
 			tmpfile << buff << "\r\n";
-			free(buff);
+			delete buff;
 			chunkSize += sizeOfChunk;
 			if (chunkSize >=  size)
 				tmpfile << "0" << "\r\n";
