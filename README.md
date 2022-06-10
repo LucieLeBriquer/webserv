@@ -138,8 +138,7 @@ in_addr_t inet_addr(const char *cp);
 ```
 converts the string `cp` to an integer value suitable for use as an Internet address.
 
-### setsockopt -- set the socket options
-TO FILL
+### setsockopt -- set the socket 
 
 ```c++
 int setsockopt(int sockfd, int level, int option_name, const void *option_value, socklen_t option_len);
@@ -147,6 +146,7 @@ int setsockopt(int sockfd, int level, int option_name, const void *option_value,
 sets the option `option_name` argument, at the protocol level specified by the `level` argument, to the value `option_value` for the socket `sockfd`.
 
 ### fcnt -- manipulate file descriptor
+
 ```c++
 #include <fcntl.h>
 
@@ -288,7 +288,7 @@ Request specific variables :
 
 Convention : we should have a `cgi-bin` directory in our root
 
-Uploading files could be handled by CGI (for example python) 
+Uploading files could be handled by CGI (for example php) 
 
 ---
 ## Ressources
