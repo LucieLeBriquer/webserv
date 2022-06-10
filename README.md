@@ -123,20 +123,36 @@ with :
 - `sin_port` = a port number
 - `sin_addr` = address for the socket (for example `inet_addr("127.0.0.1")` or const like `INADDR_ANY`)
 
-### connect
+### connect -- initiate a connection on a socket
+```c++
+int connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+```
+Connects the socket `sockfd` to the address specified by `addr`.
+
+### inet_addr -- IPv4 address manipulation
+
+```c++
+#include <arpa/inet.h>
+
+in_addr_t inet_addr(const char *cp);
+```
+converts the string `cp` to an integer value suitable for use as an Internet address.
+
+### setsockopt -- set the socket options
 TO FILL
 
-### inet_addr
-TO FILL
+```c++
+int setsockopt(int sockfd, int level, int option_name, const void *option_value, socklen_t option_len);
+```
+sets the option `option_name` argument, at the protocol level specified by the `level` argument, to the value `option_value` for the socket `sockfd`.
 
-### setsockopt
-TO FILL
+### fcnt -- manipulate file descriptor
+```c++
+#include <fcntl.h>
 
-### getsockname
-TO FILL
-
-### fcnt
-TO FILL
+int fcntl(int fd, int cmd, ... /* arg */ );
+```
+performs one of the operation `cmd` on the open file descriptor `fd`.
 
 -----------------
 ## HTTP requests methods
